@@ -1,0 +1,3 @@
+CREATE TABLE customers (
+    user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE
+);
