@@ -1,5 +1,5 @@
 # Software Engineering Conventions & Architecture Guidelines
-**Project Stack:** Java 25 | Spring Boot 3.4+ | PostgreSQL 16+ | Liquibase
+**Project Stack:** Java 25 | Spring Boot 3.4+ | PostgreSQL 16+ | Flyway
 
 ---
 
@@ -64,11 +64,11 @@ Use `record` for all read-only Data Transfer Objects (DTOs), API payloads, Value
 ```java
 // Preferred for DTOs and Value Objects
 public record UserResponseDto(
-    UUID id,
-    String email,
-    String fullName,
-    Instant createdAt
-) {}
+                UUID id,
+                String email,
+                String fullName,
+                Instant createdAt
+        ) {}
 ```
 
 ### 3.2 Sealed Classes for Explicit Domain Hierarchy
@@ -103,17 +103,55 @@ Java 25 handles high-throughput I/O natively via Virtual Threads.
 Use Multiline Text Blocks (`"""..."""`) for SQL queries, JSON templates, or multi-line strings.
 ```java
 String sql = """
-    SELECT u.id, u.email, u.status 
-    FROM users u 
-    WHERE u.status = :status AND u.created_at >= :startDate
-    """;
+        SELECT u.id, u.email, u.status 
+        FROM users u 
+        WHERE u.status = :status AND u.created_at >= :startDate
+        """;
 ```
 
 ---
 
-## 4. Spring Boot 3.4+ Best Practices
+## 4. Documentation & Javadoc Standards
 
-### 4.1 Dependency Injection
+Documentation is critical for both long-term maintenance and context awareness for AI assistants.
+
+### 4.1 When Javadoc is Required
+* **Public Domain Ports & Use Cases:** All public interfaces in `domain/port/` must have Javadoc explaining business intent, preconditions, and potential exceptions.
+* **Complex Business Logic & Aggregates:** Any public method containing multi-step algorithms, calculations, or non-trivial state transitions.
+* **Configuration & Infrastructure Integrations:** Custom Spring configurations, bean factories, or integration clients.
+
+### 4.2 When Javadoc is Omitted (Self-Documenting Code)
+* Simple getters/setters, `record` components, or trivial CRUD implementations where method signature and type names make the intent obvious.
+* REST Controller endpoints if OpenAPI/Swagger annotations (`@Operation`, `@ApiResponse`) are already present.
+
+### 4.3 Javadoc Style Guidelines
+* **Intent-Oriented:** Describe *why* the method exists and *what* business requirement it fulfills, not *how* the Java code is implemented.
+* **Markdown Snippets:** Use modern Javadoc tags (`{@snippet ...}`) introduced in Java 18+ for embedding code examples.
+* **Records Documentation:** Document record components directly using `@param` tags on the record header Javadoc.
+
+```java
+/**
+ * Primary inbound port for orchestrating order creation and payment initialization.
+ */
+public interface CreateOrderUseCase {
+
+    /**
+     * Processes a new user order, reserves stock, and emits an order creation event.
+     *
+     * @param command payload containing target product IDs, quantities, and user identity
+     * @return the unique identifiers and initial state of the created order
+     * @throws InsufficientStockException if requested items exceed available database inventory
+     * @throws PaymentInitializationException if third-party gateway rejects transaction
+     */
+    OrderResult execute(CreateOrderCommand command);
+}
+```
+
+---
+
+## 5. Spring Boot 3.4+ Best Practices
+
+### 5.1 Dependency Injection
 * **Constructor Injection Only:** Field injection (`@Autowired` on fields) is **strictly forbidden**.
 * Keep constructor parameter lists reasonable (max 5 parameters). If more are needed, refactor the class to respect Single Responsibility.
 ```java
@@ -125,7 +163,7 @@ public class OrderService implements CreateOrderUseCase {
 }
 ```
 
-### 4.2 Configuration Properties
+### 5.2 Configuration Properties
 Use strongly-typed `@ConfigurationProperties` records instead of `@Value`.
 ```java
 @ConfigurationProperties(prefix = "app.payment")
@@ -136,48 +174,42 @@ public record PaymentProperties(
 ) {}
 ```
 
-### 4.3 Validation
+### 5.3 Validation
 * Validate all incoming REST requests using `jakarta.validation` annotations on Request DTO records.
 * Trigger validation with `@Valid` on Controller parameters.
 
 ---
 
-## 5. Persistence & PostgreSQL Standards
+## 6. Persistence & PostgreSQL Standards
 
-### 5.1 Separation of Domain Models & Database Entities
+### 6.1 Separation of Domain Models & Database Entities
 * **Never use `@Entity` annotations on Domain Models.**
 * Database entities reside strictly in `infrastructure/persistence/entity/`.
 * Domain aggregates reside in `domain/model/`.
 * Use MapStruct mappers to translate between JPA Entities and Domain Models.
 
-### 5.2 Database Migrations (Liquibase)
+### 6.2 Database Migrations (Flyway)
 * **Never** use `hibernate.hbm2ddl.auto = update` or `create`.
-* All database schema changes MUST be managed through Liquibase changelogs (`src/main/resources/db/changelog/`).
-* Changelogs must be formatted in SQL or YAML and split by version:
-    * `db/changelog/db.changelog-master.xml`
-    * `db/changelog/changes/001-initial-schema.sql`
-    * `db/changelog/changes/002-add-index-users-email.sql`
+* All database schema changes MUST be managed through Flyway migrations (`src/main/resources/db/migration`).
 
-### 5.3 Naming & Primary Keys
-* **Primary Keys:** Use `UUID` (v7 preferred) or `BIGINT` (dependent on performance requirements).
+### 6.3 Naming & Primary Keys
+* **Primary Keys:** Use `BIGINT` or `INT` or `UUID` (dependent on performance requirements).
 * **Naming Conventions:**
     * Tables: `snake_case`, plural (e.g., `orders`, `user_accounts`).
     * Columns: `snake_case` (e.g., `created_at`, `payment_status`).
     * Foreign Keys: `fk_<source_table>_<target_table>` (e.g., `fk_orders_user_accounts`).
     * Indexes: `idx_<table_name>_<column_name>` (e.g., `idx_user_accounts_email`).
 
-### 5.4 Performance & Query Optimization
+### 6.4 Performance & Query Optimization
 * Always define fetch types explicitly: default to `FetchType.LAZY` on `@ManyToOne` and `@OneToMany` relationships.
 * Avoid N+1 query issues by using `JOIN FETCH` or Spring Data JPA `@EntityGraph`.
 * Read-only operations must be annotated with `@Transactional(readOnly = true)`.
-### 5.5 Money
-Money computations only using BigDecimal from default java library, do NOT use float or double for money computations.
 
 ---
 
-## 6. Error Handling & REST API Design
+## 7. Error Handling & REST API Design
 
-### 6.1 Unified Exception Handling
+### 7.1 Unified Exception Handling
 Use `@RestControllerAdvice` and RFC 7807 **Problem Details** (`ProblemDetail`) for structured error responses.
 
 ```java
@@ -197,7 +229,7 @@ public class GlobalExceptionHandler {
 }
 ```
 
-### 6.2 Standard HTTP Status Codes
+### 7.2 Standard HTTP Status Codes
 * `200 OK`: Successful fetch or update.
 * `201 Created`: Successful creation (include `Location` header).
 * `204 No Content`: Successful deletion or action with no response body.
@@ -210,11 +242,11 @@ public class GlobalExceptionHandler {
 
 ---
 
-## 7. Testing Strategy
+## 8. Testing Strategy
 
 We enforce the **Testing Pyramid**: Unit Tests > Integration Tests > E2E Tests.
 
-### 7.1 Unit Tests (JUnit 5 + Mockito / AssertJ)
+### 8.1 Unit Tests (JUnit 5 + Mockito / AssertJ)
 * Target Domain models, Application Services, and pure logic.
 * Fast, lightweight, no Spring context loading.
 ```java
@@ -230,7 +262,7 @@ class OrderServiceTest {
 }
 ```
 
-### 7.2 Integration Tests (`@SpringBootTest` + Testcontainers)
+### 8.2 Integration Tests (`@SpringBootTest` + Testcontainers)
 * Used for Testing Repositories, DB Queries, and External Adapter integration.
 * **Mandatory:** Use **Testcontainers** for PostgreSQL integration tests. Do NOT use H2 (H2 does not accurately represent PostgreSQL JSONB, locking, or dialect behaviors).
 
@@ -253,7 +285,7 @@ class UserRepositoryTest {
 
 ---
 
-## 8. Guidelines for AI Agents & LLMs
+## 9. Guidelines for AI Agents & LLMs
 
 When generating, refactoring, or inspecting code in this project, **AI Agents MUST strictly adhere to the following rules**:
 
@@ -269,5 +301,7 @@ When generating, refactoring, or inspecting code in this project, **AI Agents MU
     * Use Java `record` for DTOs and Value Objects.
     * Mark all fields in entities/classes `private final` unless mutability is explicitly required by JPA/Hibernate.
 5. **Modification Protocol:**
-    * When altering DB schema, ALWAYS generate a corresponding Liquibase XML/SQL migration script in `src/main/resources/db/changelog/changes/`. Do NOT modify existing executed migration scripts.
+    * When altering DB schema, ALWAYS generate a corresponding Flyway SQL migration script in `src/main/resources/db/migration/`. Do NOT modify existing executed migration scripts.
     * Include corresponding JUnit/Testcontainers tests for any newly added business logic or database queries.
+6. **Documentation Compliance:**
+    * Always write clear Javadoc for public Domain Ports, complex domain logic, and custom interfaces generated or updated during the task.
