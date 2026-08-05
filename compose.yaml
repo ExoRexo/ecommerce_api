@@ -1,15 +1,20 @@
 services:
   postgres:
     image: postgres:17
-    container_name: postgres
+    container_name: ecommerce_api_db
+    restart: always
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "${POSTGRES_HOST}:${POSTGRES_PORT}:${POSTGRES_PORT}"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
+    networks:
+      - ecommerce_network
 volumes:
   postgres_data:
+
+networks:
+  ecommerce_network:
