@@ -9,4 +9,4 @@ CREATE TABLE order_item_wh_reservations (
 
 CREATE INDEX idx_reservations_order_item_id ON order_item_wh_reservations(order_item_id);
 CREATE INDEX idx_reservations_warehouse_id ON order_item_wh_reservations(warehouse_id);
-CREATE INDEX idx_reservations_status_type_id ON order_item_wh_reservations(status_type
+CREATE INDEX idx_reservations_status_type_id ON order_item_wh_reservations(status_type_id);
