@@ -9,49 +9,39 @@ This document serves as the single source of truth for architectural standards, 
 
 ### Strategic Priorities
 1. **Predictability over Cleverness:** Code should be simple, explicit, and easy to read. Avoid obscure language features or overly complex abstractions.
-2. **Type Safety & Immutability:** Leverage modern Java 25 features (Records, Pattern Matching, Sealed Classes) to build compile-time safe domains.
-3. **Domain-Driven Isolation:** Keep business logic independent of external frameworks, delivery mechanisms (REST/gRPC), and persistence implementation details.
+2. **Type Safety & Immutability:** Leverage modern Java 25 features (Records, Pattern Matching, Sealed Classes) to build compile-time safe data structures.
+3. **Layered Separation of Concerns:** Maintain clean boundaries between presentation, service (business logic), data access (persistence), and external integrations.
 4. **AI-Friendly Architecture:** Code structures, naming conventions, and project hierarchy must be standardized so LLMs/AI agents can accurately navigate, reason about, and modify the codebase without context bleeding.
 
 ---
 
 ## 2. Project Architecture & Layering
 
-We follow a **Clean / Hexagonal Architecture (Ports and Adapters)** pattern with modular boundaries.
+We follow a classic **Layered Architecture (N-Tier Architecture)** pattern.
 
 ```
 src/main/java/com/project/
-├── domain/                  # Pure Business Logic (Framework Agnostic)
-│   ├── model/               # Aggregates, Entities, Value Objects (Records/Classes)
-│   ├── exception/           # Pure Domain Exceptions
-│   └── port/                # Interfaces
-│       ├── inbound/         # Use Case Interfaces (Input Ports)
-│       └── outbound/        # Repository / External Service Interfaces (Output Ports)
+├── controller/              # Presentation Layer (REST Controllers, Web API)
+│   ├── request/             # Request DTOs (Validation tags)
+│   └── response/            # Response DTOs
 │
-├── application/             # Application Services & Orchestration
-│   ├── service/             # Use Case Implementations
-│   └── dto/                 # Application Commands / Queries
+├── service/                 # Service / Business Logic Layer
+│   ├── dto/                 # Internal Service DTOs / Commands
+│   └── exception/           # Custom Business Exceptions
 │
-├── infrastructure/          # External Integrations & Concrete Implementations
-│   ├── persistence/         # Database Access
-│   │   ├── entity/          # JPA / Spring Data Entities
-│   │   ├── mapper/          # MapStruct Mappers (Domain <-> JPA)
-│   │   └── adapter/         # Output Port Implementations (Repositories)
-│   ├── client/              # External APIs (REST/Feign/WebClient)
-│   └── config/              # Spring Configuration Beans
+├── repository/              # Data Access Layer (Spring Data JPA Repositories)
+│   └── entity/              # JPA / Hibernate Entities
 │
-└── presentation/            # Controllers & Delivery Layer
-    ├── rest/                # Spring MVC / WebFlux Controllers
-    │   ├── request/         # Request DTOs (Validation tags)
-    │   └── response/        # Response DTOs
-    └── mapper/              # MapStruct Mappers (Domain <-> REST DTO)
+├── client/                  # External API Integrations (Feign, WebClient, REST Clients)
+├── config/                  # Spring Configuration Beans & Properties
+└── mapper/                  # MapStruct Mappers (DTO <-> Entity / DTO <-> Response)
 ```
 
 ### Layer Interaction Rules
-* **Domain** MUST NOT import anything from `springframework`, `jakarta.persistence`, or `presentation`.
-* **Application** depends ONLY on **Domain** and Outbound Port interfaces.
-* **Infrastructure** implements Outbound Ports and handles DB/External I/O.
-* **Presentation** calls Inbound Use Cases (Application Services) and handles HTTP serialization/validation.
+* **Controller Layer:** Handles HTTP requests, input validation, and delegates business operations to the Service layer. It returns Response DTOs.
+* **Service Layer:** Contains core business logic, transaction boundaries (`@Transactional`), and orchestrates operations between Repositories and External Clients.
+* **Repository Layer:** Handles database persistence and queries using JPA/Hibernate Entities.
+* **Dependency Flow:** Strictly top-down: `Controller` -> `Service` -> `Repository`. Lower layers MUST NOT depend on higher layers.
 
 ---
 
@@ -60,15 +50,15 @@ src/main/java/com/project/
 We leverage modern Java 25 standards. All code must adhere to these language features:
 
 ### 3.1 Records for Data Carriers
-Use `record` for all read-only Data Transfer Objects (DTOs), API payloads, Value Objects, and internal communication events.
+Use `record` for all read-only Data Transfer Objects (DTOs), API payloads, and internal communication events.
 ```java
-// Preferred for DTOs and Value Objects
+// Preferred for DTOs and API Payloads
 public record UserResponseDto(
-                UUID id,
-                String email,
-                String fullName,
-                Instant createdAt
-        ) {}
+    UUID id,
+    String email,
+    String fullName,
+    Instant createdAt
+) {}
 ```
 
 ### 3.2 Sealed Classes for Explicit Domain Hierarchy
@@ -103,10 +93,10 @@ Java 25 handles high-throughput I/O natively via Virtual Threads.
 Use Multiline Text Blocks (`"""..."""`) for SQL queries, JSON templates, or multi-line strings.
 ```java
 String sql = """
-        SELECT u.id, u.email, u.status 
-        FROM users u 
-        WHERE u.status = :status AND u.created_at >= :startDate
-        """;
+    SELECT u.id, u.email, u.status 
+    FROM users u 
+    WHERE u.status = :status AND u.created_at >= :startDate
+    """;
 ```
 
 ---
@@ -116,9 +106,9 @@ String sql = """
 Documentation is critical for both long-term maintenance and context awareness for AI assistants.
 
 ### 4.1 When Javadoc is Required
-* **Public Domain Ports & Use Cases:** All public interfaces in `domain/port/` must have Javadoc explaining business intent, preconditions, and potential exceptions.
-* **Complex Business Logic & Aggregates:** Any public method containing multi-step algorithms, calculations, or non-trivial state transitions.
-* **Configuration & Infrastructure Integrations:** Custom Spring configurations, bean factories, or integration clients.
+* **Service Interfaces & Public Methods:** All public service methods must have Javadoc explaining business intent, preconditions, and potential exceptions.
+* **Complex Business Logic:** Any public method containing multi-step algorithms, calculations, or non-trivial state transitions.
+* **Configuration & External Clients:** Custom Spring configurations, bean factories, or integration clients.
 
 ### 4.2 When Javadoc is Omitted (Self-Documenting Code)
 * Simple getters/setters, `record` components, or trivial CRUD implementations where method signature and type names make the intent obvious.
@@ -131,19 +121,19 @@ Documentation is critical for both long-term maintenance and context awareness f
 
 ```java
 /**
- * Primary inbound port for orchestrating order creation and payment initialization.
+ * Service for orchestrating order creation and payment processing.
  */
-public interface CreateOrderUseCase {
+public interface OrderService {
 
     /**
-     * Processes a new user order, reserves stock, and emits an order creation event.
+     * Processes a new user order, reserves stock, and initializes payment.
      *
-     * @param command payload containing target product IDs, quantities, and user identity
+     * @param dto payload containing target product IDs, quantities, and user identity
      * @return the unique identifiers and initial state of the created order
      * @throws InsufficientStockException if requested items exceed available database inventory
      * @throws PaymentInitializationException if third-party gateway rejects transaction
      */
-    OrderResult execute(CreateOrderCommand command);
+    OrderResponseDto createOrder(CreateOrderRequestDto dto);
 }
 ```
 
@@ -157,9 +147,10 @@ public interface CreateOrderUseCase {
 ```java
 @Service
 @RequiredArgsConstructor // Lombok constructor injection
-public class OrderService implements CreateOrderUseCase {
-    private final OrderRepositoryPort orderRepository;
-    private final PaymentGatewayPort paymentGateway;
+public class OrderServiceImpl implements OrderService {
+    private final OrderRepository orderRepository;
+    private final PaymentClient paymentClient;
+    private final OrderMapper orderMapper;
 }
 ```
 
@@ -182,18 +173,17 @@ public record PaymentProperties(
 
 ## 6. Persistence & PostgreSQL Standards
 
-### 6.1 Separation of Domain Models & Database Entities
-* **Never use `@Entity` annotations on Domain Models.**
-* Database entities reside strictly in `infrastructure/persistence/entity/`.
-* Domain aggregates reside in `domain/model/`.
-* Use MapStruct mappers to translate between JPA Entities and Domain Models.
+### 6.1 Entities & Data Access
+* Entities reside strictly in `repository/entity/`.
+* Use MapStruct mappers to translate between JPA Entities and DTOs.
+* Do **NOT** expose `@Entity` classes directly outside the Service/Repository layers (never return entities from REST Controllers).
 
 ### 6.2 Database Migrations (Flyway)
 * **Never** use `hibernate.hbm2ddl.auto = update` or `create`.
-* All database schema changes MUST be managed through Flyway migrations (`src/main/resources/db/migration`).
+* All database schema changes MUST be managed through Flyway migrations in `src/main/resources/db/migration/` (e.g., `V1__initial_schema.sql`, `V2__add_index_users_email.sql`).
 
 ### 6.3 Naming & Primary Keys
-* **Primary Keys:** Use `BIGINT` or `INT` or `UUID` (dependent on performance requirements).
+* **Primary Keys:** Use `BIGINT`, `INT`, or `UUID` (dependent on performance requirements).
 * **Naming Conventions:**
     * Tables: `snake_case`, plural (e.g., `orders`, `user_accounts`).
     * Columns: `snake_case` (e.g., `created_at`, `payment_status`).
@@ -216,8 +206,8 @@ Use `@RestControllerAdvice` and RFC 7807 **Problem Details** (`ProblemDetail`) f
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(DomainNotFoundException.class)
-    public ProblemDetail handleNotFound(DomainNotFoundException ex) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ProblemDetail handleNotFound(EntityNotFoundException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(
             HttpStatus.NOT_FOUND, 
             ex.getMessage()
@@ -247,15 +237,22 @@ public class GlobalExceptionHandler {
 We enforce the **Testing Pyramid**: Unit Tests > Integration Tests > E2E Tests.
 
 ### 8.1 Unit Tests (JUnit 5 + Mockito / AssertJ)
-* Target Domain models, Application Services, and pure logic.
+* Target Services and business logic components.
 * Fast, lightweight, no Spring context loading.
 ```java
+@ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
+
+    @Mock
+    private OrderRepository orderRepository;
+
+    @InjectMocks
+    private OrderServiceImpl orderService;
 
     @Test
     void shouldCreateOrderSuccessfully() {
         // Given
-        var command = new CreateOrderCommand(...);
+        var request = new CreateOrderRequestDto(...);
         // When & Then
         assertThat(result).isNotNull();
     }
@@ -263,7 +260,7 @@ class OrderServiceTest {
 ```
 
 ### 8.2 Integration Tests (`@SpringBootTest` + Testcontainers)
-* Used for Testing Repositories, DB Queries, and External Adapter integration.
+* Used for Testing Repositories, DB Queries, and External Client integration.
 * **Mandatory:** Use **Testcontainers** for PostgreSQL integration tests. Do NOT use H2 (H2 does not accurately represent PostgreSQL JSONB, locking, or dialect behaviors).
 
 ```java
@@ -290,18 +287,18 @@ class UserRepositoryTest {
 When generating, refactoring, or inspecting code in this project, **AI Agents MUST strictly adhere to the following rules**:
 
 1. **Context Boundary Rules:**
-    * When creating a new feature, construct the **Domain Model/Port** first, followed by **Application Service**, then **Infrastructure Adapters**, and finally **Controllers**.
-    * Never introduce Spring imports inside `domain/`.
+    * When creating a new feature, follow the top-down or bottom-up layered workflow: `Entity` -> `Repository` -> `Service` -> `Controller` (with DTOs and Mappers).
+    * Ensure strict dependency order (`Controller` -> `Service` -> `Repository`). Never inject Repositories directly into Controllers.
 2. **DTO & Entity Isolation:**
-    * Do NOT return `@Entity` objects directly from REST controllers.
-    * Do NOT pass REST Request DTOs into application or domain services. Convert them to Domain Commands/Objects via MapStruct or explicit mapping.
+    * Do NOT return `@Entity` objects directly from REST controllers or expose them as API responses.
+    * Map Request DTOs to Entities/Service DTOs before passing them to business logic.
 3. **No Unneeded Abstractions:**
-    * Do NOT create interfaces for Application Services if there is only one implementation (e.g., `UserService` does not need `UserServiceImpl`). Interfaces ARE required for Infrastructure Ports (e.g., `UserRepositoryPort`).
+    * Do NOT create unnecessary interface layers if there is only one implementation (unless explicitly required by contract or team standards).
 4. **Immutability First:**
-    * Use Java `record` for DTOs and Value Objects.
-    * Mark all fields in entities/classes `private final` unless mutability is explicitly required by JPA/Hibernate.
+    * Use Java `record` for Request/Response DTOs and internal data carriers.
+    * Keep fields encapsulated and private.
 5. **Modification Protocol:**
-    * When altering DB schema, ALWAYS generate a corresponding Flyway SQL migration script in `src/main/resources/db/migration/`. Do NOT modify existing executed migration scripts.
+    * When altering DB schema, ALWAYS generate a corresponding Flyway SQL migration script (`V<Version>__<Description>.sql`) in `src/main/resources/db/migration/`. Do NOT modify existing executed migration scripts.
     * Include corresponding JUnit/Testcontainers tests for any newly added business logic or database queries.
 6. **Documentation Compliance:**
-    * Always write clear Javadoc for public Domain Ports, complex domain logic, and custom interfaces generated or updated during the task.
+    * Always write clear Javadoc for public service methods, complex business logic, and custom interfaces generated or updated during the task.
