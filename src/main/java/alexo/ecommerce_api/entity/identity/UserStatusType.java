@@ -35,6 +35,9 @@ public class UserStatusType {
     @Column(nullable = false, unique = true, length = 100)
     private UserStatusCode code;
 
+    @Column(nullable = false, length = 120)
+    private String label;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 }

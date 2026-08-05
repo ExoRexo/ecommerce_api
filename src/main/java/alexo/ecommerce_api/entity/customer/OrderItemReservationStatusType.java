@@ -35,6 +35,9 @@ public class OrderItemReservationStatusType {
     @Column(nullable = false, unique = true, length = 50)
     private OrderItemReservationStatusCode code;
 
+    @Column(nullable = false, length = 120)
+    private String label;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 }
