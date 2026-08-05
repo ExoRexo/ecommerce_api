@@ -12,11 +12,11 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum CustomerOrderStatusCode implements EnumCode, EnumLabel, EnumDescription {
-    CREATED("CREATED", "Created", "Order was created and is awaiting further processing."),
-    PENDING_PAYMENT("PENDING_PAYMENT", "Pending Payment", "Order is waiting for a payment transaction."),
-    PAID("PAID", "Paid", "Payment was received successfully for the order."),
-    COMPLETED("COMPLETED", "Completed", "Order lifecycle is completed and closed."),
-    CANCELLED("CANCELLED", "Cancelled", "Order was cancelled before completion.");
+    CREATED("CREATED", "Создан", "Заказ создан и ожидает дальнейшей обработки."),
+    PENDING_PAYMENT("PENDING_PAYMENT", "Ожидает оплаты", "Заказ ожидает проведения оплаты."),
+    PAID("PAID", "Оплачен", "Оплата по заказу успешно получена."),
+    COMPLETED("COMPLETED", "Завершен", "Жизненный цикл заказа завершен."),
+    CANCELLED("CANCELLED", "Отменен", "Заказ отменен до завершения.");
 
     private final String code;
     private final String label;

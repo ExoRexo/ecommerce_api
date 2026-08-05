@@ -12,9 +12,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum OrderItemReservationStatusCode implements EnumCode, EnumLabel, EnumDescription {
-    ACTIVE("ACTIVE", "Active", "Reservation is active and blocks stock for the order item."),
-    CANCELLED("CANCELLED", "Cancelled", "Reservation was cancelled and stock was released."),
-    FINISHED("FINISHED", "Finished", "Reservation was consumed during fulfillment and is finished.");
+    ACTIVE("ACTIVE", "Активно", "Резерв активен и удерживает складской остаток под позицию заказа."),
+    CANCELLED("CANCELLED", "Отменено", "Резерв отменен, остаток возвращен в доступный."),
+    FINISHED("FINISHED", "Завершено", "Резерв использован при отгрузке и завершен.");
 
     private final String code;
     private final String label;

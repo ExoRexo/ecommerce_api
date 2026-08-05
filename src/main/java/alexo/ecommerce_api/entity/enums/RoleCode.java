@@ -12,9 +12,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum RoleCode implements EnumCode, EnumLabel, EnumDescription {
-    ADMIN("ADMIN", "Administrator", "Platform administrator with full access rights."),
-    MANAGER("MANAGER", "Manager", "Operations manager with catalog and order management rights."),
-    CUSTOMER("CUSTOMER", "Customer", "End user role for shopping and order placement.");
+    ADMIN("ADMIN", "Администратор", "Администратор платформы с полным доступом."),
+    MANAGER("MANAGER", "Менеджер", "Менеджер операций с доступом к управлению каталогом и заказами."),
+    CUSTOMER("CUSTOMER", "Клиент", "Конечный пользователь для покупок и оформления заказов.");
 
     private final String code;
     private final String label;
