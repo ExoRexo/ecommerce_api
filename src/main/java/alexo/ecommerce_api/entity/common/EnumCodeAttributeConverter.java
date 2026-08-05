@@ -1,12 +1,14 @@
 package alexo.ecommerce_api.entity.common;
 
 import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 /**
  * Base JPA converter that persists enum codes and restores enums from those codes.
  *
  * @param <E> enum type implementing {@link EnumCode}
  */
+@Converter
 public abstract class EnumCodeAttributeConverter<E extends Enum<E> & EnumCode>
     implements AttributeConverter<E, String> {
 
