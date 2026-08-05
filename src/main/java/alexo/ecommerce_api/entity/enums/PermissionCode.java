@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum PermissionCode implements EnumCode, EnumLabel, EnumDescription {
+	// todo implement
 	;
 
 	private final String code;
