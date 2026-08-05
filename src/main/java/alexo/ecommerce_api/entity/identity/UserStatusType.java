@@ -1,14 +1,14 @@
 package alexo.ecommerce_api.entity.identity;
 
-import alexo.ecommerce_api.entity.common.EnumCodeMapper;
+import alexo.ecommerce_api.entity.converter.UserStatusCodeConverter;
 import alexo.ecommerce_api.entity.enums.UserStatusCode;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,24 +31,10 @@ public class UserStatusType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Short id;
 
+    @Convert(converter = UserStatusCodeConverter.class)
     @Column(nullable = false, unique = true, length = 100)
-    private String code;
+    private UserStatusCode code;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
-
-    /**
-     * @return code converted to business enum.
-     */
-    @Transient
-    public UserStatusCode getStatusCodeEnum() {
-        return EnumCodeMapper.fromCode(UserStatusCode.class, code);
-    }
-
-    /**
-     * Sets database code from enum value.
-     */
-    public void setStatusCodeEnum(UserStatusCode codeEnum) {
-        this.code = codeEnum == null ? null : codeEnum.getCode();
-    }
 }
