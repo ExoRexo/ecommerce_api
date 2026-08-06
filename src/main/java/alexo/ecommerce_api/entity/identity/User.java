@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 /**
  * Platform user account.
@@ -49,5 +50,6 @@ public class User {
     private String passwordHash;
 
     @Column(name = "created_at", nullable = false)
+    @CreationTimestamp
     private OffsetDateTime createdAt;
 }
