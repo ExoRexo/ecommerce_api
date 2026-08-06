@@ -18,6 +18,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Configures Spring Security for stateless JWT authentication.
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -27,10 +30,17 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserPrincipalService userPrincipalService;
     private final PasswordEncoder passwordEncoder;
+    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+    private final RestAccessDeniedHandler restAccessDeniedHandler;
 
-    /*
-     * Main security configuration
-     * Defines endpoint access rules and JWT filter setup
+    /**
+     * Main security filter chain.
+     *
+     * <p>Allows public access to auth endpoints and protects all other routes,
+     * enables custom security error handlers and JWT filter.</p>
+     *
+     * @param http Spring Security HTTP config
+     * @return configured security filter chain
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)  {
@@ -47,6 +57,11 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
+                .exceptionHandling(exceptions -> exceptions
+                    .authenticationEntryPoint(restAuthenticationEntryPoint)
+                    .accessDeniedHandler(restAccessDeniedHandler)
+                )
+
                 // Stateless session (required for JWT)
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
@@ -59,6 +74,11 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Creates DAO provider backed by custom {@code UserDetailsService}.
+     *
+     * @return authentication provider
+     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userPrincipalService);
@@ -66,6 +86,12 @@ public class SecurityConfig {
         return provider;
     }
 
+    /**
+     * Exposes framework authentication manager.
+     *
+     * @param configuration authentication infrastructure configuration
+     * @return authentication manager
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) {
         return configuration.getAuthenticationManager();

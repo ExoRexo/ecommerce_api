@@ -19,6 +19,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Provides JWT token lifecycle operations for authentication.
+ *
+ * <p>The token includes user identity and authorization claims:
+ * {@code userId}, {@code roles}, {@code permissions}.</p>
+ */
 @Service
 @RequiredArgsConstructor
 public class JwtService {
@@ -31,6 +37,11 @@ public class JwtService {
 
     private SecretKey signingKey;
 
+    /**
+     * Initializes HMAC signing key from configured secret.
+     *
+     * @throws IllegalStateException when secret length is less than 32 bytes
+     */
     @PostConstruct
     void initializeKey() {
         byte[] keyBytes = jwtProperties.secret().getBytes(StandardCharsets.UTF_8);
@@ -40,6 +51,12 @@ public class JwtService {
         signingKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    /**
+     * Generates signed JWT access token for authenticated user.
+     *
+     * @param principal authenticated user principal
+     * @return signed JWT token string
+     */
     public String generateToken(UserPrincipal principal) {
         Instant now = Instant.now();
         Instant expiresAt = now.plusMillis(jwtProperties.expirationMs());
@@ -55,6 +72,13 @@ public class JwtService {
                 .compact();
     }
 
+    /**
+     * Extracts user identifier from token claim {@code userId}.
+     *
+     * @param token signed JWT token
+     * @return user id from token
+     * @throws IllegalArgumentException when claim is missing or has unsupported format
+     */
     public Long extractUserId(String token) {
         Object rawUserId = extractAllClaims(token).get(CLAIM_USER_ID);
         if (rawUserId instanceof Number number) {
@@ -66,6 +90,12 @@ public class JwtService {
         throw new IllegalArgumentException("Token does not contain a valid userId claim");
     }
 
+    /**
+     * Extracts role codes from token claim {@code roles}.
+     *
+     * @param token signed JWT token
+     * @return immutable list of role codes
+     */
     public List<RoleCode> extractRoles(String token) {
         return extractStringListClaim(token, CLAIM_ROLES)
                 .stream()
@@ -73,6 +103,12 @@ public class JwtService {
                 .toList();
     }
 
+    /**
+     * Extracts permission codes from token claim {@code permissions}.
+     *
+     * @param token signed JWT token
+     * @return immutable list of permission codes
+     */
     public List<PermissionCode> extractPermissions(String token) {
         return extractStringListClaim(token, CLAIM_PERMISSIONS)
                 .stream()
@@ -80,20 +116,42 @@ public class JwtService {
                 .toList();
     }
 
+    /**
+     * Validates token ownership and expiration for provided principal.
+     *
+     * @param token signed JWT token
+     * @param principal authenticated principal
+     * @return {@code true} when token belongs to principal and is not expired
+     */
     public boolean isTokenValid(String token, UserPrincipal principal) {
         Long tokenUserId = extractUserId(token);
         return tokenUserId.equals(principal.getId()) && !isTokenExpired(token);
     }
 
+    /**
+     * @return configured token TTL in milliseconds
+     */
     public long getExpirationMs() {
         return jwtProperties.expirationMs();
     }
 
+    /**
+     * Checks whether token expiration time is in the past.
+     *
+     * @param token signed JWT token
+     * @return {@code true} if token is expired
+     */
     private boolean isTokenExpired(String token) {
         Date expiration = extractAllClaims(token).getExpiration();
         return expiration.before(new Date());
     }
 
+    /**
+     * Parses signed token and returns full claim payload.
+     *
+     * @param token signed JWT token
+     * @return JWT claims payload
+     */
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(signingKey)
@@ -102,6 +160,14 @@ public class JwtService {
                 .getPayload();
     }
 
+    /**
+     * Extracts claim value and normalizes it to immutable list of strings.
+     *
+     * @param token signed JWT token
+     * @param claimName claim key to extract
+     * @return immutable list of string values, empty when claim is absent
+     * @throws IllegalArgumentException when claim exists but is not a list
+     */
     private List<String> extractStringListClaim(String token, String claimName) {
         Object rawClaim = extractAllClaims(token).get(claimName);
 

@@ -13,7 +13,7 @@ import alexo.ecommerce_api.repository.identity.UserRepository;
 import alexo.ecommerce_api.service.identity.permission.UserPermissionService;
 import alexo.ecommerce_api.service.identity.status.UserStatusCacheService;
 import alexo.ecommerce_api.service.identity.auth.signup.dto.UserCreationDTO;
-import alexo.ecommerce_api.service.identity.auth.signup.dto.UserCreationRequestDTO;
+import alexo.ecommerce_api.service.identity.auth.signup.dto.request.UserCreationRequestDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
