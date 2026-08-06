@@ -1,6 +1,6 @@
 package alexo.ecommerce_api.entity.customer;
 
-import alexo.ecommerce_api.entity.location.Warehouse;
+import alexo.ecommerce_api.entity.inventory.Warehouse;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

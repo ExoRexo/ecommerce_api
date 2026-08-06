@@ -1,10 +1,12 @@
-package alexo.ecommerce_api.entity.location;
+package alexo.ecommerce_api.entity.inventory;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,30 +15,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Postal address used by warehouses.
+ * Physical storage location for products.
  */
 @Entity
-@Table(name = "addresses")
+@Table(name = "warehouses")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Address {
+public class Warehouse {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "address", length = 255)
-    private String address;
+    private String name;
 
-    @Column(name = "mail_index", length = 20)
-    private String mailIndex;
-
-    @Column(name = "country", length = 100)
-    private String country;
-
-    @Column(name = "city", length = 100)
-    private String city;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "address_id", nullable = false)
+    private Address address;
 }

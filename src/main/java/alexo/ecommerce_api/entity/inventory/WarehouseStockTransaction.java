@@ -1,7 +1,6 @@
 package alexo.ecommerce_api.entity.inventory;
 
 import alexo.ecommerce_api.entity.catalog.Product;
-import alexo.ecommerce_api.entity.location.Warehouse;
 import alexo.ecommerce_api.entity.identity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
