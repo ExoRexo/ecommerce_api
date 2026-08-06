@@ -46,6 +46,8 @@ public class UserPermissionService {
     }
 
     /**
+     * replace current user roles to provided roles
+     *
      * @param user id of user
      * @param roles direct roles to set for user
      * @return resulted entities of user direct roles
@@ -68,6 +70,8 @@ public class UserPermissionService {
     }
 
     /**
+     * replace current user direct permissions to provided permissions
+     *
      * @param user id of user
      * @param permissions direct permissions to set for user
      * @return resulted entities of user direct permissions

@@ -122,13 +122,11 @@ public class UserCreationService {
         user.setPasswordHash(userCreationDTO.passwordHash());
         user = userRepository.save(user);
 
-        ArrayList<Role> roles;
-        roles = new ArrayList<>(userCreationDTO.roles().size());
+        ArrayList<Role> roles = new ArrayList<>(userCreationDTO.roles().size());
         roles.addAll(userCreationDTO.roles());
         userPermissionService.replaceUserRoles(user, roles);
 
-        ArrayList<Permission> permissions;
-        permissions = new ArrayList<>(userCreationDTO.directPermissions().size());
+        ArrayList<Permission> permissions = new ArrayList<>(userCreationDTO.directPermissions().size());
         permissions.addAll(userCreationDTO.directPermissions());
         userPermissionService.replaceUserDirectPermissions(user, permissions);
 
