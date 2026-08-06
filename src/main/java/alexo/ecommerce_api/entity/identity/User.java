@@ -1,5 +1,6 @@
 package alexo.ecommerce_api.entity.identity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -47,6 +48,7 @@ public class User {
     private UserStatusType statusType;
 
     @Column(name = "password_hash", nullable = false, length = 64)
+    @JsonIgnore
     private String passwordHash;
 
     @Column(name = "created_at", nullable = false)

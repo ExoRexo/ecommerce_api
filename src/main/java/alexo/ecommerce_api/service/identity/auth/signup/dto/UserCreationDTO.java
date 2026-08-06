@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.identity.user.creation.dto;
+package alexo.ecommerce_api.service.identity.auth.signup.dto;
 
 import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;

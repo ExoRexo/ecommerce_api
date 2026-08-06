@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.identity.user.creation;
+package alexo.ecommerce_api.service.identity.auth.signup;
 
 import alexo.ecommerce_api.entity.customer.Customer;
 import alexo.ecommerce_api.entity.enums.PermissionCode;
@@ -12,8 +12,8 @@ import alexo.ecommerce_api.repository.customer.CustomerRepository;
 import alexo.ecommerce_api.repository.identity.UserRepository;
 import alexo.ecommerce_api.service.identity.permission.UserPermissionService;
 import alexo.ecommerce_api.service.identity.status.UserStatusCacheService;
-import alexo.ecommerce_api.service.identity.user.creation.dto.UserCreationDTO;
-import alexo.ecommerce_api.service.identity.user.creation.dto.UserCreationRequestDTO;
+import alexo.ecommerce_api.service.identity.auth.signup.dto.UserCreationDTO;
+import alexo.ecommerce_api.service.identity.auth.signup.dto.UserCreationRequestDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ import java.util.HashSet;
 
 @RequiredArgsConstructor
 @Service
-public class UserCreationService {
+public class UserSignupService {
     private final UserRepository userRepository;
     private final UserPermissionService userPermissionService;
     private final UserStatusCacheService userStatusCacheService;
