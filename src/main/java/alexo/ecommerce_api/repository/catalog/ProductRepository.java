@@ -1,4 +1,4 @@
-﻿package alexo.ecommerce_api.repository.catalog;
+package alexo.ecommerce_api.repository.catalog;
 
 import alexo.ecommerce_api.entity.catalog.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
