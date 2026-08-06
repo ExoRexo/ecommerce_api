@@ -1,4 +1,6 @@
-package alexo.ecommerce_api.entity.common;
+package alexo.ecommerce_api.entity.converter;
+
+import alexo.ecommerce_api.entity.enums.contract.EnumCode;
 
 /**
  * Utility for converting dictionary codes into strongly typed enum values.

@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.entity.common;
+package alexo.ecommerce_api.entity.enums.contract;
 
 /**
  * Marker contract for enums that have a stable database code.

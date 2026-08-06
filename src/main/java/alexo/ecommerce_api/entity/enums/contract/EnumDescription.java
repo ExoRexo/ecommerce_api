@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.entity.common;
+package alexo.ecommerce_api.entity.enums.contract;
 
 /**
  * Contract for dictionary enums that expose a detailed description.

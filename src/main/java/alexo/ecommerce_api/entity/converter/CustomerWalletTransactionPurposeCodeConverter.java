@@ -1,6 +1,5 @@
 package alexo.ecommerce_api.entity.converter;
 
-import alexo.ecommerce_api.entity.common.EnumCodeAttributeConverter;
 import alexo.ecommerce_api.entity.enums.CustomerWalletTransactionPurposeCode;
 import jakarta.persistence.Converter;
 
@@ -9,7 +8,7 @@ import jakarta.persistence.Converter;
  */
 @Converter
 public class CustomerWalletTransactionPurposeCodeConverter
-    extends EnumCodeAttributeConverter<CustomerWalletTransactionPurposeCode> {
+    extends AbstractEnumCodeAttributeConverter<CustomerWalletTransactionPurposeCode> {
 
     public CustomerWalletTransactionPurposeCodeConverter() {
         super(CustomerWalletTransactionPurposeCode.class);

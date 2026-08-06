@@ -1,5 +1,6 @@
-package alexo.ecommerce_api.entity.common;
+package alexo.ecommerce_api.entity.converter;
 
+import alexo.ecommerce_api.entity.enums.contract.EnumCode;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
@@ -9,12 +10,12 @@ import jakarta.persistence.Converter;
  * @param <E> enum type implementing {@link EnumCode}
  */
 @Converter
-public abstract class EnumCodeAttributeConverter<E extends Enum<E> & EnumCode>
+public abstract class AbstractEnumCodeAttributeConverter<E extends Enum<E> & EnumCode>
     implements AttributeConverter<E, String> {
 
     private final Class<E> enumClass;
 
-    protected EnumCodeAttributeConverter(Class<E> enumClass) {
+    protected AbstractEnumCodeAttributeConverter(Class<E> enumClass) {
         this.enumClass = enumClass;
     }
 

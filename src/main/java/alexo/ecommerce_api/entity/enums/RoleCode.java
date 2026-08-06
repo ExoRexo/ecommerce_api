@@ -1,8 +1,8 @@
 package alexo.ecommerce_api.entity.enums;
 
-import alexo.ecommerce_api.entity.common.EnumCode;
-import alexo.ecommerce_api.entity.common.EnumDescription;
-import alexo.ecommerce_api.entity.common.EnumLabel;
+import alexo.ecommerce_api.entity.enums.contract.EnumCode;
+import alexo.ecommerce_api.entity.enums.contract.EnumDescription;
+import alexo.ecommerce_api.entity.enums.contract.EnumLabel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -1,6 +1,5 @@
 package alexo.ecommerce_api.entity.converter;
 
-import alexo.ecommerce_api.entity.common.EnumCodeAttributeConverter;
 import alexo.ecommerce_api.entity.enums.OrderItemReservationStatusCode;
 import jakarta.persistence.Converter;
 
@@ -9,7 +8,7 @@ import jakarta.persistence.Converter;
  */
 @Converter
 public class OrderItemReservationStatusCodeConverter
-    extends EnumCodeAttributeConverter<OrderItemReservationStatusCode> {
+    extends AbstractEnumCodeAttributeConverter<OrderItemReservationStatusCode> {
 
     public OrderItemReservationStatusCodeConverter() {
         super(OrderItemReservationStatusCode.class);
