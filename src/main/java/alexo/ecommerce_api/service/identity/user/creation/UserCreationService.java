@@ -92,15 +92,19 @@ public class UserCreationService {
             permissionHashSet.addAll(additionalPermissions);
         }
 
-        return persistUserEntity(new UserCreationDTO(
+        String passwordHash = passwordEncoder.encode(userCreationRequestDTO.password());
+
+        UserCreationDTO userCreationDTO = new UserCreationDTO(
                 userCreationRequestDTO.email(),
                 userCreationRequestDTO.firstName(),
                 userCreationRequestDTO.lastName(),
                 userStatusType,
                 roleHashSet,
                 permissionHashSet,
-                passwordEncoder.encode(userCreationRequestDTO.password())
-        ));
+                passwordHash
+        );
+
+        return persistUserEntity(userCreationDTO);
     }
 
     /**
