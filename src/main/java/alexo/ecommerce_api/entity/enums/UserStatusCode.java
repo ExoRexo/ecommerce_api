@@ -12,10 +12,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum UserStatusCode implements EnumCode, EnumLabel, EnumDescription {
-    ACTIVE("ACTIVE", "Активен", "Учетная запись пользователя активна и может входить в систему."),
-    UNACTIVE("UNACTIVE", "Неактивен", "Учетная запись пользователя неактивна, доступ ограничен.");
+    ACTIVE("Активен", "Учетная запись пользователя активна и может входить в систему."),
+    UNACTIVE("Неактивен", "Учетная запись пользователя неактивна, доступ ограничен.");
 
-    private final String code;
     private final String label;
     private final String description;
 }

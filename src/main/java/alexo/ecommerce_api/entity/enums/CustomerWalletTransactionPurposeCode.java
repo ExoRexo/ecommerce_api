@@ -12,10 +12,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum CustomerWalletTransactionPurposeCode implements EnumCode, EnumLabel, EnumDescription {
-    WITHDRAWAL("WITHDRAWAL", "Списание", "Средства списываются с кошелька клиента."),
-    TOP_UP("TOP-UP", "Пополнение", "Средства зачисляются на кошелек клиента.");
+    WITHDRAWAL("Списание", "Средства списываются с кошелька клиента."),
+    TOP_UP("Пополнение", "Средства зачисляются на кошелек клиента.");
 
-    private final String code;
     private final String label;
     private final String description;
 }

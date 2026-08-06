@@ -8,5 +8,10 @@ public interface EnumCode {
     /**
      * @return string code stored in the dictionary table.
      */
-    String getCode();
+    default String getCode() {
+        if (this instanceof Enum<?> enumValue) {
+            return enumValue.name();
+        }
+        throw new IllegalStateException("EnumCode must be implemented by enum types");
+    }
 }

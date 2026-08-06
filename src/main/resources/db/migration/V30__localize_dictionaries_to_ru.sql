@@ -39,7 +39,7 @@ SET label = EXCLUDED.label,
 INSERT INTO c_wallt_transaction_purpose_types (code, label, description)
 VALUES
     ('WITHDRAWAL', 'Списание', 'Средства списываются с кошелька клиента.'),
-    ('TOP-UP', 'Пополнение', 'Средства зачисляются на кошелек клиента.')
+    ('TOP_UP', 'Пополнение', 'Средства зачисляются на кошелек клиента.')
 ON CONFLICT (code) DO UPDATE
 SET label = EXCLUDED.label,
     description = EXCLUDED.description;

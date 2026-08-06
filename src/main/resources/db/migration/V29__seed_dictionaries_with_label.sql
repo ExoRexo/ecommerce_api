@@ -39,7 +39,7 @@ SET label = EXCLUDED.label,
 INSERT INTO c_wallt_transaction_purpose_types (code, label, description)
 VALUES
     ('WITHDRAWAL', 'Withdrawal', 'Funds are withdrawn from the customer wallet.'),
-    ('TOP-UP', 'Top-up', 'Funds are added to the customer wallet.')
+    ('TOP_UP', 'Top-up', 'Funds are added to the customer wallet.')
 ON CONFLICT (code) DO UPDATE
 SET label = EXCLUDED.label,
     description = EXCLUDED.description;

@@ -12,10 +12,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ProductStatusCode implements EnumCode, EnumLabel, EnumDescription {
-    ACTIVE("ACTIVE", "Активен", "Товар активен и доступен для продажи."),
-    UNACTIVE("UNACTIVE", "Неактивен", "Товар неактивен и скрыт с витрины.");
+    ACTIVE("Активен", "Товар активен и доступен для продажи."),
+    UNACTIVE("Неактивен", "Товар неактивен и скрыт с витрины.");
 
-    private final String code;
     private final String label;
     private final String description;
 }

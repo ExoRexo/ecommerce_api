@@ -12,11 +12,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum WarehouseStockTransactionPurposeCode implements EnumCode, EnumLabel, EnumDescription {
-    SALE("SALE", "Продажа", "Остаток уменьшен в результате продажи клиенту."),
-    PURCHASE("PURCHASE", "Закупка", "Остаток увеличен в результате закупки."),
-    INVENTORY_ADJUSTMENT("INVENTORY_ADJUSTMENT", "Инвентаризационная корректировка", "Остаток скорректирован вручную по итогам инвентаризации.");
+    SALE("Продажа", "Остаток уменьшен в результате продажи клиенту."),
+    PURCHASE("Закупка", "Остаток увеличен в результате закупки."),
+    INVENTORY_ADJUSTMENT("Инвентаризационная корректировка", "Остаток скорректирован вручную по итогам инвентаризации.");
 
-    private final String code;
     private final String label;
     private final String description;
 }
