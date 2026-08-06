@@ -27,7 +27,7 @@ import java.util.HashSet;
 
 @RequiredArgsConstructor
 @Service
-public class UserSignupService {
+public class SignupService {
     private final UserRepository userRepository;
     private final UserPermissionService userPermissionService;
     private final UserStatusCacheService userStatusCacheService;

@@ -18,7 +18,7 @@ public class LoginService {
     private final JwtService jwtService;
     private final UserPrincipalService userPrincipalService;
 
-    public AuthTokenResponseDTO login(AuthLoginRequestDTO request) {
+    public AuthTokenResponseDTO authenticateUser(AuthLoginRequestDTO request) {
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
