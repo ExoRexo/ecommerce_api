@@ -32,6 +32,7 @@ public class JwtService {
     private static final String CLAIM_USER_ID = "userId";
     private static final String CLAIM_ROLES = "roles";
     private static final String CLAIM_PERMISSIONS = "permissions";
+    private static final String CLAIM_IS_ENABLED = "isEnabled";
 
     private final JwtProperties jwtProperties;
 
@@ -66,6 +67,7 @@ public class JwtService {
                 .claim(CLAIM_USER_ID, principal.getId())
                 .claim(CLAIM_ROLES, principal.getRoles())
                 .claim(CLAIM_PERMISSIONS, principal.getPermissions())
+                .claim(CLAIM_IS_ENABLED, principal.isEnabled())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiresAt))
                 .signWith(signingKey)
@@ -88,6 +90,24 @@ public class JwtService {
             return Long.parseLong(value);
         }
         throw new IllegalArgumentException("Token does not contain a valid userId claim");
+    }
+
+    /**
+     * Extracts user isEnabled flag from token claim {@code userId}.
+     *
+     * @param token signed JWT token
+     * @return user id from token
+     * @throws IllegalArgumentException when claim is missing or has unsupported format
+     */
+    public boolean extractIsEnabled(String token) {
+        Object rawEnabled = extractAllClaims(token).get(CLAIM_IS_ENABLED);
+        if (rawEnabled instanceof Boolean bool) {
+            return bool;
+        }
+        if (rawEnabled instanceof String value) {
+            return Boolean.parseBoolean(value);
+        }
+        throw new IllegalArgumentException("Token does not contain a valid isEnabled claim");
     }
 
     /**
