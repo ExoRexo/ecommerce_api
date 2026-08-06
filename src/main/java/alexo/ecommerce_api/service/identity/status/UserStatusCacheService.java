@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
-public class StatusCacheService {
+public class UserStatusCacheService {
 
     private final UserStatusTypeRepository userStatusTypeRepository;
 

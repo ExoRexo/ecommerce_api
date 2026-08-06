@@ -11,7 +11,7 @@ import alexo.ecommerce_api.entity.identity.UserStatusType;
 import alexo.ecommerce_api.repository.customer.CustomerRepository;
 import alexo.ecommerce_api.repository.identity.UserRepository;
 import alexo.ecommerce_api.service.identity.permission.UserPermissionService;
-import alexo.ecommerce_api.service.identity.status.StatusCacheService;
+import alexo.ecommerce_api.service.identity.status.UserStatusCacheService;
 import alexo.ecommerce_api.service.identity.user.creation.dto.UserCreationDTO;
 import alexo.ecommerce_api.service.identity.user.creation.dto.UserCreationRequestDTO;
 import jakarta.persistence.EntityNotFoundException;
@@ -30,7 +30,7 @@ import java.util.HashSet;
 public class UserCreationService {
     private final UserRepository userRepository;
     private final UserPermissionService userPermissionService;
-    private final StatusCacheService statusCacheService;
+    private final UserStatusCacheService userStatusCacheService;
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -45,7 +45,7 @@ public class UserCreationService {
             throw new IllegalArgumentException("Пользователь с почтой " + userCreationRequestDTO.email() + " уже существует");
         }
 
-        UserStatusType userStatusType = statusCacheService.getStatusTypes().get(UserStatusCode.ACTIVE);
+        UserStatusType userStatusType = userStatusCacheService.getStatusTypes().get(UserStatusCode.ACTIVE);
         if (userStatusType == null) {
             throw new EntityNotFoundException("Не найден статус ACTIVE");
         }
