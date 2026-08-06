@@ -18,6 +18,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,13 +36,11 @@ public class UserCreationService {
 
     @Transactional
     public User createUser(
-        UserCreationRequestDTO userCreationRequestDTO
+        @NotNull UserCreationRequestDTO userCreationRequestDTO,
+        @Nullable ArrayList<RoleCode> roleCodesAdditional,
+        @Nullable ArrayList<PermissionCode> permissionCodesAdditional
     )
     {
-        if (userCreationRequestDTO == null) {
-            throw new IllegalArgumentException("userCreationRequestDTO cannot be null");
-        }
-
         if (userRepository.existsByEmail(userCreationRequestDTO.email())) {
             throw new IllegalArgumentException("Пользователь с почтой " + userCreationRequestDTO.email() + " уже существует");
         }
@@ -59,10 +58,10 @@ public class UserCreationService {
         HashSet<Role> roleHashSet = new HashSet<>(5);
         roleHashSet.add(customerRole);
 
-        if (!userCreationRequestDTO.roleCodesAdditional().isEmpty()) {
-            HashSet<Role> additionalRoles = new HashSet<>(userCreationRequestDTO.roleCodesAdditional().size());
+        if (roleCodesAdditional != null && !roleCodesAdditional.isEmpty()) {
+            HashSet<Role> additionalRoles = new HashSet<>(roleCodesAdditional.size());
 
-            for (RoleCode roleCode : userCreationRequestDTO.roleCodesAdditional()) {
+            for (RoleCode roleCode : roleCodesAdditional) {
                 Role additionalRole = userPermissionService.getRoleByCode(roleCode);
 
                 if (additionalRole == null) {
@@ -76,10 +75,10 @@ public class UserCreationService {
         }
 
         HashSet<Permission> permissionHashSet = new HashSet<>(10);
-        if (!userCreationRequestDTO.permissionCodesAdditional().isEmpty()) {
-            HashSet<Permission> additionalPermissions = new HashSet<>(userCreationRequestDTO.permissionCodesAdditional().size());
+        if (permissionCodesAdditional != null && !permissionCodesAdditional.isEmpty()) {
+            HashSet<Permission> additionalPermissions = new HashSet<>(permissionCodesAdditional.size());
 
-            for (PermissionCode permissionCode : userCreationRequestDTO.permissionCodesAdditional()) {
+            for (PermissionCode permissionCode : permissionCodesAdditional) {
                 Permission additionalPermission = userPermissionService.getPermissionByCode(permissionCode);
 
                 if (additionalPermission == null) {
