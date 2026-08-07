@@ -1,7 +1,7 @@
 package alexo.ecommerce_api.configuration.jackson;
 
-import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +19,7 @@ public class JacksonConfig {
      * @return Jackson module instance
      */
     @Bean
-    public Module javaTimeModule() {
+    public JavaTimeModule javaTimeModule() {
         return new JavaTimeModule();
     }
 
@@ -30,7 +30,7 @@ public class JacksonConfig {
      */
     @Bean
     @Primary
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
+    public ObjectMapper objectMapper(JavaTimeModule javaTimeModule) {
+        return new ObjectMapper().registerModule(javaTimeModule).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 }
