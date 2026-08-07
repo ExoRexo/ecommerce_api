@@ -5,11 +5,15 @@ import alexo.ecommerce_api.configuration.security.jwt.JwtService;
 import alexo.ecommerce_api.service.identity.auth.login.dto.AuthLoginRequestDTO;
 import alexo.ecommerce_api.service.identity.auth.login.dto.AuthTokenResponseDTO;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +28,37 @@ public class LoginService {
             new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
 
-        UserPrincipal principal = (UserPrincipal) userPrincipalService.loadUserByUsername(request.email());
+        return generateTokenForPrincipal((UserPrincipal) userPrincipalService.loadUserByUsername(request.email()));
+    }
+
+    public AuthTokenResponseDTO refresh() {
+        UserPrincipal userPrincipal = getCurrentUserPrincipal();
+
+        if (userPrincipal == null) {
+            throw new BadCredentialsException(null);
+        }
+
+        Long userId = userPrincipal.getId();
+
+        if(userId == null) {
+            throw new RuntimeException("userId is null");
+        }
+
+        return generateTokenForPrincipal(getFreshPrincipalForUserId(userId));
+    }
+
+    private UserPrincipal getFreshPrincipalForUserId(@NotNull Long userId) {
+        return (UserPrincipal) userPrincipalService.loadUserById(userId);
+    }
+
+    private UserPrincipal getCurrentUserPrincipal() {
+        return (UserPrincipal) Objects.requireNonNull(SecurityContextHolder
+                        .getContext()
+                        .getAuthentication())
+                        .getPrincipal();
+    }
+
+    private AuthTokenResponseDTO generateTokenForPrincipal(UserPrincipal principal) {
         String accessToken = jwtService.generateToken(principal);
 
         return new AuthTokenResponseDTO(

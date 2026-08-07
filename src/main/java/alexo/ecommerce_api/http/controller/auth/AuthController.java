@@ -60,4 +60,12 @@ public class AuthController {
     public AuthTokenResponseDTO login(@Valid @RequestBody AuthLoginRequestDTO request) {
         return loginService.authenticateUser(request);
     }
+
+    /**
+     * Returns new JWT token payload. Authentication required for this method
+     */
+    @PostMapping("/refresh")
+    public AuthTokenResponseDTO refresh() {
+        return loginService.refresh();
+    }
 }

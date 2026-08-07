@@ -25,11 +25,18 @@ public class UserPrincipalService implements UserDetailsService {
     private final UserPrincipalRepository userPrincipalRepository;
     private final UserPermissionService userPermissionService;
 
-    @Override
     @Transactional
     public @NotNull UserDetails loadUserByUsername(@NotNull String username) throws UsernameNotFoundException {
         User user = userPrincipalRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with email " + username + " not found"));
+
+        return buildPrincipal(user);
+    }
+
+    @Transactional
+    public @NotNull UserDetails loadUserById(@NotNull Long userId) throws UsernameNotFoundException {
+        User user = userPrincipalRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User with userId " + userId + " not found"));
 
         return buildPrincipal(user);
     }

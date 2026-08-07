@@ -12,4 +12,8 @@ public interface UserPrincipalRepository extends UserRepository {
     @Override
     @EntityGraph(value = "statusType")
     Optional<User> findByEmail(String email);
+
+    @Override
+    @EntityGraph(value = "statusType")
+    Optional<User> findById(Long id);
 }
