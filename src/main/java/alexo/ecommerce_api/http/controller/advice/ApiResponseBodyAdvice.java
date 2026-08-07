@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 /**
  * Globally wraps JSON responses into {@link ApiResponse} envelope.
+ * Leaves OpenAPI and Swagger infrastructure endpoints untouched so generated docs remain valid.
  */
 @RestControllerAdvice
 @RequiredArgsConstructor
@@ -37,6 +38,7 @@ public class ApiResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
     /**
      * Wraps response body into standard envelope for JSON responses.
+     * Skips Swagger-related endpoints because they must return raw OpenAPI payloads.
      *
      * @param body raw controller body
      * @param returnType controller return metadata
@@ -55,6 +57,12 @@ public class ApiResponseBodyAdvice implements ResponseBodyAdvice<Object> {
             ServerHttpRequest request,
             ServerHttpResponse response
     ) {
+        String path = request.getURI().getPath();
+
+        if (path.startsWith("/v3/api-docs") || path.startsWith("/swagger-ui")) {
+            return body;
+        }
+
         if (body instanceof ApiResponse) {
             return body;
         }
