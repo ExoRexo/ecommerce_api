@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -35,8 +36,6 @@ public class JwtService {
     private static final String CLAIM_ROLES = "roles";
     private static final String CLAIM_PERMISSIONS = "permissions";
     private static final String CLAIM_IS_ENABLED = "isEnabled";
-    private static final String CLAIM_PASSWORD_HASH = "passwordHash";
-    private static final String CLAIM_AUTHORITIES = "authorities";
 
     private final JwtProperties jwtProperties;
 
@@ -57,20 +56,23 @@ public class JwtService {
     }
 
     /**
-     * get user principal from JWT token
+         * Rebuilds authenticated principal from token claims without database lookup.
      *
      * @param token encoded JWT token
      * @return user principal
      */
     public UserPrincipal getPrincipalFromToken(String token) {
+        List<RoleCode> roles = extractRoles(token);
+        List<PermissionCode> permissions = extractPermissions(token);
+
         return new UserPrincipal(
                 extractUserId(token),
                 extractUsername(token),
-                extractPasswordHash(token),
+            null,
                 extractIsEnabled(token),
-                extractRoles(token),
-                extractPermissions(token),
-                extractAuthorities(token)
+                roles,
+                permissions,
+                buildAuthorities(roles, permissions)
         );
     }
 
@@ -87,10 +89,8 @@ public class JwtService {
         return Jwts.builder()
                 .subject(principal.getUsername())
                 .claim(CLAIM_USER_ID, principal.getId())
-                .claim(CLAIM_PASSWORD_HASH, principal.getPassword())
-                .claim(CLAIM_AUTHORITIES, principal.getAuthorities())
-                .claim(CLAIM_ROLES, principal.getRoles())
-                .claim(CLAIM_PERMISSIONS, principal.getPermissions())
+                .claim(CLAIM_ROLES, principal.getRoles().stream().map(RoleCode::getCode).toList())
+                .claim(CLAIM_PERMISSIONS, principal.getPermissions().stream().map(PermissionCode::getCode).toList())
                 .claim(CLAIM_IS_ENABLED, principal.isEnabled())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiresAt))
@@ -111,25 +111,6 @@ public class JwtService {
         }
 
         throw new IllegalArgumentException("Token does not contain a valid subject claim");
-    }
-
-    /**
-     * Extracts authorities from token claim {@code roles}.
-     *
-     * @param token signed JWT token
-     * @return authorities list
-     */
-    private List<? extends GrantedAuthority> extractAuthorities(String token) {
-        return extractStringListClaim(token, CLAIM_AUTHORITIES).stream().map(SimpleGrantedAuthority::new).toList();
-    }
-
-    private String extractPasswordHash(String token) {
-        Object rawPasswordHash = extractAllClaims(token).get(CLAIM_PASSWORD_HASH);
-        if (rawPasswordHash instanceof String value) {
-            return value;
-        }
-
-        throw new IllegalArgumentException("Token does not contain a valid passwordHash claim");
     }
 
     /**
@@ -189,13 +170,18 @@ public class JwtService {
     }
 
     /**
-     * Validates token ownership and expiration for provided principal.
+     * Validates token structure and expiration for stateless authentication.
      *
      * @param token signed JWT token
-     * @return {@code true} when token belongs to principal and is not expired
+     * @return {@code true} when token is parseable, not expired, and has required claims
      */
     public boolean isTokenValid(String token) {
-        return !isTokenExpired(token);
+        try {
+            Claims claims = extractAllClaims(token);
+            return hasRequiredClaims(claims) && !isTokenExpired(claims);
+        } catch (IllegalArgumentException ex) {
+            return false;
+        }
     }
 
     /**
@@ -208,11 +194,12 @@ public class JwtService {
     /**
      * Checks whether token expiration time is in the past.
      *
-     * @param token signed JWT token
+     * @param claims claims of JWT token
      * @return {@code true} if token is expired
      */
-    private boolean isTokenExpired(String token) {
-        return extractAllClaims(token).getExpiration().before(new Date());
+    private boolean isTokenExpired(Claims claims) {
+        Date expiration = claims.getExpiration();
+        return expiration == null || expiration.before(new Date());
     }
 
     /**
@@ -223,6 +210,50 @@ public class JwtService {
      */
     private Claims extractAllClaims(String token) {
         return Jwts.parser().verifyWith(signingKey).build().parseSignedClaims(token).getPayload();
+    }
+
+    /**
+     * Builds Spring Security authorities from role and permission codes stored in token.
+     *
+     * @param roles role codes from token
+     * @param permissions permission codes from token
+     * @return immutable authority collection
+     */
+    private List<? extends GrantedAuthority> buildAuthorities(List<RoleCode> roles, List<PermissionCode> permissions) {
+        LinkedHashSet<GrantedAuthority> authorities = new LinkedHashSet<>();
+
+        roles.stream()
+                .map((role) -> UserPrincipal.ROLE_GRANTED_AUTHORITY_PREFIX + role.getCode())
+                .map(SimpleGrantedAuthority::new)
+                .forEach(authorities::add);
+
+        permissions.stream()
+                .map((permission) -> UserPrincipal.PERMISSION_GRANTED_AUTHORITY_PREFIX + permission.getCode())
+                .map(SimpleGrantedAuthority::new)
+                .forEach(authorities::add);
+
+        return List.copyOf(authorities);
+    }
+
+    /**
+     * Checks minimal required claims for secure principal reconstruction.
+     *
+     * @param claims parsed token claims
+     * @return {@code true} when token includes required identity claims
+     */
+    private boolean hasRequiredClaims(Claims claims) {
+        String subject = claims.getSubject();
+        if (subject == null || subject.isBlank()) {
+            return false;
+        }
+
+        Object rawUserId = claims.get(CLAIM_USER_ID);
+        if (rawUserId == null) {
+            return false;
+        }
+
+        Object rawEnabled = claims.get(CLAIM_IS_ENABLED);
+        return rawEnabled instanceof Boolean || rawEnabled instanceof String;
     }
 
     /**

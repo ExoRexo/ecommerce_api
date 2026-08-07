@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.identity.auth.login;
+package alexo.ecommerce_api.configuration.security;
 
 import alexo.ecommerce_api.entity.enums.PermissionCode;
 import alexo.ecommerce_api.entity.enums.RoleCode;
@@ -6,6 +6,7 @@ import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.repository.identity.user.UserPrincipalRepository;
+import alexo.ecommerce_api.service.identity.auth.login.UserPrincipal;
 import alexo.ecommerce_api.service.identity.permission.UserPermissionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

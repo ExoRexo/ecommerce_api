@@ -14,12 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
-final public class UserController {
+public class UserController {
+
     @GetMapping("/me/permissions")
     public MePermissionsResponseDTO getPermissions(@NotNull Authentication authentication) throws AuthenticationException {
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-
-        if (userPrincipal == null) {
+        if (!(authentication.getPrincipal() instanceof UserPrincipal userPrincipal)) {
             throw new AuthenticationCredentialsNotFoundException("permissions not found, probably, your token is invalid");
         }
 
