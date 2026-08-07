@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.identity.permission;
+package alexo.ecommerce_api.cache.identity.permission;
 
 import alexo.ecommerce_api.entity.enums.RoleCode;
 import alexo.ecommerce_api.entity.identity.Role;

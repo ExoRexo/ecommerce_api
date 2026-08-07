@@ -11,7 +11,7 @@ import alexo.ecommerce_api.entity.identity.UserStatusType;
 import alexo.ecommerce_api.repository.customer.CustomerRepository;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
 import alexo.ecommerce_api.service.identity.permission.UserPermissionService;
-import alexo.ecommerce_api.service.identity.status.UserStatusCacheService;
+import alexo.ecommerce_api.cache.identity.status.UserStatusCacheService;
 import alexo.ecommerce_api.service.identity.auth.signup.dto.UserCreationDTO;
 import alexo.ecommerce_api.service.identity.auth.signup.dto.request.UserCreationRequestDTO;
 import jakarta.persistence.EntityNotFoundException;

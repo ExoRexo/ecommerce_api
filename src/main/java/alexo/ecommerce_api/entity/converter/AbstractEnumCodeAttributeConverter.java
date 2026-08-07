@@ -1,6 +1,7 @@
 package alexo.ecommerce_api.entity.converter;
 
 import alexo.ecommerce_api.entity.enums.contract.EnumCode;
+import alexo.ecommerce_api.mapper.enums.EnumCodeMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

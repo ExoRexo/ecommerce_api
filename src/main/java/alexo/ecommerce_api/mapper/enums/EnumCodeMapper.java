@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.entity.converter;
+package alexo.ecommerce_api.mapper.enums;
 
 import alexo.ecommerce_api.entity.enums.contract.EnumCode;
 

@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.identity.status;
+package alexo.ecommerce_api.cache.identity.status;
 
 import alexo.ecommerce_api.entity.enums.UserStatusCode;
 import alexo.ecommerce_api.entity.identity.UserStatusType;
