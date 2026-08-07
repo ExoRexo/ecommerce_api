@@ -1,7 +1,6 @@
 package alexo.ecommerce_api.configuration.security.jwt;
 
 import alexo.ecommerce_api.service.identity.auth.login.UserPrincipal;
-import alexo.ecommerce_api.service.identity.auth.login.UserPrincipalService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,7 +28,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserPrincipalService userPrincipalService;
 
     /**
      * Parses and validates bearer token from {@code Authorization} header.
@@ -56,10 +54,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                Long userId = jwtService.extractUserId(token);
-                UserPrincipal principal = userPrincipalService.loadUserById(userId);
+                UserPrincipal principal = jwtService.getPrincipalFromToken(token);
 
-                if (jwtService.isTokenValid(token, principal)) {
+                if (jwtService.isTokenValid(token)) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             principal,
                             null,

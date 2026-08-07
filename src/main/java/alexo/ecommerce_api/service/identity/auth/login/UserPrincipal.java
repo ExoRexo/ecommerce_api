@@ -1,14 +1,17 @@
 package alexo.ecommerce_api.service.identity.auth.login;
 
+import alexo.ecommerce_api.entity.enums.PermissionCode;
+import alexo.ecommerce_api.entity.enums.RoleCode;
 import alexo.ecommerce_api.entity.enums.UserStatusCode;
 import alexo.ecommerce_api.entity.identity.User;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 @Getter
 public class UserPrincipal implements UserDetails {
@@ -19,17 +22,17 @@ public class UserPrincipal implements UserDetails {
     private final String username;
     private final String password;
     private final boolean enabled;
-    private final List<String> roles;
-    private final List<String> permissions;
+    private final List<RoleCode> roles;
+    private final List<PermissionCode> permissions;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    private UserPrincipal(
+    public UserPrincipal(
             Long id,
             String username,
             String password,
             boolean enabled,
-            List<String> roles,
-            List<String> permissions,
+            List<RoleCode> roles,
+            List<PermissionCode> permissions,
             Collection<? extends GrantedAuthority> authorities
     ) {
         this.id = id;
@@ -41,16 +44,16 @@ public class UserPrincipal implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserPrincipal from(User user, List<String> roles, List<String> permissions) {
+    public static UserPrincipal from(User user, List<RoleCode> roles, List<PermissionCode> permissions) {
         LinkedHashSet<GrantedAuthority> authorities = new LinkedHashSet<>();
 
         roles.stream()
-                .map((role) -> ROLE_GRANTED_AUTHORITY_PREFIX + role)
+                .map((role) -> ROLE_GRANTED_AUTHORITY_PREFIX + role.getCode())
                 .map(SimpleGrantedAuthority::new)
                 .forEach(authorities::add);
 
         permissions.stream()
-                .map((role) -> PERMISSION_GRANTED_AUTHORITY_PREFIX + role)
+                .map((role) -> PERMISSION_GRANTED_AUTHORITY_PREFIX + role.getCode())
                 .map(SimpleGrantedAuthority::new)
                 .forEach(authorities::add);
 

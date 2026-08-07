@@ -9,6 +9,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -28,11 +30,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class JwtService {
-
     private static final String CLAIM_USER_ID = "userId";
+
     private static final String CLAIM_ROLES = "roles";
     private static final String CLAIM_PERMISSIONS = "permissions";
     private static final String CLAIM_IS_ENABLED = "isEnabled";
+    private static final String CLAIM_PASSWORD_HASH = "passwordHash";
+    private static final String CLAIM_AUTHORITIES = "authorities";
 
     private final JwtProperties jwtProperties;
 
@@ -53,6 +57,24 @@ public class JwtService {
     }
 
     /**
+     * get user principal from JWT token
+     *
+     * @param token encoded JWT token
+     * @return user principal
+     */
+    public UserPrincipal getPrincipalFromToken(String token) {
+        return new UserPrincipal(
+                extractUserId(token),
+                extractUsername(token),
+                extractPasswordHash(token),
+                extractIsEnabled(token),
+                extractRoles(token),
+                extractPermissions(token),
+                extractAuthorities(token)
+        );
+    }
+
+    /**
      * Generates signed JWT access token for authenticated user.
      *
      * @param principal authenticated user principal
@@ -65,6 +87,8 @@ public class JwtService {
         return Jwts.builder()
                 .subject(principal.getUsername())
                 .claim(CLAIM_USER_ID, principal.getId())
+                .claim(CLAIM_PASSWORD_HASH, principal.getPassword())
+                .claim(CLAIM_AUTHORITIES, principal.getAuthorities())
                 .claim(CLAIM_ROLES, principal.getRoles())
                 .claim(CLAIM_PERMISSIONS, principal.getPermissions())
                 .claim(CLAIM_IS_ENABLED, principal.isEnabled())
@@ -75,13 +99,47 @@ public class JwtService {
     }
 
     /**
+     * Extracts username from token claim {@code roles}.
+     *
+     * @param token signed JWT token
+     * @return username
+     */
+    private String extractUsername(String token) {
+        Object rawUsername = extractAllClaims(token).getSubject();
+        if (rawUsername instanceof String value) {
+            return value;
+        }
+
+        throw new IllegalArgumentException("Token does not contain a valid subject claim");
+    }
+
+    /**
+     * Extracts authorities from token claim {@code roles}.
+     *
+     * @param token signed JWT token
+     * @return authorities list
+     */
+    private List<? extends GrantedAuthority> extractAuthorities(String token) {
+        return extractStringListClaim(token, CLAIM_AUTHORITIES).stream().map(SimpleGrantedAuthority::new).toList();
+    }
+
+    private String extractPasswordHash(String token) {
+        Object rawPasswordHash = extractAllClaims(token).get(CLAIM_PASSWORD_HASH);
+        if (rawPasswordHash instanceof String value) {
+            return value;
+        }
+
+        throw new IllegalArgumentException("Token does not contain a valid passwordHash claim");
+    }
+
+    /**
      * Extracts user identifier from token claim {@code userId}.
      *
      * @param token signed JWT token
      * @return user id from token
      * @throws IllegalArgumentException when claim is missing or has unsupported format
      */
-    public Long extractUserId(String token) {
+    private Long extractUserId(String token) {
         Object rawUserId = extractAllClaims(token).get(CLAIM_USER_ID);
         if (rawUserId instanceof Number number) {
             return number.longValue();
@@ -99,7 +157,7 @@ public class JwtService {
      * @return user id from token
      * @throws IllegalArgumentException when claim is missing or has unsupported format
      */
-    public boolean extractIsEnabled(String token) {
+    private boolean extractIsEnabled(String token) {
         Object rawEnabled = extractAllClaims(token).get(CLAIM_IS_ENABLED);
         if (rawEnabled instanceof Boolean bool) {
             return bool;
@@ -116,11 +174,8 @@ public class JwtService {
      * @param token signed JWT token
      * @return immutable list of role codes
      */
-    public List<RoleCode> extractRoles(String token) {
-        return extractStringListClaim(token, CLAIM_ROLES)
-                .stream()
-                .map((String permissionCode) -> EnumCodeMapper.fromCode(RoleCode.class, permissionCode))
-                .toList();
+    private List<RoleCode> extractRoles(String token) {
+        return extractStringListClaim(token, CLAIM_ROLES).stream().map((String permissionCode) -> EnumCodeMapper.fromCode(RoleCode.class, permissionCode)).toList();
     }
 
     /**
@@ -129,23 +184,18 @@ public class JwtService {
      * @param token signed JWT token
      * @return immutable list of permission codes
      */
-    public List<PermissionCode> extractPermissions(String token) {
-        return extractStringListClaim(token, CLAIM_PERMISSIONS)
-                .stream()
-                .map((String permissionCode) -> EnumCodeMapper.fromCode(PermissionCode.class, permissionCode))
-                .toList();
+    private List<PermissionCode> extractPermissions(String token) {
+        return extractStringListClaim(token, CLAIM_PERMISSIONS).stream().map((String permissionCode) -> EnumCodeMapper.fromCode(PermissionCode.class, permissionCode)).toList();
     }
 
     /**
      * Validates token ownership and expiration for provided principal.
      *
      * @param token signed JWT token
-     * @param principal authenticated principal
      * @return {@code true} when token belongs to principal and is not expired
      */
-    public boolean isTokenValid(String token, UserPrincipal principal) {
-        Long tokenUserId = extractUserId(token);
-        return tokenUserId.equals(principal.getId()) && !isTokenExpired(token);
+    public boolean isTokenValid(String token) {
+        return !isTokenExpired(token);
     }
 
     /**
@@ -162,8 +212,7 @@ public class JwtService {
      * @return {@code true} if token is expired
      */
     private boolean isTokenExpired(String token) {
-        Date expiration = extractAllClaims(token).getExpiration();
-        return expiration.before(new Date());
+        return extractAllClaims(token).getExpiration().before(new Date());
     }
 
     /**
@@ -173,17 +222,13 @@ public class JwtService {
      * @return JWT claims payload
      */
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(signingKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        return Jwts.parser().verifyWith(signingKey).build().parseSignedClaims(token).getPayload();
     }
 
     /**
      * Extracts claim value and normalizes it to immutable list of strings.
      *
-     * @param token signed JWT token
+     * @param token     signed JWT token
      * @param claimName claim key to extract
      * @return immutable list of string values, empty when claim is absent
      * @throws IllegalArgumentException when claim exists but is not a list
@@ -209,4 +254,5 @@ public class JwtService {
 
         return List.copyOf(result);
     }
+
 }

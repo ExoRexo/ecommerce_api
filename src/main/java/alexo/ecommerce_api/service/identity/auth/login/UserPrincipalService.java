@@ -1,6 +1,7 @@
 package alexo.ecommerce_api.service.identity.auth.login;
 
-import alexo.ecommerce_api.entity.enums.contract.EnumCode;
+import alexo.ecommerce_api.entity.enums.PermissionCode;
+import alexo.ecommerce_api.entity.enums.RoleCode;
 import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.entity.identity.User;
@@ -32,27 +33,19 @@ public class UserPrincipalService implements UserDetailsService {
         return buildPrincipal(user);
     }
 
-    @Transactional()
-    public UserPrincipal loadUserById(Long userId) throws UsernameNotFoundException {
-        User user = userPrincipalRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User with id " + userId + " not found"));
-
-        return buildPrincipal(user);
-    }
-
     private UserPrincipal buildPrincipal(User user) {
-        List<String> roles = userPermissionService.getEffectiveRoles(user.getId())
+        List<Role> roles = userPermissionService.getEffectiveRoles(user.getId());
+
+        List<RoleCode> roleCodes = roles
                 .stream()
                 .map(Role::getCode)
-                .map(EnumCode::getCode)
                 .toList();
 
-        List<String> permissions = userPermissionService.getEffectivePermissions(user.getId())
+        List<PermissionCode> permissions = userPermissionService.getEffectivePermissions(user.getId(), roles)
                 .stream()
                 .map(Permission::getCode)
-                .map(EnumCode::getCode)
                 .toList();
 
-        return UserPrincipal.from(user, roles, permissions);
+        return UserPrincipal.from(user, roleCodes, permissions);
     }
 }

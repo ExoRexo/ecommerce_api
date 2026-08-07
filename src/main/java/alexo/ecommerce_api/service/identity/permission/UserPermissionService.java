@@ -11,6 +11,7 @@ import alexo.ecommerce_api.repository.identity.UserRoleRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -97,11 +98,17 @@ public class UserPermissionService {
      * @param userId user identifier
      * @return all unique permissions from roles and direct permissions
      */
-    public @NotNull Set<Permission> getEffectivePermissions(@NotNull Long userId) {
+    public @NotNull Set<Permission> getEffectivePermissions(@NotNull Long userId, @Nullable List<Role> rolesOverride) {
 
         Set<Permission> result = new LinkedHashSet<>(userPermissionRepository.findDirectPermissionsByUserId(userId));
 
-        List<Role> roles = userRoleRepository.findRolesByUserId(userId);
+        List<Role> roles;
+        if (rolesOverride != null) {
+            roles = rolesOverride;
+        } else {
+            roles = userRoleRepository.findRolesByUserId(userId);
+        }
+
         if (!roles.isEmpty()) {
             Set<Integer> roleIds = roles.stream()
                     .map(Role::getId)
