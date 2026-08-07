@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.repository.identity;
+package alexo.ecommerce_api.repository.identity.user;
 
 import alexo.ecommerce_api.entity.identity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

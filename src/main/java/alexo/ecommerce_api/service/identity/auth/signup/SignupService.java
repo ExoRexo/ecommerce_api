@@ -9,7 +9,7 @@ import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.entity.identity.UserStatusType;
 import alexo.ecommerce_api.repository.customer.CustomerRepository;
-import alexo.ecommerce_api.repository.identity.UserRepository;
+import alexo.ecommerce_api.repository.identity.user.UserRepository;
 import alexo.ecommerce_api.service.identity.permission.UserPermissionService;
 import alexo.ecommerce_api.service.identity.status.UserStatusCacheService;
 import alexo.ecommerce_api.service.identity.auth.signup.dto.UserCreationDTO;

@@ -5,7 +5,6 @@ import alexo.ecommerce_api.entity.enums.RoleCode;
 import alexo.ecommerce_api.entity.identity.*;
 import alexo.ecommerce_api.repository.identity.RolePermissionRepository;
 import alexo.ecommerce_api.repository.identity.UserPermissionRepository;
-import alexo.ecommerce_api.repository.identity.UserRepository;
 import alexo.ecommerce_api.repository.identity.UserRoleRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,6 @@ public class UserPermissionService {
     private final RolePermissionRepository rolePermissionRepository;
     private final RoleCacheService roleCacheService;
     private final PermissionCacheService permissionCacheService;
-    private final UserRepository userRepository;
 
     /**
      * @param code permissions of the user

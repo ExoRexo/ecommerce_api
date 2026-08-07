@@ -4,9 +4,9 @@ import alexo.ecommerce_api.entity.enums.contract.EnumCode;
 import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.entity.identity.User;
-import alexo.ecommerce_api.repository.identity.UserRepository;
+import alexo.ecommerce_api.repository.identity.user.UserPrincipalRepository;
 import alexo.ecommerce_api.service.identity.permission.UserPermissionService;
-import java.util.List;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,23 +14,27 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserPrincipalService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserPrincipalRepository userPrincipalRepository;
     private final UserPermissionService userPermissionService;
 
     @Override
+    @Transactional
     public @NotNull UserDetails loadUserByUsername(@NotNull String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username)
+        User user = userPrincipalRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with email " + username + " not found"));
 
         return buildPrincipal(user);
     }
 
+    @Transactional()
     public UserPrincipal loadUserById(Long userId) throws UsernameNotFoundException {
-        User user = userRepository.findById(userId)
+        User user = userPrincipalRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User with id " + userId + " not found"));
 
         return buildPrincipal(user);
