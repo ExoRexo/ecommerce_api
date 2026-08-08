@@ -7,8 +7,6 @@ import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.repository.identity.user.UserPrincipalRepository;
 import alexo.ecommerce_api.service.identity.auth.login.UserPrincipal;
-import alexo.ecommerce_api.service.identity.permission.UserPermissionService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,43 +15,48 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserPrincipalService implements UserDetailsService {
 
     private final UserPrincipalRepository userPrincipalRepository;
-    private final UserPermissionService userPermissionService;
 
-    @Transactional
     public @NotNull UserDetails loadUserByUsername(@NotNull String username) throws UsernameNotFoundException {
-        User user = userPrincipalRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User with email " + username + " not found"));
-
-        return buildPrincipal(user);
+        return buildPrincipal(userPrincipalRepository.findByEmailForUserDetails(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User with email " + username + " not found")));
     }
 
-    @Transactional
     public @NotNull UserDetails loadUserById(@NotNull Long userId) throws UsernameNotFoundException {
-        User user = userPrincipalRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User with userId " + userId + " not found"));
-
-        return buildPrincipal(user);
+        return buildPrincipal(userPrincipalRepository.findByIdForUserDetails(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User with userId " + userId + " not found")));
     }
 
     private UserPrincipal buildPrincipal(User user) {
-        List<Role> roles = userPermissionService.getEffectiveRoles(user.getId());
+        Set<Role> roles = user.getRoles();
 
         List<RoleCode> roleCodes = roles
                 .stream()
                 .map(Role::getCode)
                 .toList();
 
-        List<PermissionCode> permissions = userPermissionService.getEffectivePermissions(user.getId(), roles)
+        Set<PermissionCode> directPermissions = user
+                .getDirectPermissions()
                 .stream()
                 .map(Permission::getCode)
-                .toList();
+                .collect(Collectors.toSet());
 
-        return UserPrincipal.from(user, roleCodes, permissions);
+        for (Role role : roles) {
+            directPermissions.addAll(
+                    role.getPermissions()
+                            .stream()
+                            .map(Permission::getCode)
+                            .collect(Collectors.toSet())
+            );
+        }
+
+        return UserPrincipal.from(user, roleCodes, directPermissions.stream().toList());
     }
 }

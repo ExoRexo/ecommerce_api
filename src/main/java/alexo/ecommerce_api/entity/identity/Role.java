@@ -2,18 +2,10 @@ package alexo.ecommerce_api.entity.identity;
 
 import alexo.ecommerce_api.entity.converter.RoleCodeConverter;
 import alexo.ecommerce_api.entity.enums.RoleCode;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.Set;
 
 /**
  * Security role dictionary.
@@ -40,4 +32,12 @@ public class Role {
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "role_permissions",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
+    private Set<Permission> permissions;
 }

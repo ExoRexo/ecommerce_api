@@ -7,7 +7,6 @@ import alexo.ecommerce_api.service.identity.auth.login.dto.AuthTokenResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,17 +31,9 @@ public class LoginService {
     }
 
     public AuthTokenResponseDTO refresh() {
-        UserPrincipal userPrincipal = getCurrentUserPrincipal();
+        UserPrincipal userPrincipal = Objects.requireNonNull(getCurrentUserPrincipal());
 
-        if (userPrincipal == null) {
-            throw new BadCredentialsException(null);
-        }
-
-        Long userId = userPrincipal.getId();
-
-        if(userId == null) {
-            throw new RuntimeException("userId is null");
-        }
+        Long userId = Objects.requireNonNull(userPrincipal.getId());
 
         return generateTokenForPrincipal(getFreshPrincipalForUserId(userId));
     }
