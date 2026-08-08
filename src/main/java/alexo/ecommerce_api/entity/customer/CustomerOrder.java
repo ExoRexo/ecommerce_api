@@ -37,4 +37,23 @@ public class CustomerOrder {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "status_type_id", nullable = false)
     private CustomerOrderStatusType statusType;
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof CustomerOrder other)) {
+            return false;
+        }
+
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

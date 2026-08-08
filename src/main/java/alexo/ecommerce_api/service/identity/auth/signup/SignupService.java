@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -45,28 +46,18 @@ public class SignupService {
             throw new IllegalArgumentException("Пользователь с почтой " + userCreationRequestDTO.email() + " уже существует");
         }
 
-        UserStatusType userStatusType = userStatusCacheService.getStatusTypes().get(UserStatusCode.ACTIVE);
-        if (userStatusType == null) {
-            throw new EntityNotFoundException("Не найден статус ACTIVE");
-        }
+        UserStatusType userStatusType = Objects.requireNonNull(userStatusCacheService.getStatusTypes().get(UserStatusCode.ACTIVE));
 
-        Role customerRole = userPermissionService.getRoleByCode(RoleCode.CUSTOMER);
-        if (customerRole == null) {
-            throw new EntityNotFoundException("Не найдена роль CUSTOMER");
-        }
+        Role customerRole = Objects.requireNonNull(userPermissionService.getRoleByCode(RoleCode.CUSTOMER));
 
-        HashSet<Role> roleHashSet = new HashSet<>(5);
+        HashSet<Role> roleHashSet = new HashSet<>();
         roleHashSet.add(customerRole);
 
         if (roleCodesAdditional != null && !roleCodesAdditional.isEmpty()) {
-            HashSet<Role> additionalRoles = new HashSet<>(roleCodesAdditional.size());
+            HashSet<Role> additionalRoles = new HashSet<>();
 
             for (RoleCode roleCode : roleCodesAdditional) {
-                Role additionalRole = userPermissionService.getRoleByCode(roleCode);
-
-                if (additionalRole == null) {
-                    throw new EntityNotFoundException("Не найдена роль " + roleCode.getCode());
-                }
+                Role additionalRole = Objects.requireNonNull(userPermissionService.getRoleByCode(roleCode));
 
                 additionalRoles.add(additionalRole);
             }
@@ -110,7 +101,7 @@ public class SignupService {
      * @param userCreationDTO dto to create user
      * @return user entity
      */
-    protected User persistUserEntity(@NotNull UserCreationDTO userCreationDTO)
+    private User persistUserEntity(@NotNull UserCreationDTO userCreationDTO)
     {
         User user = new User();
 

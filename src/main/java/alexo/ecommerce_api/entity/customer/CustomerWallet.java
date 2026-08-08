@@ -38,4 +38,23 @@ public class CustomerWallet {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal balance;
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof CustomerWallet other)) {
+            return false;
+        }
+
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -1,6 +1,7 @@
 package alexo.ecommerce_api.entity.identity;
 
 import alexo.ecommerce_api.entity.converter.RoleCodeConverter;
+import alexo.ecommerce_api.entity.customer.OrderItemWarehouseReservation;
 import alexo.ecommerce_api.entity.enums.RoleCode;
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,4 +41,23 @@ public class Role {
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private Set<Permission> permissions;
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof Role other)) {
+            return false;
+        }
+
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

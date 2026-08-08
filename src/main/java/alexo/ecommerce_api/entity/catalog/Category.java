@@ -1,5 +1,6 @@
 package alexo.ecommerce_api.entity.catalog;
 
+import alexo.ecommerce_api.entity.identity.Permission;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -37,4 +38,24 @@ public class Category {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof Category other)) {
+            return false;
+        }
+
+        return id != null && id.equals(other.id);
+    }
+
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

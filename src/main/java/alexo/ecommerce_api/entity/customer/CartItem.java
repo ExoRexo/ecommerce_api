@@ -1,6 +1,7 @@
 package alexo.ecommerce_api.entity.customer;
 
 import alexo.ecommerce_api.entity.catalog.Product;
+import alexo.ecommerce_api.entity.catalog.ProductStatusType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -50,4 +51,23 @@ public class CartItem {
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof CartItem other)) {
+            return false;
+        }
+
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

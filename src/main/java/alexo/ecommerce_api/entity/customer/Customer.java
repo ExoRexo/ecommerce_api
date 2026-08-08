@@ -32,4 +32,23 @@ public class Customer {
     @MapsId
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof Customer other)) {
+            return false;
+        }
+
+        return userId != null && userId.equals(other.userId);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -31,4 +31,23 @@ public class CustomerCart {
     @MapsId
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof CustomerCart other)) {
+            return false;
+        }
+
+        return customerId != null && customerId.equals(other.customerId);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

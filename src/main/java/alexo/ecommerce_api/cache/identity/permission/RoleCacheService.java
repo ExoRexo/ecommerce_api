@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -16,8 +16,8 @@ public class RoleCacheService {
     private final RoleRepository roleRepository;
 
     @Cacheable("user_roles")
-    public ConcurrentHashMap<RoleCode, Role> getRoles() {
-        ConcurrentHashMap<RoleCode, Role> roles = new ConcurrentHashMap<>();
+    public HashMap<RoleCode, Role> getRoles() {
+        HashMap<RoleCode, Role> roles = new HashMap<>();
 
         roleRepository.findAll().forEach(role -> roles.put(role.getCode(), role));
 
