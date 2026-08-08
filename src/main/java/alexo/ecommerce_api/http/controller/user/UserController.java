@@ -6,7 +6,7 @@ import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
 import alexo.ecommerce_api.service.identity.auth.login.UserPrincipal;
-import alexo.ecommerce_api.service.identity.user.dto.MePermissionsResponseDTO;
+import alexo.ecommerce_api.service.identity.user.dto.MeAuthoritiesResponseDTO;
 import alexo.ecommerce_api.service.identity.user.dto.profile.ProfileResponseDTO;
 import alexo.ecommerce_api.service.identity.user.dto.profile.StatusTypeDTO;
 import jakarta.transaction.Transactional;
@@ -30,13 +30,13 @@ public class UserController {
 
     private UserRepository userRepository;
 
-    @GetMapping("/me/permissions")
-    public MePermissionsResponseDTO getPermissions(@NotNull Authentication authentication) throws AuthenticationException {
+    @GetMapping("/me/authorities")
+    public MeAuthoritiesResponseDTO getAuthorities(@NotNull Authentication authentication) throws AuthenticationException {
         if (!(authentication.getPrincipal() instanceof UserPrincipal userPrincipal)) {
             throw new AuthenticationCredentialsNotFoundException("authentication not found, probably, your token is invalid");
         }
 
-        return new MePermissionsResponseDTO(
+        return new MeAuthoritiesResponseDTO(
                 userPrincipal.getRoles(),
                 userPrincipal.getPermissions()
         );

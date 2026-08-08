@@ -5,7 +5,7 @@ import alexo.ecommerce_api.entity.enums.RoleCode;
 
 import java.util.List;
 
-public record MePermissionsResponseDTO(
+public record MeAuthoritiesResponseDTO(
         List<RoleCode> roles,
         List<PermissionCode> permissions
 ) {
