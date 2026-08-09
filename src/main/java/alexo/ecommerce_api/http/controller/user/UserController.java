@@ -1,8 +1,5 @@
 package alexo.ecommerce_api.http.controller.user;
 
-import alexo.ecommerce_api.entity.enums.PermissionCode;
-import alexo.ecommerce_api.entity.identity.Permission;
-import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
 import alexo.ecommerce_api.service.identity.auth.login.UserPrincipal;
@@ -18,10 +15,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -50,14 +43,8 @@ public class UserController {
         }
 
         User user = userRepository
-                .findByIdForUserDetails(userPrincipal.getId())
+                .findByIdForUserProfile(userPrincipal.getId())
                 .orElseThrow();
-
-        Set<PermissionCode> rolePermissions = new HashSet<>();
-
-        for (Role role : user.getRoles()) {
-            rolePermissions.addAll(role.getPermissions().stream().map(Permission::getCode).collect(Collectors.toSet()));
-        }
 
         return new ProfileResponseDTO(
                 user.getEmail(),
@@ -67,13 +54,7 @@ public class UserController {
                         user.getStatusType().getCode(),
                         user.getStatusType().getLabel(),
                         user.getStatusType().getDescription()
-                ),
-                user.getDirectPermissions()
-                        .stream()
-                        .map(Permission::getCode)
-                        .collect(Collectors.toSet()),
-                rolePermissions,
-                user.getRoles().stream().map(Role::getCode).toList()
+                )
         );
     }
 

@@ -25,6 +25,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByIdForUserDetails(Long id);
 
     @EntityGraph(attributePaths = {
+            "statusType",
+    })
+    @Query("""
+        select u
+        from User u
+        where u.id = :id
+    """)
+    Optional<User> findByIdForUserProfile(Long id);
+
+    @EntityGraph(attributePaths = {
             "directPermissions",
             "roles.permissions",
             "statusType",
