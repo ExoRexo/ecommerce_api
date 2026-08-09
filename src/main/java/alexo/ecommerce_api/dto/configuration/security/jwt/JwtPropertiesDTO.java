@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.configuration.security.jwt;
+package alexo.ecommerce_api.dto.configuration.security.jwt;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;

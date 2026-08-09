@@ -1,5 +1,6 @@
 package alexo.ecommerce_api.configuration.security.jwt;
 
+import alexo.ecommerce_api.dto.configuration.security.jwt.JwtPropertiesDTO;
 import alexo.ecommerce_api.mapper.enums.EnumCodeMapper;
 import alexo.ecommerce_api.enums.entity.PermissionCode;
 import alexo.ecommerce_api.enums.entity.RoleCode;
