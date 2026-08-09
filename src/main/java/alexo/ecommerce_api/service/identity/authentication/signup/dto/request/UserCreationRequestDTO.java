@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.identity.auth.signup.dto.request;
+package alexo.ecommerce_api.service.identity.authentication.signup.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

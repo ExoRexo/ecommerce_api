@@ -1,13 +1,13 @@
 package alexo.ecommerce_api.http.controller.auth;
 
 import alexo.ecommerce_api.entity.identity.User;
-import alexo.ecommerce_api.service.identity.auth.login.LoginService;
-import alexo.ecommerce_api.service.identity.auth.login.dto.AuthLoginRequestDTO;
-import alexo.ecommerce_api.service.identity.auth.login.dto.AuthTokenResponseDTO;
-import alexo.ecommerce_api.service.identity.auth.signup.SignupService;
-import alexo.ecommerce_api.service.identity.auth.signup.dto.request.UserCreationRequestDTO;
-import alexo.ecommerce_api.service.identity.auth.signup.dto.response.StatusTypeDTO;
-import alexo.ecommerce_api.service.identity.auth.signup.dto.response.UserCreationResponseDTO;
+import alexo.ecommerce_api.service.identity.authentication.login.LoginService;
+import alexo.ecommerce_api.service.identity.authentication.login.dto.AuthLoginRequestDTO;
+import alexo.ecommerce_api.service.identity.authentication.login.dto.AuthTokenResponseDTO;
+import alexo.ecommerce_api.service.identity.authentication.signup.SignupService;
+import alexo.ecommerce_api.service.identity.authentication.signup.dto.request.UserCreationRequestDTO;
+import alexo.ecommerce_api.service.identity.authentication.signup.dto.response.StatusTypeDTO;
+import alexo.ecommerce_api.service.identity.authentication.signup.dto.response.UserCreationResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

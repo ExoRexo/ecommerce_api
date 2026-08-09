@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.identity.auth.signup.dto.response;
+package alexo.ecommerce_api.service.identity.authentication.signup.dto.response;
 
 import java.time.OffsetDateTime;
 

@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.identity.auth.signup;
+package alexo.ecommerce_api.service.identity.authentication.signup;
 
 import alexo.ecommerce_api.entity.customer.Customer;
 import alexo.ecommerce_api.entity.enums.PermissionCode;
@@ -12,8 +12,8 @@ import alexo.ecommerce_api.repository.customer.CustomerRepository;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
 import alexo.ecommerce_api.service.identity.authority.UserAuthorityService;
 import alexo.ecommerce_api.cache.identity.status.UserStatusCacheService;
-import alexo.ecommerce_api.service.identity.auth.signup.dto.UserCreationDTO;
-import alexo.ecommerce_api.service.identity.auth.signup.dto.request.UserCreationRequestDTO;
+import alexo.ecommerce_api.service.identity.authentication.signup.dto.UserCreationDTO;
+import alexo.ecommerce_api.service.identity.authentication.signup.dto.request.UserCreationRequestDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
