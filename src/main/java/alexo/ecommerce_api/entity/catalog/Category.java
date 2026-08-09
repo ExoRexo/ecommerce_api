@@ -1,20 +1,7 @@
 package alexo.ecommerce_api.entity.catalog;
 
-import alexo.ecommerce_api.entity.identity.Permission;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 /**
  * Product category with optional hierarchy through parent reference.
@@ -38,6 +25,17 @@ public class Category {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;
+
+    /**
+     * @return full category tree name separated by dots
+     */
+    public String getTreeName() {
+        if (parent == null) {
+            return name;
+        }
+
+        return parent.getTreeName() + " > " + name;
+    }
 
     @Override
     public boolean equals(Object o) {

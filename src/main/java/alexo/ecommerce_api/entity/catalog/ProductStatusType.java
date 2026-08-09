@@ -2,18 +2,8 @@ package alexo.ecommerce_api.entity.catalog;
 
 import alexo.ecommerce_api.entity.converter.ProductStatusCodeConverter;
 import alexo.ecommerce_api.entity.enums.ProductStatusCode;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 /**
  * Dictionary row describing a product status.

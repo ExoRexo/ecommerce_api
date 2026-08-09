@@ -1,0 +1,1 @@
+CREATE INDEX idx_categories_name_parent_id_unique ON categories(name, parent_id);
