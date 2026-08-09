@@ -1,17 +1,16 @@
 package alexo.ecommerce_api.repository.catalog;
 
 import alexo.ecommerce_api.entity.catalog.Category;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-
-    boolean existsByName(String name);
-
-    boolean existsByNameAndParentId(String name, Long parentId);
 
     @Query(value = """
         WITH RECURSIVE category_tree AS (
@@ -38,5 +37,10 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
         WHERE parent_id IS NULL
         """, nativeQuery = true)
     String findTreeName(@Param("categoryId") Long categoryId);
+
+    Optional<Category> findByNameAndIdIsNotAndParentIdIs(String name, Long id, Long parentId);
+
+    @EntityGraph("parent")
+    Optional<Category> findByNameAndParentId(String name, Long parentId);
 }
 

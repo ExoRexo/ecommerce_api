@@ -2,14 +2,16 @@ package alexo.ecommerce_api.service.catalog.category;
 
 import alexo.ecommerce_api.entity.catalog.Category;
 import alexo.ecommerce_api.repository.catalog.CategoryRepository;
+import alexo.ecommerce_api.service.catalog.category.dto.CategoryResponseDTO;
 import alexo.ecommerce_api.service.catalog.category.dto.create.CreateRequestDTO;
-import alexo.ecommerce_api.service.catalog.category.dto.create.CreateResponseDTO;
+import alexo.ecommerce_api.service.catalog.category.dto.update.UpdateRequestDTO;
 import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -22,35 +24,96 @@ public class CategoryService {
      * @return category create response
      */
     @Transactional
-    public CreateResponseDTO createCategory(CreateRequestDTO createRequestDTO) {
+    public CategoryResponseDTO createCategory(CreateRequestDTO createRequestDTO) {
         Objects.requireNonNull(createRequestDTO);
+
+        Category category = new Category();
 
         Long parentId = createRequestDTO.parentId();
 
-        Category parent = null;
         if (parentId != null) {
-            parent = categoryRepository.findById(parentId).orElseThrow();
+            category.setParent(categoryRepository.findById(parentId).orElseThrow());
         }
 
-        String categoryName = createRequestDTO.name().trim();
-        if (categoryRepository.existsByName(categoryName)) {
-            throw new EntityExistsException("category with name [" + categoryName + "] is already exists");
+        category.setName(createRequestDTO.name().trim());
+
+        Optional<Category> existsCategory = categoryRepository.findByNameAndParentId(category.getName(), parentId);
+
+        if (existsCategory.isPresent()) {
+            String message;
+
+            if (parentId == null) {
+                message = "root category [" + existsCategory.get().getName() +  "] is already exists";
+            } else {
+                message = "category [" + category.getName() + "] with parent category [" + existsCategory.get().getParent().getName() +  "] is already exists";
+            }
+
+            throw new EntityExistsException(message);
         }
 
-        if (categoryRepository.existsByNameAndParentId(categoryName, parentId)) {
-            throw new EntityExistsException("category with name [" + categoryName + "] and parentId [" + parentId +  "] is already exists");
-        }
-
-        Category category = new Category();
-        category.setName(categoryName);
-        category.setParent(parent);
         categoryRepository.save(category);
 
-        return new CreateResponseDTO(
+        return new CategoryResponseDTO(
                 category.getId(),
                 categoryCacheService.getCategoryTree(category.getId()),
                 parentId
         );
     }
 
+    public CategoryResponseDTO updateCategory(UpdateRequestDTO updateRequestDTO) {
+        Objects.requireNonNull(updateRequestDTO);
+
+        Long categoryId = updateRequestDTO.categoryId();
+
+        Category category = categoryRepository.findById(categoryId).orElseThrow();
+
+        String categoryName = updateRequestDTO.name();
+
+        if (updateRequestDTO.parentId().isPresent()) {
+            Long parentId = updateRequestDTO.parentId().get();
+
+            if (parentId == null) {
+                category.setParent(null);
+            } else {
+                Category parent = categoryRepository.findById(parentId).orElseThrow();
+                category.setParent(parent);
+            }
+        }
+
+        if (categoryName != null) {
+            categoryName = categoryName.trim();
+            category.setName(categoryName);
+        }
+
+        Category parent = category.getParent();
+
+        Long parentId = null;
+        if (parent != null) {
+            parentId = parent.getId();
+        }
+
+        Optional<Category> alreadyExistsCategory = categoryRepository.findByNameAndIdIsNotAndParentIdIs(category.getName(), category.getId(), parentId);
+
+        if (alreadyExistsCategory.isPresent()) {
+            String message = "category with name [" + alreadyExistsCategory.get().getName() + "]";
+
+            if (parent != null) {
+                message += " and parent category name [" + parent.getName() + "]";
+            }
+
+            message += " is already exists";
+
+            throw new EntityExistsException(message);
+        }
+
+        categoryRepository.save(category);
+
+        categoryCacheService.evictAllCategoryTrees();
+
+        return new CategoryResponseDTO(
+                category.getId(),
+                categoryCacheService.getCategoryTree(category.getId()),
+                parentId
+        );
+    }
 }
