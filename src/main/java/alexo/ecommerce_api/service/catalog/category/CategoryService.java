@@ -15,6 +15,7 @@ import java.util.Objects;
 @Service
 public class CategoryService {
     private CategoryRepository categoryRepository;
+    private CategoryCacheService categoryCacheService;
 
     /**
      * @param createRequestDTO category create request
@@ -47,7 +48,7 @@ public class CategoryService {
 
         return new CreateResponseDTO(
                 category.getId(),
-                category.getTreeName(),
+                categoryCacheService.getCategoryTree(category.getId()),
                 parentId
         );
     }

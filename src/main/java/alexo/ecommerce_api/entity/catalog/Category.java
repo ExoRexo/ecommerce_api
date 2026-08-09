@@ -26,17 +26,6 @@ public class Category {
     @JoinColumn(name = "parent_id")
     private Category parent;
 
-    /**
-     * @return full category tree name separated by dots
-     */
-    public String getTreeName() {
-        if (parent == null) {
-            return name;
-        }
-
-        return parent.getTreeName() + " > " + name;
-    }
-
     @Override
     public boolean equals(Object o) {
 
