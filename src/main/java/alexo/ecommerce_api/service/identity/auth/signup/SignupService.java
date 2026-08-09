@@ -10,7 +10,7 @@ import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.entity.identity.UserStatusType;
 import alexo.ecommerce_api.repository.customer.CustomerRepository;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
-import alexo.ecommerce_api.service.identity.permission.UserPermissionService;
+import alexo.ecommerce_api.service.identity.authority.UserAuthorityService;
 import alexo.ecommerce_api.cache.identity.status.UserStatusCacheService;
 import alexo.ecommerce_api.service.identity.auth.signup.dto.UserCreationDTO;
 import alexo.ecommerce_api.service.identity.auth.signup.dto.request.UserCreationRequestDTO;
@@ -30,7 +30,7 @@ import java.util.Objects;
 @Service
 public class SignupService {
     private final UserRepository userRepository;
-    private final UserPermissionService userPermissionService;
+    private final UserAuthorityService userAuthorityService;
     private final UserStatusCacheService userStatusCacheService;
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
@@ -48,7 +48,7 @@ public class SignupService {
 
         UserStatusType userStatusType = Objects.requireNonNull(userStatusCacheService.getStatusTypes().get(UserStatusCode.ACTIVE));
 
-        Role customerRole = Objects.requireNonNull(userPermissionService.getRoleByCode(RoleCode.CUSTOMER));
+        Role customerRole = Objects.requireNonNull(userAuthorityService.getRoleByCode(RoleCode.CUSTOMER));
 
         HashSet<Role> roleHashSet = new HashSet<>();
         roleHashSet.add(customerRole);
@@ -57,7 +57,7 @@ public class SignupService {
             HashSet<Role> additionalRoles = new HashSet<>();
 
             for (RoleCode roleCode : roleCodesAdditional) {
-                Role additionalRole = Objects.requireNonNull(userPermissionService.getRoleByCode(roleCode));
+                Role additionalRole = Objects.requireNonNull(userAuthorityService.getRoleByCode(roleCode));
 
                 additionalRoles.add(additionalRole);
             }
@@ -70,7 +70,7 @@ public class SignupService {
             HashSet<Permission> additionalPermissions = new HashSet<>(permissionCodesAdditional.size());
 
             for (PermissionCode permissionCode : permissionCodesAdditional) {
-                Permission additionalPermission = userPermissionService.getPermissionByCode(permissionCode);
+                Permission additionalPermission = userAuthorityService.getPermissionByCode(permissionCode);
 
                 if (additionalPermission == null) {
                     throw new EntityNotFoundException("Не найден доступ " + permissionCode.getCode());
@@ -114,11 +114,11 @@ public class SignupService {
 
         ArrayList<Role> roles = new ArrayList<>(userCreationDTO.roles().size());
         roles.addAll(userCreationDTO.roles());
-        userPermissionService.replaceUserRoles(user, roles);
+        userAuthorityService.replaceUserRoles(user, roles);
 
         ArrayList<Permission> permissions = new ArrayList<>(userCreationDTO.directPermissions().size());
         permissions.addAll(userCreationDTO.directPermissions());
-        userPermissionService.replaceUserDirectPermissions(user, permissions);
+        userAuthorityService.replaceUserDirectPermissions(user, permissions);
 
         Customer customer = new Customer();
         customer.setUser(user);

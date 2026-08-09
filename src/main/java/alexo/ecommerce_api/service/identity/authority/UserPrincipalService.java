@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.configuration.security;
+package alexo.ecommerce_api.service.identity.authority;
 
 import alexo.ecommerce_api.entity.enums.PermissionCode;
 import alexo.ecommerce_api.entity.enums.RoleCode;
@@ -6,7 +6,6 @@ import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.repository.identity.user.UserPrincipalRepository;
-import alexo.ecommerce_api.service.identity.auth.login.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.userdetails.UserDetails;

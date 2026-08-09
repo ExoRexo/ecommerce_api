@@ -2,6 +2,7 @@ package alexo.ecommerce_api.configuration.security;
 
 import alexo.ecommerce_api.configuration.security.jwt.JwtAuthenticationFilter;
 import alexo.ecommerce_api.configuration.security.jwt.JwtProperties;
+import alexo.ecommerce_api.service.identity.authority.UserPrincipalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,32 +1,26 @@
-package alexo.ecommerce_api.service.identity.permission;
+package alexo.ecommerce_api.service.identity.authority;
 
-import alexo.ecommerce_api.cache.identity.permission.PermissionCacheService;
-import alexo.ecommerce_api.cache.identity.permission.RoleCacheService;
+import alexo.ecommerce_api.cache.identity.authority.PermissionCacheService;
+import alexo.ecommerce_api.cache.identity.authority.RoleCacheService;
 import alexo.ecommerce_api.entity.enums.PermissionCode;
 import alexo.ecommerce_api.entity.enums.RoleCode;
 import alexo.ecommerce_api.entity.identity.*;
-import alexo.ecommerce_api.repository.identity.RolePermissionRepository;
 import alexo.ecommerce_api.repository.identity.UserPermissionRepository;
 import alexo.ecommerce_api.repository.identity.UserRoleRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserPermissionService {
+public class UserAuthorityService {
 
     private final UserRoleRepository userRoleRepository;
     private final UserPermissionRepository userPermissionRepository;
-    private final RolePermissionRepository rolePermissionRepository;
     private final RoleCacheService roleCacheService;
     private final PermissionCacheService permissionCacheService;
 
@@ -94,37 +88,4 @@ public class UserPermissionService {
         return userPermissionRepository.saveAll(userPermissions);
     }
 
-    /**
-     * @param userId user identifier
-     * @return all unique permissions from roles and direct permissions
-     */
-    public @NotNull Set<Permission> getEffectivePermissions(@NotNull Long userId, @Nullable List<Role> rolesOverride) {
-
-        Set<Permission> result = new LinkedHashSet<>(userPermissionRepository.findDirectPermissionsByUserId(userId));
-
-        List<Role> roles;
-        if (rolesOverride != null) {
-            roles = rolesOverride;
-        } else {
-            roles = userRoleRepository.findRolesByUserId(userId);
-        }
-
-        if (!roles.isEmpty()) {
-            Set<Integer> roleIds = roles.stream()
-                    .map(Role::getId)
-                    .collect(Collectors.toSet());
-
-            result.addAll(rolePermissionRepository.findPermissionsByRoleIds(roleIds));
-        }
-
-        return result;
-    }
-
-    /**
-     * @param userId user identifier
-     * @return all unique roles
-     */
-    public @NotNull List<Role> getEffectiveRoles(@NotNull Long userId) {
-        return userRoleRepository.findRolesByUserId(userId);
-    }
 }

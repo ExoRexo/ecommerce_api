@@ -1,6 +1,6 @@
 package alexo.ecommerce_api.configuration.security.jwt;
 
-import alexo.ecommerce_api.service.identity.auth.login.UserPrincipal;
+import alexo.ecommerce_api.service.identity.authority.UserPrincipal;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

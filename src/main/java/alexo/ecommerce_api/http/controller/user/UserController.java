@@ -2,7 +2,7 @@ package alexo.ecommerce_api.http.controller.user;
 
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
-import alexo.ecommerce_api.service.identity.auth.login.UserPrincipal;
+import alexo.ecommerce_api.service.identity.authority.UserPrincipal;
 import alexo.ecommerce_api.service.identity.user.dto.MeAuthoritiesResponseDTO;
 import alexo.ecommerce_api.service.identity.user.dto.profile.ProfileResponseDTO;
 import alexo.ecommerce_api.service.identity.user.dto.profile.StatusTypeDTO;

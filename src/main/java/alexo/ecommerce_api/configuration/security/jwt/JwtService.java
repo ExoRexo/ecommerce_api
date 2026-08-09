@@ -3,7 +3,7 @@ package alexo.ecommerce_api.configuration.security.jwt;
 import alexo.ecommerce_api.mapper.enums.EnumCodeMapper;
 import alexo.ecommerce_api.entity.enums.PermissionCode;
 import alexo.ecommerce_api.entity.enums.RoleCode;
-import alexo.ecommerce_api.service.identity.auth.login.UserPrincipal;
+import alexo.ecommerce_api.service.identity.authority.UserPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
