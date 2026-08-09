@@ -1,6 +1,6 @@
 package alexo.ecommerce_api.cache.identity.authority;
 
-import alexo.ecommerce_api.entity.enums.RoleCode;
+import alexo.ecommerce_api.enums.entity.RoleCode;
 import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.repository.identity.RoleRepository;
 import lombok.RequiredArgsConstructor;

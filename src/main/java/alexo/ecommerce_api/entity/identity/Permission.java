@@ -1,7 +1,7 @@
 package alexo.ecommerce_api.entity.identity;
 
 import alexo.ecommerce_api.entity.converter.PermissionCodeConverter;
-import alexo.ecommerce_api.entity.enums.PermissionCode;
+import alexo.ecommerce_api.enums.entity.PermissionCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;

@@ -2,10 +2,10 @@ package alexo.ecommerce_api.http.controller.user;
 
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
-import alexo.ecommerce_api.service.identity.authority.UserPrincipal;
-import alexo.ecommerce_api.service.identity.user.dto.MeAuthoritiesResponseDTO;
-import alexo.ecommerce_api.service.identity.user.dto.profile.ProfileResponseDTO;
-import alexo.ecommerce_api.service.identity.user.dto.profile.StatusTypeDTO;
+import alexo.ecommerce_api.dto.service.identity.UserPrincipalDTO;
+import alexo.ecommerce_api.dto.service.identity.user.MeAuthoritiesResponseDTO;
+import alexo.ecommerce_api.dto.service.identity.user.profile.MeProfileResponseDTO;
+import alexo.ecommerce_api.dto.service.identity.user.profile.StatusTypeDTO;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -25,28 +25,28 @@ public class UserController {
 
     @GetMapping("/me/authorities")
     public MeAuthoritiesResponseDTO getAuthorities(@NotNull Authentication authentication) throws AuthenticationException {
-        if (!(authentication.getPrincipal() instanceof UserPrincipal userPrincipal)) {
+        if (!(authentication.getPrincipal() instanceof UserPrincipalDTO userPrincipalDTO)) {
             throw new AuthenticationCredentialsNotFoundException("authentication not found, probably, your token is invalid");
         }
 
         return new MeAuthoritiesResponseDTO(
-                userPrincipal.getRoles(),
-                userPrincipal.getPermissions()
+                userPrincipalDTO.getRoles(),
+                userPrincipalDTO.getPermissions()
         );
     }
 
     @GetMapping("/me/profile")
     @Transactional
-    public ProfileResponseDTO getProfile(@NotNull Authentication authentication) throws AuthenticationException {
-        if (!(authentication.getPrincipal() instanceof UserPrincipal userPrincipal) || userPrincipal.getId() == null) {
+    public MeProfileResponseDTO getProfile(@NotNull Authentication authentication) throws AuthenticationException {
+        if (!(authentication.getPrincipal() instanceof UserPrincipalDTO userPrincipalDTO) || userPrincipalDTO.getId() == null) {
             throw new AuthenticationCredentialsNotFoundException("authentication not found, probably, your token is invalid");
         }
 
         User user = userRepository
-                .findByIdForUserProfile(userPrincipal.getId())
+                .findByIdForUserProfile(userPrincipalDTO.getId())
                 .orElseThrow();
 
-        return new ProfileResponseDTO(
+        return new MeProfileResponseDTO(
                 user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),

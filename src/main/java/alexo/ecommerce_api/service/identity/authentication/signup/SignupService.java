@@ -1,9 +1,9 @@
 package alexo.ecommerce_api.service.identity.authentication.signup;
 
 import alexo.ecommerce_api.entity.customer.Customer;
-import alexo.ecommerce_api.entity.enums.PermissionCode;
-import alexo.ecommerce_api.entity.enums.RoleCode;
-import alexo.ecommerce_api.entity.enums.UserStatusCode;
+import alexo.ecommerce_api.enums.entity.PermissionCode;
+import alexo.ecommerce_api.enums.entity.RoleCode;
+import alexo.ecommerce_api.enums.entity.UserStatusCode;
 import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.entity.identity.User;
@@ -12,8 +12,8 @@ import alexo.ecommerce_api.repository.customer.CustomerRepository;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
 import alexo.ecommerce_api.service.identity.authority.UserAuthorityService;
 import alexo.ecommerce_api.cache.identity.status.UserStatusCacheService;
-import alexo.ecommerce_api.service.identity.authentication.signup.dto.UserCreationDTO;
-import alexo.ecommerce_api.service.identity.authentication.signup.dto.request.UserCreationRequestDTO;
+import alexo.ecommerce_api.dto.service.identity.authentication.signup.UserCreationDTO;
+import alexo.ecommerce_api.dto.service.identity.authentication.signup.request.UserSignupRequestDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -37,13 +37,13 @@ public class SignupService {
 
     @Transactional
     public User createUser(
-        @NotNull UserCreationRequestDTO userCreationRequestDTO,
+        @NotNull UserSignupRequestDTO userSignupRequestDTO,
         @Nullable ArrayList<RoleCode> roleCodesAdditional,
         @Nullable ArrayList<PermissionCode> permissionCodesAdditional
     )
     {
-        if (userRepository.existsByEmail(userCreationRequestDTO.email())) {
-            throw new IllegalArgumentException("Пользователь с почтой " + userCreationRequestDTO.email() + " уже существует");
+        if (userRepository.existsByEmail(userSignupRequestDTO.email())) {
+            throw new IllegalArgumentException("Пользователь с почтой " + userSignupRequestDTO.email() + " уже существует");
         }
 
         UserStatusType userStatusType = Objects.requireNonNull(userStatusCacheService.getStatusTypes().get(UserStatusCode.ACTIVE));
@@ -82,12 +82,12 @@ public class SignupService {
             permissionHashSet.addAll(additionalPermissions);
         }
 
-        String passwordHash = passwordEncoder.encode(userCreationRequestDTO.password());
+        String passwordHash = passwordEncoder.encode(userSignupRequestDTO.password());
 
         UserCreationDTO userCreationDTO = new UserCreationDTO(
-                userCreationRequestDTO.email(),
-                userCreationRequestDTO.firstName(),
-                userCreationRequestDTO.lastName(),
+                userSignupRequestDTO.email(),
+                userSignupRequestDTO.firstName(),
+                userSignupRequestDTO.lastName(),
                 userStatusType,
                 roleHashSet,
                 permissionHashSet,

@@ -1,8 +1,7 @@
 package alexo.ecommerce_api.entity.identity;
 
 import alexo.ecommerce_api.entity.converter.RoleCodeConverter;
-import alexo.ecommerce_api.entity.customer.OrderItemWarehouseReservation;
-import alexo.ecommerce_api.entity.enums.RoleCode;
+import alexo.ecommerce_api.enums.entity.RoleCode;
 import jakarta.persistence.*;
 import lombok.*;
 

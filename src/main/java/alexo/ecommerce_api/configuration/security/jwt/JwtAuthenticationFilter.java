@@ -1,6 +1,6 @@
 package alexo.ecommerce_api.configuration.security.jwt;
 
-import alexo.ecommerce_api.service.identity.authority.UserPrincipal;
+import alexo.ecommerce_api.dto.service.identity.UserPrincipalDTO;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             if (SecurityContextHolder.getContext().getAuthentication() == null && jwtService.isTokenValid(token)) {
-                UserPrincipal principal = jwtService.getPrincipalFromToken(token);
+                UserPrincipalDTO principal = jwtService.getPrincipalFromToken(token);
 
                 if (principal.isEnabled()) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

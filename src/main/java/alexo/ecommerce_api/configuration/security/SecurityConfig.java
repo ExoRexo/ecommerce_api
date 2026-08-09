@@ -1,7 +1,7 @@
 package alexo.ecommerce_api.configuration.security;
 
 import alexo.ecommerce_api.configuration.security.jwt.JwtAuthenticationFilter;
-import alexo.ecommerce_api.configuration.security.jwt.JwtProperties;
+import alexo.ecommerce_api.configuration.security.jwt.JwtPropertiesDTO;
 import alexo.ecommerce_api.service.identity.authority.UserPrincipalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity
-@EnableConfigurationProperties(JwtProperties.class)
+@EnableConfigurationProperties(JwtPropertiesDTO.class)
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;

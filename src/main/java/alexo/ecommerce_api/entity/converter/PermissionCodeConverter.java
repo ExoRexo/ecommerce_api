@@ -1,6 +1,6 @@
 package alexo.ecommerce_api.entity.converter;
 
-import alexo.ecommerce_api.entity.enums.PermissionCode;
+import alexo.ecommerce_api.enums.entity.PermissionCode;
 import jakarta.persistence.Converter;
 
 /**

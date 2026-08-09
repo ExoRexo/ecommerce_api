@@ -2,12 +2,12 @@ package alexo.ecommerce_api.http.controller.auth;
 
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.service.identity.authentication.login.LoginService;
-import alexo.ecommerce_api.service.identity.authentication.login.dto.AuthLoginRequestDTO;
-import alexo.ecommerce_api.service.identity.authentication.login.dto.AuthTokenResponseDTO;
+import alexo.ecommerce_api.dto.service.identity.authentication.login.AuthLoginRequestDTO;
+import alexo.ecommerce_api.dto.service.identity.authentication.login.AuthTokenResponseDTO;
 import alexo.ecommerce_api.service.identity.authentication.signup.SignupService;
-import alexo.ecommerce_api.service.identity.authentication.signup.dto.request.UserCreationRequestDTO;
-import alexo.ecommerce_api.service.identity.authentication.signup.dto.response.StatusTypeDTO;
-import alexo.ecommerce_api.service.identity.authentication.signup.dto.response.UserCreationResponseDTO;
+import alexo.ecommerce_api.dto.service.identity.authentication.signup.request.UserSignupRequestDTO;
+import alexo.ecommerce_api.dto.service.identity.authentication.signup.response.StatusTypeDTO;
+import alexo.ecommerce_api.dto.service.identity.authentication.signup.response.UserSignupResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,10 +33,10 @@ public class AuthController {
      * @return unified response with created user payload
      */
     @PostMapping("/signup")
-    public UserCreationResponseDTO signup(@Valid @RequestBody UserCreationRequestDTO request) {
+    public UserSignupResponseDTO signup(@Valid @RequestBody UserSignupRequestDTO request) {
         User user = signupService.createUser(request, null, null);
 
-        return new UserCreationResponseDTO(
+        return new UserSignupResponseDTO(
                 user.getId(),
                 user.getEmail(),
                 user.getFirstName(),

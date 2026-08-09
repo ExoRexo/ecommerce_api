@@ -1,6 +1,6 @@
 package alexo.ecommerce_api.entity.converter;
 
-import alexo.ecommerce_api.entity.enums.CustomerOrderStatusCode;
+import alexo.ecommerce_api.enums.entity.CustomerOrderStatusCode;
 import jakarta.persistence.Converter;
 
 /**

@@ -1,9 +1,9 @@
 package alexo.ecommerce_api.configuration.security.jwt;
 
 import alexo.ecommerce_api.mapper.enums.EnumCodeMapper;
-import alexo.ecommerce_api.entity.enums.PermissionCode;
-import alexo.ecommerce_api.entity.enums.RoleCode;
-import alexo.ecommerce_api.service.identity.authority.UserPrincipal;
+import alexo.ecommerce_api.enums.entity.PermissionCode;
+import alexo.ecommerce_api.enums.entity.RoleCode;
+import alexo.ecommerce_api.dto.service.identity.UserPrincipalDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -37,7 +37,7 @@ public class JwtService {
     private static final String CLAIM_PERMISSIONS = "permissions";
     private static final String CLAIM_IS_ENABLED = "isEnabled";
 
-    private final JwtProperties jwtProperties;
+    private final JwtPropertiesDTO jwtPropertiesDTO;
 
     private SecretKey signingKey;
 
@@ -48,7 +48,7 @@ public class JwtService {
      */
     @PostConstruct
     void initializeKey() {
-        byte[] keyBytes = jwtProperties.secret().getBytes(StandardCharsets.UTF_8);
+        byte[] keyBytes = jwtPropertiesDTO.secret().getBytes(StandardCharsets.UTF_8);
         if (keyBytes.length < 32) {
             throw new IllegalStateException("JWT secret must contain at least 32 bytes");
         }
@@ -61,11 +61,11 @@ public class JwtService {
      * @param token encoded JWT token
      * @return user principal
      */
-    public UserPrincipal getPrincipalFromToken(String token) {
+    public UserPrincipalDTO getPrincipalFromToken(String token) {
         List<RoleCode> roles = extractRoles(token);
         List<PermissionCode> permissions = extractPermissions(token);
 
-        return new UserPrincipal(
+        return new UserPrincipalDTO(
                 extractUserId(token),
                 extractUsername(token),
             null,
@@ -82,9 +82,9 @@ public class JwtService {
      * @param principal authenticated user principal
      * @return signed JWT token string
      */
-    public String generateToken(UserPrincipal principal) {
+    public String generateToken(UserPrincipalDTO principal) {
         Instant now = Instant.now();
-        Instant expiresAt = now.plusMillis(jwtProperties.expirationMs());
+        Instant expiresAt = now.plusMillis(jwtPropertiesDTO.expirationMs());
 
         return Jwts.builder()
                 .subject(principal.getUsername())
@@ -188,7 +188,7 @@ public class JwtService {
      * @return configured token TTL in milliseconds
      */
     public long getExpirationMs() {
-        return jwtProperties.expirationMs();
+        return jwtPropertiesDTO.expirationMs();
     }
 
     /**
@@ -223,12 +223,12 @@ public class JwtService {
         LinkedHashSet<GrantedAuthority> authorities = new LinkedHashSet<>();
 
         roles.stream()
-                .map((role) -> UserPrincipal.ROLE_GRANTED_AUTHORITY_PREFIX + role.getCode())
+                .map((role) -> UserPrincipalDTO.ROLE_GRANTED_AUTHORITY_PREFIX + role.getCode())
                 .map(SimpleGrantedAuthority::new)
                 .forEach(authorities::add);
 
         permissions.stream()
-                .map((permission) -> UserPrincipal.PERMISSION_GRANTED_AUTHORITY_PREFIX + permission.getCode())
+                .map((permission) -> UserPrincipalDTO.PERMISSION_GRANTED_AUTHORITY_PREFIX + permission.getCode())
                 .map(SimpleGrantedAuthority::new)
                 .forEach(authorities::add);
 

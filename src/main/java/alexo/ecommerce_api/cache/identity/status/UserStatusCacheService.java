@@ -1,6 +1,6 @@
 package alexo.ecommerce_api.cache.identity.status;
 
-import alexo.ecommerce_api.entity.enums.UserStatusCode;
+import alexo.ecommerce_api.enums.entity.UserStatusCode;
 import alexo.ecommerce_api.entity.identity.UserStatusType;
 import alexo.ecommerce_api.repository.identity.UserStatusTypeRepository;
 import lombok.RequiredArgsConstructor;

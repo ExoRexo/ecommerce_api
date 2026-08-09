@@ -1,7 +1,7 @@
 package alexo.ecommerce_api.entity.inventory;
 
 import alexo.ecommerce_api.entity.converter.WarehouseStockTransactionPurposeCodeConverter;
-import alexo.ecommerce_api.entity.enums.WarehouseStockTransactionPurposeCode;
+import alexo.ecommerce_api.enums.entity.WarehouseStockTransactionPurposeCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;

@@ -1,7 +1,8 @@
 package alexo.ecommerce_api.service.identity.authority;
 
-import alexo.ecommerce_api.entity.enums.PermissionCode;
-import alexo.ecommerce_api.entity.enums.RoleCode;
+import alexo.ecommerce_api.dto.service.identity.UserPrincipalDTO;
+import alexo.ecommerce_api.enums.entity.PermissionCode;
+import alexo.ecommerce_api.enums.entity.RoleCode;
 import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.entity.identity.User;
@@ -33,7 +34,7 @@ public class UserPrincipalService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User with userId " + userId + " not found")));
     }
 
-    private UserPrincipal buildPrincipal(User user) {
+    private UserPrincipalDTO buildPrincipal(User user) {
         Set<Role> roles = user.getRoles();
 
         List<RoleCode> roleCodes = roles
@@ -56,6 +57,6 @@ public class UserPrincipalService implements UserDetailsService {
             );
         }
 
-        return UserPrincipal.from(user, roleCodes, directPermissions.stream().toList());
+        return UserPrincipalDTO.from(user, roleCodes, directPermissions.stream().toList());
     }
 }

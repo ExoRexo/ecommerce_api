@@ -1,7 +1,7 @@
 package alexo.ecommerce_api.entity.catalog;
 
 import alexo.ecommerce_api.entity.converter.ProductStatusCodeConverter;
-import alexo.ecommerce_api.entity.enums.ProductStatusCode;
+import alexo.ecommerce_api.enums.entity.ProductStatusCode;
 import jakarta.persistence.*;
 import lombok.*;
 

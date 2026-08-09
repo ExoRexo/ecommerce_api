@@ -2,8 +2,8 @@ package alexo.ecommerce_api.service.identity.authority;
 
 import alexo.ecommerce_api.cache.identity.authority.PermissionCacheService;
 import alexo.ecommerce_api.cache.identity.authority.RoleCacheService;
-import alexo.ecommerce_api.entity.enums.PermissionCode;
-import alexo.ecommerce_api.entity.enums.RoleCode;
+import alexo.ecommerce_api.enums.entity.PermissionCode;
+import alexo.ecommerce_api.enums.entity.RoleCode;
 import alexo.ecommerce_api.entity.identity.*;
 import alexo.ecommerce_api.repository.identity.UserPermissionRepository;
 import alexo.ecommerce_api.repository.identity.UserRoleRepository;
