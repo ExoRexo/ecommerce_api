@@ -15,12 +15,12 @@ import java.util.List;
  */
 public record ApiResponse(
         @JsonInclude(JsonInclude.Include.NON_NULL) Object payload,
-        @JsonInclude(JsonInclude.Include.NON_EMPTY) List<String> errors,
+        @JsonInclude(JsonInclude.Include.NON_EMPTY) Object errors,
         @JsonInclude(JsonInclude.Include.ALWAYS) Instant date
 ) {
 
     public ApiResponse {
-        errors = errors == null ? List.of() : List.copyOf(errors);
+        errors = errors == null ? List.of() : errors;
         date = date == null ? Instant.now() : date;
     }
 
@@ -34,13 +34,7 @@ public record ApiResponse(
         return new ApiResponse(payload, List.of(), null);
     }
 
-    /**
-     * Creates failed API envelope.
-     *
-     * @param errors error messages
-     * @return envelope with null payload
-     */
-    public static ApiResponse failure(List<String> errors) {
+    public static ApiResponse failure(Object errors) {
         return new ApiResponse(null, errors, null);
     }
 

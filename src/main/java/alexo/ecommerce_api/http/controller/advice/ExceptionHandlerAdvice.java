@@ -9,11 +9,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Maps application exceptions to unified HTTP error responses.
@@ -30,11 +33,13 @@ public class ExceptionHandlerAdvice {
     public ResponseEntity<@NotNull ApiResponse> handleValidation(
             MethodArgumentNotValidException exception
     ) {
-        List<String> errors = exception.getBindingResult()
+        Map<String, List<String>> errors = exception.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .toList();
+                .collect(Collectors.groupingBy(
+                        FieldError::getField,
+                        Collectors.mapping(FieldError::getDefaultMessage, Collectors.toList())
+                ));
 
         return build(HttpStatus.BAD_REQUEST, errors);
     }
@@ -47,10 +52,12 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<@NotNull ApiResponse> handleConstraintViolation(ConstraintViolationException exception) {
-        List<String> errors = exception.getConstraintViolations()
+        Map<String, List<String>> errors = exception.getConstraintViolations()
                 .stream()
-                .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
-                .toList();
+                .collect(Collectors.groupingBy(
+                        v -> v.getPropertyPath().toString(),
+                        Collectors.mapping(v -> v.getMessage(), Collectors.toList())
+                ));
 
         return build(HttpStatus.BAD_REQUEST, errors);
     }
@@ -128,7 +135,7 @@ public class ExceptionHandlerAdvice {
      * @param errors error message list
      * @return response entity with unified payload
      */
-    private ResponseEntity<@NotNull ApiResponse> build(HttpStatus status, List<String> errors) {
+    private ResponseEntity<@NotNull ApiResponse> build(HttpStatus status, Object errors) {
         return ResponseEntity.status(status).body(ApiResponse.failure(errors));
     }
 
