@@ -1,7 +1,8 @@
 package alexo.ecommerce_api.service.catalog.category;
 
+import alexo.ecommerce_api.cache.catalog.category.CategoryCacheService;
 import alexo.ecommerce_api.entity.catalog.Category;
-import alexo.ecommerce_api.repository.catalog.CategoryRepository;
+import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
 import alexo.ecommerce_api.service.catalog.category.dto.CategoryResponseDTO;
 import alexo.ecommerce_api.service.catalog.category.dto.create.CreateRequestDTO;
 import alexo.ecommerce_api.service.catalog.category.dto.update.UpdateRequestDTO;

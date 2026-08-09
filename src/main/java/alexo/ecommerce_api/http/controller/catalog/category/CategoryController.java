@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/catalog/category")
@@ -24,5 +26,17 @@ public class CategoryController {
 //    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_CATEGORY_UPDATE')") todo
     public CategoryResponseDTO updateCategory(@Valid @RequestBody UpdateRequestDTO request) {
         return categoryService.updateCategory(request);
+    }
+
+    @GetMapping
+//    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_CATEGORY_READ_LIST')") todo
+    public List<CategoryResponseDTO> getCategoryList() {
+        return categoryService.getCategoryList();
+    }
+
+    @GetMapping("/{categoryId}")
+//    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_CATEGORY_READ_CONCRETE')") todo
+    public CategoryResponseDTO getCategory(@PathVariable Long categoryId) {
+        return categoryService.getCategory(categoryId);
     }
 }

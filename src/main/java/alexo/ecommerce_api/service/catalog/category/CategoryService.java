@@ -1,7 +1,8 @@
 package alexo.ecommerce_api.service.catalog.category;
 
+import alexo.ecommerce_api.cache.catalog.category.CategoryCacheService;
 import alexo.ecommerce_api.entity.catalog.Category;
-import alexo.ecommerce_api.repository.catalog.CategoryRepository;
+import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
 import alexo.ecommerce_api.service.catalog.category.dto.CategoryResponseDTO;
 import alexo.ecommerce_api.service.catalog.category.dto.create.CreateRequestDTO;
 import alexo.ecommerce_api.service.catalog.category.dto.update.UpdateRequestDTO;
@@ -10,6 +11,8 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -119,6 +122,35 @@ public class CategoryService {
                 category.getId(),
                 categoryCacheService.getCategoryTree(category.getId()),
                 parentId
+        );
+    }
+
+    /**
+     * @return list of categories
+     */
+    public List<CategoryResponseDTO> getCategoryList() {
+        Map<Long, String> categoryTrees = categoryCacheService.getCategoryTrees();
+        return categoryRepository.findAll().stream().map(category -> new CategoryResponseDTO(
+                category.getId(),
+                Optional.ofNullable(categoryTrees.get(category.getId())).orElseThrow(),
+                Optional.ofNullable(category.getParent())
+                        .map(Category::getId)
+                        .orElse(null)
+        )).toList();
+    }
+
+    /**
+     * @param categoryId pk of category
+     * @return category
+     */
+    public CategoryResponseDTO getCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow();
+        return new CategoryResponseDTO(
+                category.getId(),
+                categoryCacheService.getCategoryTree(category.getId()),
+                Optional.ofNullable(category.getParent())
+                        .map(Category::getId)
+                        .orElse(null)
         );
     }
 }
