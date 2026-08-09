@@ -60,6 +60,11 @@ public class CategoryService {
         );
     }
 
+    /**
+     * @param updateRequestDTO update request
+     * @return category response
+     */
+    @Transactional
     public CategoryResponseDTO updateCategory(UpdateRequestDTO updateRequestDTO) {
         Objects.requireNonNull(updateRequestDTO);
 
