@@ -2,9 +2,11 @@ package alexo.ecommerce_api.entity.catalog;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 /**
@@ -26,7 +28,12 @@ public class Product {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(nullable = false, length = 20)
+    @Column(
+            nullable = false,
+            unique = true,
+            length = 20,
+            updatable = false
+    )
     private String code;
 
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -42,6 +49,10 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    @Column(name = "created_at", nullable = false)
+    @CreationTimestamp
+    private OffsetDateTime createdAt;
 
     @Override
     public final boolean equals(Object o) {
