@@ -2,9 +2,9 @@ package alexo.ecommerce_api.service.identity.authority;
 
 import alexo.ecommerce_api.cache.identity.authority.PermissionCacheService;
 import alexo.ecommerce_api.cache.identity.authority.RoleCacheService;
+import alexo.ecommerce_api.entity.identity.*;
 import alexo.ecommerce_api.enums.entity.PermissionCode;
 import alexo.ecommerce_api.enums.entity.RoleCode;
-import alexo.ecommerce_api.entity.identity.*;
 import alexo.ecommerce_api.repository.identity.UserPermissionRepository;
 import alexo.ecommerce_api.repository.identity.UserRoleRepository;
 import jakarta.transaction.Transactional;
@@ -48,7 +48,7 @@ public class UserAuthorityService {
      * @return resulted entities of user direct roles
      */
     @Transactional
-    public List<UserRole> replaceUserRoles(@NotNull User user, @NotNull ArrayList<Role> roles) {
+    public List<UserRole> replaceUserRoles(@NotNull User user, @NotNull List<Role> roles) {
         userRoleRepository.deleteAllByUserId(user.getId());
 
         List<UserRole> userRoles = new ArrayList<>(roles.size());
@@ -65,6 +65,77 @@ public class UserAuthorityService {
     }
 
     /**
+     * @param user user
+     * @param roles roles to add
+     * @return added roles
+     */
+    @Transactional
+    public List<UserRole> addUserRoles(@NotNull User user, @NotNull List<Role> roles) {
+        List<Role> existsRoles = userRoleRepository
+                .findByRoleIdInAndUserId(
+                        roles.stream().map(Role::getId).toList(),
+                        user.getId()
+                )
+                .stream()
+                .map(UserRole::getRole)
+                .toList();
+
+        List<UserRole> toSave = new ArrayList<>();
+
+        for (Role role : roles) {
+
+            if (existsRoles.contains(role)) {
+                continue;
+            }
+
+            UserRole userRole = new UserRole();
+            userRole.setRole(role);
+            userRole.setUser(user);
+            toSave.add(userRole);
+        }
+
+        return userRoleRepository.saveAll(toSave);
+    }
+
+    @Transactional
+    public void removeUserRoles(@NotNull User user, @NotNull List<Role> roles) {
+        userRoleRepository.deleteAllByUserIdAndRoleIdIn(user.getId(), roles.stream().map(Role::getId).toList());
+    }
+
+    /**
+     * @param user user
+     * @param permissions permissions to add
+     * @return added permissions
+     */
+    @Transactional
+    public List<UserPermission> addUserDirectPermissions(@NotNull User user, @NotNull List<Permission> permissions) {
+        List<Permission> existsPermissions = userPermissionRepository
+                .findByPermissionIdInAndUserId(
+                        permissions.stream().map(Permission::getId).toList(),
+                        user.getId()
+                )
+                .stream()
+                .map(UserPermission::getPermission)
+                .toList();
+
+        List<UserPermission> toSave = new ArrayList<>();
+
+        for (Permission permission : permissions) {
+
+            if (existsPermissions.contains(permission)) {
+                continue;
+            }
+
+            UserPermission userPermission = new UserPermission();
+            userPermission.setPermission(permission);
+            userPermission.setUser(user);
+            toSave.add(userPermission);
+        }
+
+        return userPermissionRepository.saveAll(toSave);
+    }
+
+    /**
      * replace current user direct permissions to provided permissions
      *
      * @param user id of user
@@ -72,7 +143,7 @@ public class UserAuthorityService {
      * @return resulted entities of user direct permissions
      */
     @Transactional
-    public List<UserPermission> replaceUserDirectPermissions(@NotNull User user, @NotNull ArrayList<Permission> permissions) {
+    public List<UserPermission> replaceUserDirectPermissions(@NotNull User user, @NotNull List<Permission> permissions) {
         userPermissionRepository.deleteAllByUserId(user.getId());
 
         List<UserPermission> userPermissions = new ArrayList<>(permissions.size());
@@ -86,6 +157,11 @@ public class UserAuthorityService {
         }
 
         return userPermissionRepository.saveAll(userPermissions);
+    }
+
+    @Transactional
+    public void removeUserDirectPermissions(@NotNull User user, @NotNull List<Permission> permissions) {
+        userPermissionRepository.deleteAllByUserIdAndPermissionIdIn(user.getId(), permissions.stream().map(Permission::getId).toList());
     }
 
 }

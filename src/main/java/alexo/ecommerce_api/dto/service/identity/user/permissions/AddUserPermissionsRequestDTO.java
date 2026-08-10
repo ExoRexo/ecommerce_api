@@ -1,0 +1,17 @@
+package alexo.ecommerce_api.dto.service.identity.user.permissions;
+
+import alexo.ecommerce_api.enums.entity.PermissionCode;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.UniqueElements;
+
+import java.util.List;
+
+public record AddUserPermissionsRequestDTO(
+        @NotNull
+        Long userId,
+
+        @NotNull
+        @UniqueElements
+        List<PermissionCode> permissionCodes
+) {
+}
