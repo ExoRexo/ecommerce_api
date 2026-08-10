@@ -7,7 +7,7 @@ import alexo.ecommerce_api.enums.entity.PermissionCode;
 import alexo.ecommerce_api.enums.entity.RoleCode;
 import alexo.ecommerce_api.repository.identity.UserPermissionRepository;
 import alexo.ecommerce_api.repository.identity.UserRoleRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;

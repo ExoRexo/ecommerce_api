@@ -15,7 +15,7 @@ import alexo.ecommerce_api.cache.identity.status.UserStatusCacheService;
 import alexo.ecommerce_api.dto.service.identity.authentication.signup.UserCreationDTO;
 import alexo.ecommerce_api.dto.service.identity.authentication.signup.request.UserSignupRequestDTO;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

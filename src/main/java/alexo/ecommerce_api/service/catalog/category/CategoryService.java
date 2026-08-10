@@ -7,7 +7,7 @@ import alexo.ecommerce_api.dto.service.catalog.category.CategoryResponseDTO;
 import alexo.ecommerce_api.dto.service.catalog.category.create.CreateRequestDTO;
 import alexo.ecommerce_api.dto.service.catalog.category.update.UpdateRequestDTO;
 import jakarta.persistence.EntityExistsException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
