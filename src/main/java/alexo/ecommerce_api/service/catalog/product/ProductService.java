@@ -6,8 +6,10 @@ import alexo.ecommerce_api.dto.service.catalog.product.create.request.ProductCre
 import alexo.ecommerce_api.dto.service.catalog.product.create.response.CategoryDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.ProductResponseDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.create.response.StatusTypeDTO;
+import alexo.ecommerce_api.dto.service.catalog.product.update.request.ProductUpdateRequestDTO;
 import alexo.ecommerce_api.entity.catalog.Category;
 import alexo.ecommerce_api.entity.catalog.Product;
+import alexo.ecommerce_api.entity.catalog.ProductStatusType;
 import alexo.ecommerce_api.enums.entity.ProductStatusCode;
 import alexo.ecommerce_api.repository.catalog.ProductRepository;
 import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
@@ -17,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -46,6 +49,62 @@ public class ProductService {
                     .build()
         );
 
+        return getProductResponseDTO(product);
+    }
+
+    @Transactional
+    public ProductResponseDTO updateProduct(ProductUpdateRequestDTO request) {
+        Product product = productRepository.findByIdForUpdate(request.productId()).orElseThrow();
+
+        Category category = product.getCategory();
+        String name = product.getName();
+        String description = product.getDescription();
+        BigDecimal priceRub = product.getPriceRub();
+        ProductStatusType statusType = product.getStatusType();
+
+        if (request.categoryId().isPresent()) {
+            category = categoryRepository.findById(request.categoryId().get()).orElseThrow();
+        }
+
+        if (request.name().isPresent()) {
+            name = request.name().get();
+        }
+
+        if (request.description().isPresent()) {
+            description = request.description().get();
+        }
+
+        if (request.priceRub().isPresent()) {
+            priceRub = request.priceRub().get();
+        }
+
+        if (request.statusCode().isPresent()) {
+            statusType = Optional
+                    .ofNullable(
+                        productCacheService
+                                .getProductStatuses()
+                                .get(
+                                        request.statusCode().get()
+                                )
+                    )
+                    .orElseThrow();
+        }
+
+        if (productRepository.existsByIdNotAndNameAndCategory_Id(product.getId(), name, category.getId())) {
+            throw new EntityExistsException("product with name [" + product.getName() + "] and category id [" + product.getCategory().getId() +"] is already exists");
+        }
+
+        product.setCategory(category);
+        product.setName(name);
+        product.setDescription(description);
+        product.setPriceRub(priceRub);
+        product.setStatusType(statusType);
+
+        return getProductResponseDTO(product);
+    }
+
+    @NotNull
+    private ProductResponseDTO getProductResponseDTO(Product product) {
         return new ProductResponseDTO(
                 product.getId(),
                 product.getName(),
@@ -67,4 +126,5 @@ public class ProductService {
                 )
         );
     }
+
 }
