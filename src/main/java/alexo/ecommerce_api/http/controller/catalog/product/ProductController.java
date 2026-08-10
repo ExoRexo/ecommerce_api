@@ -18,7 +18,7 @@ public class ProductController {
 
     @PostMapping
 //    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_PRODUCT_CREATE')") todo
-    public ProductResponseDTO createCategory(@Valid @RequestBody ProductCreateRequestDTO request) {
+    public ProductResponseDTO createProduct(@Valid @RequestBody ProductCreateRequestDTO request) {
         return productService.createProduct(request);
     }
 }
