@@ -2,7 +2,7 @@ package alexo.ecommerce_api.http.controller.catalog.category;
 
 import alexo.ecommerce_api.configuration.jackson.JacksonConfig;
 import alexo.ecommerce_api.service.identity.authority.UserPrincipalService;
-import alexo.ecommerce_api.configuration.security.jwt.JwtService;
+import alexo.ecommerce_api.service.configuration.security.jwt.JwtService;
 import alexo.ecommerce_api.http.response.ApiPayloadSerializer;
 import alexo.ecommerce_api.service.catalog.category.CategoryService;
 import alexo.ecommerce_api.dto.service.catalog.category.CategoryResponseDTO;
