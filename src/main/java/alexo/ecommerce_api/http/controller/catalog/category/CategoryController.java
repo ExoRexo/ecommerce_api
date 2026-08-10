@@ -1,5 +1,6 @@
 package alexo.ecommerce_api.http.controller.catalog.category;
 
+import alexo.ecommerce_api.dto.service.catalog.category.tree.NodeDTO;
 import alexo.ecommerce_api.service.catalog.category.CategoryService;
 import alexo.ecommerce_api.dto.service.catalog.category.CategoryResponseDTO;
 import alexo.ecommerce_api.dto.service.catalog.category.create.CreateRequestDTO;
@@ -32,6 +33,12 @@ public class CategoryController {
 //    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_CATEGORY_READ_LIST')") todo
     public List<CategoryResponseDTO> getCategoryList() {
         return categoryService.getCategoryList();
+    }
+
+    @GetMapping("/tree")
+//    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_CATEGORY_READ_TREE')") todo
+    public List<NodeDTO> getCategoryTree() {
+        return categoryService.getCategoryTree();
     }
 
     @GetMapping("/{categoryId}")

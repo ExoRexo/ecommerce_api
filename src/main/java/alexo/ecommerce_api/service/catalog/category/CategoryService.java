@@ -1,12 +1,14 @@
 package alexo.ecommerce_api.service.catalog.category;
 
 import alexo.ecommerce_api.cache.catalog.category.CategoryCacheService;
+import alexo.ecommerce_api.dto.service.catalog.category.tree.NodeDTO;
 import alexo.ecommerce_api.entity.catalog.Category;
 import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
 import alexo.ecommerce_api.dto.service.catalog.category.CategoryResponseDTO;
 import alexo.ecommerce_api.dto.service.catalog.category.create.CreateRequestDTO;
 import alexo.ecommerce_api.dto.service.catalog.category.update.UpdateRequestDTO;
 import jakarta.persistence.EntityExistsException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -151,6 +154,43 @@ public class CategoryService {
                 Optional.ofNullable(category.getParent())
                         .map(Category::getId)
                         .orElse(null)
+        );
+    }
+
+    /**
+     * get categories tree
+     * @return categories tree
+     */
+    public List<NodeDTO> getCategoryTree() {
+
+        List<Category> categories = categoryRepository.findAllWithParent();
+
+        Map<Long, List<Category>> childrenByParent = categories.stream()
+                .filter(category -> category.getParent() != null)
+                .collect(Collectors.groupingBy(
+                        category -> category.getParent().getId()
+                ));
+
+        return categories.stream()
+                .filter(category -> category.getParent() == null)
+                .map(category -> toNode(category, childrenByParent))
+                .toList();
+    }
+
+    private @NotNull NodeDTO toNode(
+            @NotNull Category category,
+            @NotNull Map<Long, List<Category>> childrenByParent
+    ) {
+        List<NodeDTO> children = childrenByParent
+                .getOrDefault(category.getId(), List.of())
+                .stream()
+                .map(child -> toNode(child, childrenByParent))
+                .toList();
+
+        return new NodeDTO(
+                category.getId(),
+                category.getName(),
+                children
         );
     }
 }

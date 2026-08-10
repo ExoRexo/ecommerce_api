@@ -104,5 +104,11 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @EntityGraph("parent")
     Optional<Category> findByNameAndParentId(String name, Long parentId);
+
+    @EntityGraph("parent")
+    @Query("""
+    select c from Category c
+""")
+    List<Category> findAllWithParent();
 }
 
