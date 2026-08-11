@@ -29,6 +29,7 @@ public record ProductUpdateRequestDTO(
         @NotNull
         JsonNullable<ProductStatusCode> statusCode,
 
+        @NotNull
         JsonNullable<Long> categoryId
 ) {
 }

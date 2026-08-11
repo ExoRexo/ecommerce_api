@@ -14,6 +14,7 @@ import alexo.ecommerce_api.enums.entity.ProductStatusCode;
 import alexo.ecommerce_api.repository.catalog.ProductRepository;
 import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -54,7 +55,7 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDTO updateProduct(ProductUpdateRequestDTO request) {
-        Product product = productRepository.findByIdForUpdate(request.productId()).orElseThrow();
+        Product product = productRepository.findByIdForUpdate(request.productId()).orElseThrow((() -> new EntityNotFoundException("product with id [" + request.productId() + "] is not found")));
 
         Category category = product.getCategory();
         String name = product.getName();
