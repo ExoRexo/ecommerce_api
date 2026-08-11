@@ -1,8 +1,6 @@
 package alexo.ecommerce_api.enums.entity;
 
 import alexo.ecommerce_api.contract.enums.EnumCode;
-import alexo.ecommerce_api.contract.enums.EnumDescription;
-import alexo.ecommerce_api.contract.enums.EnumLabel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -11,10 +9,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public enum CustomerWalletTransactionPurposeCode implements EnumCode, EnumLabel, EnumDescription {
-    WITHDRAWAL("Списание", "Средства списываются с кошелька клиента."),
-    TOP_UP("Пополнение", "Средства зачисляются на кошелек клиента.");
-
-    private final String label;
-    private final String description;
+public enum CustomerWalletTransactionPurposeCode implements EnumCode {
+    WITHDRAWAL,
+    TOP_UP
 }

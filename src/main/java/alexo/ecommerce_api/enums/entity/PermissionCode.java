@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Permission values stored in permissions.code.
- * Currently, intentionally empty and will be filled later.
  */
 @Getter
 @RequiredArgsConstructor

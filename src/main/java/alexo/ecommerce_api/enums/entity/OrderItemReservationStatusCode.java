@@ -1,8 +1,6 @@
 package alexo.ecommerce_api.enums.entity;
 
 import alexo.ecommerce_api.contract.enums.EnumCode;
-import alexo.ecommerce_api.contract.enums.EnumDescription;
-import alexo.ecommerce_api.contract.enums.EnumLabel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -11,11 +9,8 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public enum OrderItemReservationStatusCode implements EnumCode, EnumLabel, EnumDescription {
-    ACTIVE("Активно", "Резерв активен и удерживает складской остаток под позицию заказа."),
-    CANCELLED("Отменено", "Резерв отменен, остаток возвращен в доступный."),
-    FINISHED("Завершено", "Резерв использован при отгрузке и завершен.");
-
-    private final String label;
-    private final String description;
+public enum OrderItemReservationStatusCode implements EnumCode {
+    ACTIVE,
+    CANCELLED,
+    FINISHED
 }
