@@ -1,7 +1,8 @@
 package alexo.ecommerce_api.http.controller.catalog.product;
 
-import alexo.ecommerce_api.dto.service.catalog.product.create.request.ProductCreateRequestDTO;
+import alexo.ecommerce_api.dto.http.response.PageResponseDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.ProductResponseDTO;
+import alexo.ecommerce_api.dto.service.catalog.product.create.request.ProductCreateRequestDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.list.request.FiltersDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.list.request.PaginationDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.list.request.SortDTO;
@@ -11,7 +12,6 @@ import alexo.ecommerce_api.service.catalog.product.ProductService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +37,7 @@ public class ProductController {
 
     @GetMapping
 //    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_PRODUCT_READ_LIST')") todo
-    public Page<@NotNull ProductResponseDTO> getProductList(
+    public PageResponseDTO<@NotNull ProductResponseDTO> getProductList(
             @RequestParam(name = "sortField", defaultValue = "createdAt") String sortField,
             @RequestParam(name = "sortDirection", defaultValue = "DESC") Sort.Direction sortDirection,
             @RequestParam(name = "id", required = false) Long id,

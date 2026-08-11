@@ -2,6 +2,7 @@ package alexo.ecommerce_api.service.catalog.product;
 
 import alexo.ecommerce_api.cache.catalog.category.CategoryCacheService;
 import alexo.ecommerce_api.cache.catalog.product.ProductCacheService;
+import alexo.ecommerce_api.dto.http.response.PageResponseDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.ProductResponseDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.create.request.ProductCreateRequestDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.create.response.CategoryDTO;
@@ -147,7 +148,7 @@ public class ProductService {
         );
     }
 
-    public Page<@NotNull ProductResponseDTO> getProductList(FiltersDTO filtersDTO, SortDTO sortDTO, PaginationDTO paginationDTO) {
+    public PageResponseDTO<@NotNull ProductResponseDTO> getProductList(FiltersDTO filtersDTO, SortDTO sortDTO, PaginationDTO paginationDTO) {
         Assert.notNull(sortDTO, "sort must not be null");
         Assert.notNull(filtersDTO, "filters must not be null");
         Assert.notNull(paginationDTO, "pagination must not be null");
@@ -168,6 +169,6 @@ public class ProductService {
 
         Map<Long, String> categoryTrees = categoryCacheService.getCategoryTrees(productPage.map(product -> product.getCategory().getId()).stream().toList());
 
-        return productPage.map(product -> getProductResponseDTO(product, categoryTrees));
+        return PageResponseDTO.from(productPage.map(product -> getProductResponseDTO(product, categoryTrees)));
     }
 }

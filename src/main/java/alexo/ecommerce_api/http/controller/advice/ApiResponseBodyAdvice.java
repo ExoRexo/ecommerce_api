@@ -1,5 +1,6 @@
 package alexo.ecommerce_api.http.controller.advice;
 
+import alexo.ecommerce_api.dto.http.response.PageResponseDTO;
 import alexo.ecommerce_api.http.response.ApiPayloadSerializer;
 import alexo.ecommerce_api.http.response.ApiResponse;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -17,7 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
  * Globally wraps JSON responses into {@link ApiResponse} envelope.
  * Leaves OpenAPI and Swagger infrastructure endpoints untouched so generated docs remain valid.
  */
-//@RestControllerAdvice
+@RestControllerAdvice
 @RequiredArgsConstructor
 public class ApiResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
@@ -74,6 +75,10 @@ public class ApiResponseBodyAdvice implements ResponseBodyAdvice<Object> {
         if (body instanceof JsonNode jsonNode) {
             Object normalized = objectMapper.convertValue(jsonNode, Object.class);
             return ApiResponse.success(normalized);
+        }
+
+        if (body instanceof PageResponseDTO<?> page) {
+            return ApiResponse.success(apiPayloadSerializer.serialize(page));
         }
 
         return ApiResponse.success(apiPayloadSerializer.serialize(body));
