@@ -14,10 +14,12 @@ import alexo.ecommerce_api.dto.service.catalog.product.update.request.ProductUpd
 import alexo.ecommerce_api.entity.catalog.Category;
 import alexo.ecommerce_api.entity.catalog.Product;
 import alexo.ecommerce_api.entity.catalog.ProductStatusType;
+import alexo.ecommerce_api.enums.entity.PermissionCode;
 import alexo.ecommerce_api.enums.entity.ProductStatusCode;
+import alexo.ecommerce_api.enums.entity.RoleCode;
 import alexo.ecommerce_api.repository.catalog.ProductRepository;
-import alexo.ecommerce_api.repository.catalog.ProductStatusTypeRepository;
 import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
+import alexo.ecommerce_api.service.identity.authority.AuthorizationService;
 import alexo.ecommerce_api.specification.catalog.product.ProductSpecifications;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -28,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -48,6 +51,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryCacheService categoryCacheService;
+    private final AuthorizationService authorizationService;
 
     @Transactional
     public ProductResponseDTO createProduct(@NotNull ProductCreateRequestDTO request) {
@@ -93,6 +97,15 @@ public class ProductService {
         }
 
         if (request.priceRub().isPresent()) {
+
+            if (
+                !authorizationService.hasRoleAuthority(RoleCode.ADMIN)
+                &&
+                !authorizationService.hasPermissionAuthority(PermissionCode.CATALOG_PRODUCT_UPDATE_PRICE_RUB)
+            ) {
+                throw new AccessDeniedException("you cannot change price");
+            }
+
             priceRub = request.priceRub().get();
         }
 

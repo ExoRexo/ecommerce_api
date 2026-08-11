@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -29,7 +30,7 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping
-//    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_PRODUCT_CREATE')") todo
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_CATALOG_PRODUCT_CREATE')")
     public ResponseEntity<@NotNull ApiResponseDTO<ProductResponseDTO>> createProduct(@Valid @RequestBody ProductCreateRequestDTO request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -37,19 +38,19 @@ public class ProductController {
     }
 
     @PutMapping
-//    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_PRODUCT_UPDATE')") todo
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_CATALOG_PRODUCT_UPDATE')")
     public ResponseEntity<@NotNull ApiResponseDTO<ProductResponseDTO>> updateProduct(@Valid @RequestBody ProductUpdateRequestDTO request) {
         return ResponseEntity.ok(ApiResponseDTO.success(productService.updateProduct(request)));
     }
 
     @GetMapping("/status-types")
-//    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_PRODUCT_READ_STATUS_TYPES')") todo
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_CATALOG_PRODUCT_READ_STATUS_TYPES')")
     public ResponseEntity<@NotNull ApiResponseDTO<List<StatusTypeDTO>>> getProductStatusTypes() {
         return ResponseEntity.ok(ApiResponseDTO.success(productService.getProductStatusList()));
     }
 
     @GetMapping
-//    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_PRODUCT_READ_LIST')") todo
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_CATALOG_PRODUCT_READ_LIST')")
     public ResponseEntity<@NotNull ApiResponseDTO<PageResponseDTO<ProductResponseDTO>>> getProductList(
             @RequestParam(name = "sortField", defaultValue = "createdAt") String sortField,
             @RequestParam(name = "sortDirection", defaultValue = "DESC") Sort.Direction sortDirection,

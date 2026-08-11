@@ -1,8 +1,6 @@
 package alexo.ecommerce_api.enums.entity;
 
 import alexo.ecommerce_api.contract.enums.EnumCode;
-import alexo.ecommerce_api.contract.enums.EnumDescription;
-import alexo.ecommerce_api.contract.enums.EnumLabel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,9 +10,12 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public enum PermissionCode implements EnumCode, EnumLabel, EnumDescription {
-	;
+public enum PermissionCode implements EnumCode {
+    CATALOG_PRODUCT_CREATE,
+    CATALOG_PRODUCT_READ_LIST,
+    CATALOG_PRODUCT_READ_STATUS_TYPES,
+    CATALOG_PRODUCT_UPDATE,
+    CATALOG_PRODUCT_UPDATE_PRICE_RUB
 
-	private final String label;
-	private final String description;
+
 }
