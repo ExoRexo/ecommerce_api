@@ -16,6 +16,7 @@ import alexo.ecommerce_api.entity.catalog.Product;
 import alexo.ecommerce_api.entity.catalog.ProductStatusType;
 import alexo.ecommerce_api.enums.entity.ProductStatusCode;
 import alexo.ecommerce_api.repository.catalog.ProductRepository;
+import alexo.ecommerce_api.repository.catalog.ProductStatusTypeRepository;
 import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
 import alexo.ecommerce_api.specification.catalog.product.ProductSpecifications;
 import jakarta.persistence.EntityExistsException;
@@ -149,6 +150,18 @@ public class ProductService {
                                 .orElse(null)
                 )
         );
+    }
+
+    public @NotNull List<StatusTypeDTO> getProductStatusList() {
+        return productCacheService.getProductStatuses()
+                .values()
+                .stream()
+                .map(productStatusType -> new StatusTypeDTO(
+                        productStatusType.getCode(),
+                        productStatusType.getLabel(),
+                        productStatusType.getDescription()
+                    )
+                ).toList();
     }
 
     public PageResponseDTO<@NotNull ProductResponseDTO> getProductList(FiltersDTO filtersDTO, @Valid SortDTO sortDTO, @Valid PaginationDTO paginationDTO) {

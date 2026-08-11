@@ -3,6 +3,7 @@ package alexo.ecommerce_api.http.controller.catalog.product;
 import alexo.ecommerce_api.dto.http.response.PageResponseDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.ProductResponseDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.create.request.ProductCreateRequestDTO;
+import alexo.ecommerce_api.dto.service.catalog.product.create.response.StatusTypeDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.list.request.FiltersDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.list.request.PaginationDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.list.request.SortDTO;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -38,6 +40,12 @@ public class ProductController {
 //    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_PRODUCT_UPDATE')") todo
     public ResponseEntity<@NotNull ApiResponseDTO<ProductResponseDTO>> updateProduct(@Valid @RequestBody ProductUpdateRequestDTO request) {
         return ResponseEntity.ok(ApiResponseDTO.success(productService.updateProduct(request)));
+    }
+
+    @GetMapping("/status-types")
+//    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_PRODUCT_READ_STATUS_TYPES')") todo
+    public ResponseEntity<@NotNull ApiResponseDTO<List<StatusTypeDTO>>> getProductStatusTypes() {
+        return ResponseEntity.ok(ApiResponseDTO.success(productService.getProductStatusList()));
     }
 
     @GetMapping
