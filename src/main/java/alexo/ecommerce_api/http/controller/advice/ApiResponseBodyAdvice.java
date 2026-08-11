@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
  * Globally wraps JSON responses into {@link ApiResponse} envelope.
  * Leaves OpenAPI and Swagger infrastructure endpoints untouched so generated docs remain valid.
  */
-@RestControllerAdvice
+//@RestControllerAdvice
 @RequiredArgsConstructor
 public class ApiResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 

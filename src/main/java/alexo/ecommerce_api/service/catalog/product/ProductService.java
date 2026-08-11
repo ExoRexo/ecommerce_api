@@ -2,10 +2,13 @@ package alexo.ecommerce_api.service.catalog.product;
 
 import alexo.ecommerce_api.cache.catalog.category.CategoryCacheService;
 import alexo.ecommerce_api.cache.catalog.product.ProductCacheService;
+import alexo.ecommerce_api.dto.service.catalog.product.ProductResponseDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.create.request.ProductCreateRequestDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.create.response.CategoryDTO;
-import alexo.ecommerce_api.dto.service.catalog.product.ProductResponseDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.create.response.StatusTypeDTO;
+import alexo.ecommerce_api.dto.service.catalog.product.list.request.FiltersDTO;
+import alexo.ecommerce_api.dto.service.catalog.product.list.request.PaginationDTO;
+import alexo.ecommerce_api.dto.service.catalog.product.list.request.SortDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.update.request.ProductUpdateRequestDTO;
 import alexo.ecommerce_api.entity.catalog.Category;
 import alexo.ecommerce_api.entity.catalog.Product;
@@ -13,14 +16,23 @@ import alexo.ecommerce_api.entity.catalog.ProductStatusType;
 import alexo.ecommerce_api.enums.entity.ProductStatusCode;
 import alexo.ecommerce_api.repository.catalog.ProductRepository;
 import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
+import alexo.ecommerce_api.specification.catalog.product.ProductSpecifications;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -106,6 +118,11 @@ public class ProductService {
 
     @NotNull
     private ProductResponseDTO getProductResponseDTO(Product product) {
+        return getProductResponseDTO(product, null);
+    }
+
+    @NotNull
+    private ProductResponseDTO getProductResponseDTO(Product product, Map<Long, String> categoryTrees) {
         return new ProductResponseDTO(
                 product.getId(),
                 product.getName(),
@@ -120,7 +137,9 @@ public class ProductService {
                 ),
                 new CategoryDTO(
                         product.getCategory().getId(),
-                        categoryCacheService.getCategoryTree(product.getCategory().getId()),
+                        categoryTrees == null
+                                ? categoryCacheService.getCategoryTree(product.getCategory().getId())
+                                : categoryTrees.get(product.getCategory().getId()),
                         Optional.ofNullable(product.getCategory().getParent())
                                 .map(Category::getId)
                                 .orElse(null)
@@ -128,4 +147,27 @@ public class ProductService {
         );
     }
 
+    public Page<@NotNull ProductResponseDTO> getProductList(FiltersDTO filtersDTO, SortDTO sortDTO, PaginationDTO paginationDTO) {
+        Assert.notNull(sortDTO, "sort must not be null");
+        Assert.notNull(filtersDTO, "filters must not be null");
+        Assert.notNull(paginationDTO, "pagination must not be null");
+
+        List<Sort.Order> orders = new ArrayList<>();
+
+        orders.add(new Sort.Order(sortDTO.direction(),sortDTO.field()));
+
+        PageRequest pageRequest = PageRequest.of(
+                paginationDTO.page(),
+                paginationDTO.size(),
+                Sort.by(orders)
+        );
+
+        Specification<@NotNull Product> specification = ProductSpecifications.ListSpecification.getSpecification(filtersDTO);
+
+        Page<@NotNull Product> productPage = productRepository.findAll(specification, pageRequest);
+
+        Map<Long, String> categoryTrees = categoryCacheService.getCategoryTrees(productPage.map(product -> product.getCategory().getId()).stream().toList());
+
+        return productPage.map(product -> getProductResponseDTO(product, categoryTrees));
+    }
 }
