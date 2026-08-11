@@ -20,6 +20,7 @@ import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
 import alexo.ecommerce_api.specification.catalog.product.ProductSpecifications;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Validated
 public class ProductService {
     private final CodeGenerator codeGenerator;
     private final ProductCacheService productCacheService;
@@ -148,7 +151,7 @@ public class ProductService {
         );
     }
 
-    public PageResponseDTO<@NotNull ProductResponseDTO> getProductList(FiltersDTO filtersDTO, SortDTO sortDTO, PaginationDTO paginationDTO) {
+    public PageResponseDTO<@NotNull ProductResponseDTO> getProductList(FiltersDTO filtersDTO, @Valid SortDTO sortDTO, @Valid PaginationDTO paginationDTO) {
         Assert.notNull(sortDTO, "sort must not be null");
         Assert.notNull(filtersDTO, "filters must not be null");
         Assert.notNull(paginationDTO, "pagination must not be null");

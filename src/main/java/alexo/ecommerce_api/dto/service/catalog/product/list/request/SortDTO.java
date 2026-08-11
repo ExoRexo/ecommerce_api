@@ -4,7 +4,10 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Sort;
 
 public record SortDTO(
-        @NotNull String field,
-        @NotNull Sort.Direction direction
+        @NotNull
+        String field,
+
+        @NotNull
+        Sort.Direction direction
 ) {
 }
