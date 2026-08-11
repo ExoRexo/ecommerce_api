@@ -8,8 +8,12 @@ import alexo.ecommerce_api.service.identity.authentication.signup.SignupService;
 import alexo.ecommerce_api.dto.service.identity.authentication.signup.request.UserSignupRequestDTO;
 import alexo.ecommerce_api.dto.service.identity.authentication.signup.response.StatusTypeDTO;
 import alexo.ecommerce_api.dto.service.identity.authentication.signup.response.UserSignupResponseDTO;
+import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,10 +37,10 @@ public class AuthController {
      * @return unified response with created user payload
      */
     @PostMapping("/signup")
-    public UserSignupResponseDTO signup(@Valid @RequestBody UserSignupRequestDTO request) {
+    public ResponseEntity<@NotNull ApiResponseDTO<UserSignupResponseDTO>> signup(@Valid @RequestBody UserSignupRequestDTO request) {
         User user = signupService.createUser(request, null, null);
 
-        return new UserSignupResponseDTO(
+        UserSignupResponseDTO response = new UserSignupResponseDTO(
                 user.getId(),
                 user.getEmail(),
                 user.getFirstName(),
@@ -48,6 +52,8 @@ public class AuthController {
                         user.getStatusType().getDescription()
                 )
         );
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.success(response));
     }
 
     /**
@@ -57,15 +63,15 @@ public class AuthController {
      * @return unified response with token payload
      */
     @PostMapping("/login")
-    public AuthTokenResponseDTO login(@Valid @RequestBody AuthLoginRequestDTO request) {
-        return loginService.authenticateUser(request);
+    public ResponseEntity<@NotNull ApiResponseDTO<AuthTokenResponseDTO>> login(@Valid @RequestBody AuthLoginRequestDTO request) {
+        return ResponseEntity.ok(ApiResponseDTO.success(loginService.authenticateUser(request)));
     }
 
     /**
      * Returns new JWT token payload. Authentication required for this method
      */
     @PostMapping("/refresh")
-    public AuthTokenResponseDTO refresh() {
-        return loginService.refresh();
+    public ResponseEntity<@NotNull ApiResponseDTO<AuthTokenResponseDTO>> refresh() {
+        return ResponseEntity.ok(ApiResponseDTO.success(loginService.refresh()));
     }
 }

@@ -8,10 +8,13 @@ import alexo.ecommerce_api.dto.service.catalog.product.list.request.PaginationDT
 import alexo.ecommerce_api.dto.service.catalog.product.list.request.SortDTO;
 import alexo.ecommerce_api.dto.service.catalog.product.update.request.ProductUpdateRequestDTO;
 import alexo.ecommerce_api.enums.entity.ProductStatusCode;
+import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import alexo.ecommerce_api.service.catalog.product.ProductService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,19 +28,21 @@ public class ProductController {
 
     @PostMapping
 //    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_PRODUCT_CREATE')") todo
-    public ProductResponseDTO createProduct(@Valid @RequestBody ProductCreateRequestDTO request) {
-        return productService.createProduct(request);
+    public ResponseEntity<@NotNull ApiResponseDTO<ProductResponseDTO>> createProduct(@Valid @RequestBody ProductCreateRequestDTO request) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.success(productService.createProduct(request)));
     }
 
     @PutMapping
 //    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_PRODUCT_UPDATE')") todo
-    public ProductResponseDTO updateProduct(@Valid @RequestBody ProductUpdateRequestDTO request) {
-        return productService.updateProduct(request);
+    public ResponseEntity<@NotNull ApiResponseDTO<ProductResponseDTO>> updateProduct(@Valid @RequestBody ProductUpdateRequestDTO request) {
+        return ResponseEntity.ok(ApiResponseDTO.success(productService.updateProduct(request)));
     }
 
     @GetMapping
 //    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_PRODUCT_READ_LIST')") todo
-    public PageResponseDTO<@NotNull ProductResponseDTO> getProductList(
+    public ResponseEntity<@NotNull ApiResponseDTO<PageResponseDTO<ProductResponseDTO>>> getProductList(
             @RequestParam(name = "sortField", defaultValue = "createdAt") String sortField,
             @RequestParam(name = "sortDirection", defaultValue = "DESC") Sort.Direction sortDirection,
             @RequestParam(name = "id", required = false) Long id,
@@ -50,7 +55,7 @@ public class ProductController {
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "size", defaultValue = "50") Integer size
     ) {
-        return productService.getProductList(
+        return ResponseEntity.ok(ApiResponseDTO.success(productService.getProductList(
                 new FiltersDTO(
                     id,
                     name,
@@ -68,6 +73,6 @@ public class ProductController {
                         page,
                         size
                 )
-        );
+            )));
     }
 }

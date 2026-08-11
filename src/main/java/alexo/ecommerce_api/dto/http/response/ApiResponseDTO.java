@@ -1,7 +1,6 @@
-package alexo.ecommerce_api.http.response;
+package alexo.ecommerce_api.dto.http.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 import java.util.List;
@@ -9,17 +8,18 @@ import java.util.List;
 /**
  * Standard API envelope used by all JSON endpoints.
  *
+ * @param <T> successful response payload type
  * @param payload successful response payload, can be primitive, object, or list
  * @param errors list of error messages, empty for success responses
  * @param date response creation timestamp in UTC
  */
-public record ApiResponse(
-        @JsonInclude(JsonInclude.Include.NON_NULL) Object payload,
+public record ApiResponseDTO<T>(
+        @JsonInclude(JsonInclude.Include.NON_NULL) T payload,
         @JsonInclude(JsonInclude.Include.NON_EMPTY) Object errors,
         @JsonInclude(JsonInclude.Include.ALWAYS) Instant date
 ) {
 
-    public ApiResponse {
+    public ApiResponseDTO {
         errors = errors == null ? List.of() : errors;
         date = date == null ? Instant.now() : date;
     }
@@ -30,21 +30,15 @@ public record ApiResponse(
      * @param payload successful response payload
      * @return envelope with empty error list
      */
-    public static ApiResponse success(Object payload) {
-        return new ApiResponse(payload, List.of(), null);
+    public static <T> ApiResponseDTO<T> success(T payload) {
+        return new ApiResponseDTO<>(payload, List.of(), null);
     }
 
-    public static ApiResponse failure(Object errors) {
-        return new ApiResponse(null, errors, null);
+    public static ApiResponseDTO<Void> success() {
+        return success(null);
     }
 
-    /**
-     * Exposes short class name for envelope typing.
-     *
-     * @return short runtime type name
-     */
-    @JsonProperty("$type")
-    public String type() {
-        return getClass().getSimpleName();
+    public static ApiResponseDTO<Void> failure(Object errors) {
+        return new ApiResponseDTO<>(null, errors, null);
     }
 }

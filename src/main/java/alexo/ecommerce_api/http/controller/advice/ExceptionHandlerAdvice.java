@@ -1,7 +1,8 @@
 package alexo.ecommerce_api.http.controller.advice;
 
-import alexo.ecommerce_api.http.response.ApiResponse;
+import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class ExceptionHandlerAdvice {
      * @return HTTP 400 with unified error envelope
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<@NotNull ApiResponse> handleValidation(
+        public ResponseEntity<@NotNull ApiResponseDTO<Void>> handleValidation(
             MethodArgumentNotValidException exception
     ) {
         Map<String, List<String>> errors = exception.getBindingResult()
@@ -51,12 +52,12 @@ public class ExceptionHandlerAdvice {
      * @return HTTP 400 with unified error envelope
      */
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<@NotNull ApiResponse> handleConstraintViolation(ConstraintViolationException exception) {
+    public ResponseEntity<@NotNull ApiResponseDTO<Void>> handleConstraintViolation(ConstraintViolationException exception) {
         Map<String, List<String>> errors = exception.getConstraintViolations()
                 .stream()
                 .collect(Collectors.groupingBy(
                         v -> v.getPropertyPath().toString(),
-                        Collectors.mapping(v -> v.getMessage(), Collectors.toList())
+                        Collectors.mapping(ConstraintViolation::getMessage, Collectors.toList())
                 ));
 
         return build(HttpStatus.BAD_REQUEST, errors);
@@ -69,7 +70,7 @@ public class ExceptionHandlerAdvice {
      * @return HTTP 400 with unified error envelope
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<@NotNull ApiResponse> handleInvalidBody(HttpMessageNotReadableException exception) {
+    public ResponseEntity<@NotNull ApiResponseDTO<Void>> handleInvalidBody(HttpMessageNotReadableException exception) {
         return build(HttpStatus.BAD_REQUEST, List.of(resolveMessage(exception, "Request body is invalid")));
     }
 
@@ -80,7 +81,7 @@ public class ExceptionHandlerAdvice {
      * @return HTTP 400 with unified error envelope
      */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<@NotNull ApiResponse> handleIllegalArgument(IllegalArgumentException exception) {
+    public ResponseEntity<@NotNull ApiResponseDTO<Void>> handleIllegalArgument(IllegalArgumentException exception) {
         return build(HttpStatus.BAD_REQUEST, List.of(resolveMessage(exception, "Request is invalid")));
     }
 
@@ -91,7 +92,7 @@ public class ExceptionHandlerAdvice {
      * @return HTTP 404 with unified error envelope
      */
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<@NotNull ApiResponse> handleNotFound(EntityNotFoundException exception) {
+    public ResponseEntity<@NotNull ApiResponseDTO<Void>> handleNotFound(EntityNotFoundException exception) {
         return build(HttpStatus.NOT_FOUND, List.of(resolveMessage(exception, "Resource not found")));
     }
 
@@ -102,7 +103,7 @@ public class ExceptionHandlerAdvice {
      * @return HTTP 401 with unified error envelope
      */
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<@NotNull ApiResponse> handleAuthentication(AuthenticationException exception) {
+    public ResponseEntity<@NotNull ApiResponseDTO<Void>> handleAuthentication(AuthenticationException exception) {
         return build(HttpStatus.UNAUTHORIZED, List.of(resolveMessage(exception, "Authentication failed")));
     }
 
@@ -113,7 +114,7 @@ public class ExceptionHandlerAdvice {
      * @return HTTP 403 with unified error envelope
      */
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<@NotNull ApiResponse> handleAccessDenied(AccessDeniedException exception) {
+    public ResponseEntity<@NotNull ApiResponseDTO<Void>> handleAccessDenied(AccessDeniedException exception) {
         return build(HttpStatus.FORBIDDEN, List.of(resolveMessage(exception, "Access is denied")));
     }
 
@@ -124,7 +125,7 @@ public class ExceptionHandlerAdvice {
      * @return HTTP 500 with unified error envelope
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<@NotNull ApiResponse> handleUnexpected(Exception exception) {
+    public ResponseEntity<@NotNull ApiResponseDTO<Void>> handleUnexpected(Exception exception) {
         return build(HttpStatus.INTERNAL_SERVER_ERROR, List.of(resolveMessage(exception, "Unexpected server error")));
     }
 
@@ -135,8 +136,8 @@ public class ExceptionHandlerAdvice {
      * @param errors error message list
      * @return response entity with unified payload
      */
-    private ResponseEntity<@NotNull ApiResponse> build(HttpStatus status, Object errors) {
-        return ResponseEntity.status(status).body(ApiResponse.failure(errors));
+    private ResponseEntity<@NotNull ApiResponseDTO<Void>> build(HttpStatus status, Object errors) {
+        return ResponseEntity.status(status).body(ApiResponseDTO.failure(errors));
     }
 
     /**

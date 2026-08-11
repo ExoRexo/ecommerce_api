@@ -11,11 +11,13 @@ import alexo.ecommerce_api.dto.service.identity.user.roles.AddUserRolesRequestDT
 import alexo.ecommerce_api.dto.service.identity.user.roles.RemoveUserRolesRequestDTO;
 import alexo.ecommerce_api.dto.service.identity.user.roles.ReplaceUserRolesRequestDTO;
 import alexo.ecommerce_api.entity.identity.User;
+import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
 import alexo.ecommerce_api.service.identity.authority.UserAuthorityService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
@@ -34,20 +36,20 @@ public class UserController {
     private UserAuthorityService userAuthorityService;
 
     @GetMapping("/me/authorities")
-    public MeAuthoritiesResponseDTO getAuthorities(@NotNull Authentication authentication) throws AuthenticationException {
+    public ResponseEntity<@NotNull ApiResponseDTO<MeAuthoritiesResponseDTO>> getAuthorities(@NotNull Authentication authentication) throws AuthenticationException {
         if (!(authentication.getPrincipal() instanceof UserPrincipalDTO userPrincipalDTO)) {
             throw new AuthenticationCredentialsNotFoundException("authentication not found, probably, your token is invalid");
         }
 
-        return new MeAuthoritiesResponseDTO(
+        return ResponseEntity.ok(ApiResponseDTO.success(new MeAuthoritiesResponseDTO(
                 userPrincipalDTO.getRoles(),
                 userPrincipalDTO.getPermissions()
-        );
+        )));
     }
 
     @GetMapping("/me/profile")
     @Transactional
-    public MeProfileResponseDTO getProfile(@NotNull Authentication authentication) throws AuthenticationException {
+    public ResponseEntity<@NotNull ApiResponseDTO<MeProfileResponseDTO>> getProfile(@NotNull Authentication authentication) throws AuthenticationException {
         if (!(authentication.getPrincipal() instanceof UserPrincipalDTO userPrincipalDTO) || userPrincipalDTO.getId() == null) {
             throw new AuthenticationCredentialsNotFoundException("authentication not found, probably, your token is invalid");
         }
@@ -56,7 +58,7 @@ public class UserController {
                 .findByIdForUserProfile(userPrincipalDTO.getId())
                 .orElseThrow();
 
-        return new MeProfileResponseDTO(
+        return ResponseEntity.ok(ApiResponseDTO.success(new MeProfileResponseDTO(
                 user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
@@ -65,12 +67,12 @@ public class UserController {
                         user.getStatusType().getLabel(),
                         user.getStatusType().getDescription()
                 )
-        );
+        )));
     }
 
     @PostMapping("/roles/replace")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public void replaceUserRoles(@Valid @RequestBody ReplaceUserRolesRequestDTO request) {
+    public ResponseEntity<@NotNull ApiResponseDTO<Void>> replaceUserRoles(@Valid @RequestBody ReplaceUserRolesRequestDTO request) {
         userAuthorityService.replaceUserRoles(
                 userRepository
                         .findById(request.userId())
@@ -84,11 +86,13 @@ public class UserController {
                         )
                         .toList()
         );
+
+        return ResponseEntity.ok(ApiResponseDTO.success());
     }
 
     @PostMapping("/roles/add")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public void addUserRoles(@Valid @RequestBody AddUserRolesRequestDTO request) {
+    public ResponseEntity<@NotNull ApiResponseDTO<Void>> addUserRoles(@Valid @RequestBody AddUserRolesRequestDTO request) {
         userAuthorityService.addUserRoles(
                 userRepository
                         .findById(request.userId())
@@ -102,11 +106,13 @@ public class UserController {
                         )
                         .toList()
         );
+
+        return ResponseEntity.ok(ApiResponseDTO.success());
     }
 
     @PostMapping("/roles/remove")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public void removeUserRoles(@Valid @RequestBody RemoveUserRolesRequestDTO request) {
+    public ResponseEntity<@NotNull ApiResponseDTO<Void>> removeUserRoles(@Valid @RequestBody RemoveUserRolesRequestDTO request) {
         userAuthorityService.removeUserRoles(
                 userRepository
                         .findById(request.userId())
@@ -120,11 +126,13 @@ public class UserController {
                         )
                         .toList()
         );
+
+        return ResponseEntity.ok(ApiResponseDTO.success());
     }
 
     @PostMapping("/permissions/replace")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public void replaceUserPermissions(@Valid @RequestBody ReplaceUserPermissionsRequestDTO request) {
+    public ResponseEntity<@NotNull ApiResponseDTO<Void>> replaceUserPermissions(@Valid @RequestBody ReplaceUserPermissionsRequestDTO request) {
         userAuthorityService.replaceUserDirectPermissions(
                 userRepository
                         .findById(request.userId())
@@ -138,11 +146,13 @@ public class UserController {
                         )
                         .toList()
         );
+
+        return ResponseEntity.ok(ApiResponseDTO.success());
     }
 
     @PostMapping("/permissions/add")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public void addUserPermissions(@Valid @RequestBody AddUserPermissionsRequestDTO request) {
+    public ResponseEntity<@NotNull ApiResponseDTO<Void>> addUserPermissions(@Valid @RequestBody AddUserPermissionsRequestDTO request) {
         userAuthorityService.addUserDirectPermissions(
                 userRepository
                         .findById(request.userId())
@@ -156,11 +166,13 @@ public class UserController {
                         )
                         .toList()
         );
+
+        return ResponseEntity.ok(ApiResponseDTO.success());
     }
 
     @PostMapping("/permissions/remove")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public void removeUserPermissions(@Valid @RequestBody RemoveUserPermissionsRequestDTO request) {
+    public ResponseEntity<@NotNull ApiResponseDTO<Void>> removeUserPermissions(@Valid @RequestBody RemoveUserPermissionsRequestDTO request) {
         userAuthorityService.removeUserDirectPermissions(
                 userRepository
                         .findById(request.userId())
@@ -174,6 +186,8 @@ public class UserController {
                         )
                         .toList()
         );
+
+        return ResponseEntity.ok(ApiResponseDTO.success());
     }
 
 }
