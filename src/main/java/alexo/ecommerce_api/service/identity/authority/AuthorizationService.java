@@ -15,11 +15,11 @@ final public class AuthorizationService {
     private static final String PERMISSION_AUTHORITY_PREFIX = UserPrincipalDTO.PERMISSION_GRANTED_AUTHORITY_PREFIX;
 
     public boolean hasRoleAuthority(RoleCode roleCode) {
-        return hasCodeAuthority(PERMISSION_AUTHORITY_PREFIX + roleCode.getCode());
+        return hasCodeAuthority(ROLE_AUTHORITY_PREFIX + roleCode.getCode());
     }
 
     public boolean hasPermissionAuthority(PermissionCode permissionCode) {
-        return hasCodeAuthority(ROLE_AUTHORITY_PREFIX + permissionCode.getCode());
+        return hasCodeAuthority(PERMISSION_AUTHORITY_PREFIX + permissionCode.getCode());
     }
 
     private boolean hasCodeAuthority(String authorityWithPrefix) {
