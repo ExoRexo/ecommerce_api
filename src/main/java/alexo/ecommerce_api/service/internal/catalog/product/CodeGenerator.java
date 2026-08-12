@@ -18,7 +18,7 @@ public final class CodeGenerator {
      * generates unique code for product
      * @return not null string of 20 characters length
      */
-    public String generateCode() {
+    String generateCode() {
         StringBuilder result = new StringBuilder("PRD-");
 
         for (int i = 0; i < RANDOM_LENGTH; i++) {

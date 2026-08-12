@@ -20,7 +20,7 @@ public record ApiResponseDTO<T>(
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         T payload,
 
-        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         List<String> errors,
 

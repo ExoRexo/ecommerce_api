@@ -17,7 +17,7 @@ import java.util.Objects;
 
 @Service
 @AllArgsConstructor
-public class WarehouseTransactionalService {
+public class WarehouseModifyingService {
 
     private final WarehouseRepository warehouseRepository;
     private final AddressRepository addressRepository;
