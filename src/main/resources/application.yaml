@@ -32,3 +32,12 @@ security:
 logging:
   level:
     root: DEBUG
+
+springdoc:
+
+  swagger-ui:
+    groups-order:
+      DESC
+
+    disable-swagger-default-url:
+      true

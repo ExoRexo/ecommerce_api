@@ -1,8 +1,7 @@
 package alexo.ecommerce_api.service.internal.inventory.warehouse;
 
-import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.request.WarehouseCreateRequestDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.request.AddressDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.request.WarehouseUpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.WarehouseCreateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.WarehouseUpdateRequestDTO;
 import alexo.ecommerce_api.entity.inventory.Address;
 import alexo.ecommerce_api.entity.inventory.Warehouse;
 import alexo.ecommerce_api.repository.inventory.AddressRepository;
@@ -65,11 +64,11 @@ public class WarehouseTransactionalService {
         String addressCountry = warehouseAddress.getCountry();
         String addressCity = warehouseAddress.getCity();
 
-        JsonNullable<AddressDTO> nullableAddressFromDto = requestDTO.address();
+        JsonNullable<WarehouseUpdateRequestDTO.AddressDTO> nullableAddressFromDto = requestDTO.address();
 
         // address fill
         if (nullableAddressFromDto.isPresent()) {
-            AddressDTO AddressFromDto = nullableAddressFromDto.get();
+            WarehouseUpdateRequestDTO.AddressDTO AddressFromDto = nullableAddressFromDto.get();
 
             if(AddressFromDto.address().isPresent()) {
                 addressAddress = AddressFromDto.address().get();

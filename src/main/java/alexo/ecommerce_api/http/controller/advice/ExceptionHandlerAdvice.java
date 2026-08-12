@@ -2,7 +2,6 @@ package alexo.ecommerce_api.http.controller.advice;
 
 import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
@@ -10,13 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -34,13 +31,11 @@ public class ExceptionHandlerAdvice {
         public ResponseEntity<@NotNull ApiResponseDTO<Void>> handleValidation(
             MethodArgumentNotValidException exception
     ) {
-        Map<String, List<String>> errors = exception.getBindingResult()
+        List<String> errors = exception.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .collect(Collectors.groupingBy(
-                        FieldError::getField,
-                        Collectors.mapping(FieldError::getDefaultMessage, Collectors.toList())
-                ));
+                .map(fieldError -> fieldError.getField()+": "+ fieldError.getDefaultMessage())
+                .collect(Collectors.toList());
 
         return build(HttpStatus.BAD_REQUEST, errors);
     }
@@ -53,12 +48,10 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<@NotNull ApiResponseDTO<Void>> handleConstraintViolation(ConstraintViolationException exception) {
-        Map<String, List<String>> errors = exception.getConstraintViolations()
+        List<String> errors =  exception.getConstraintViolations()
                 .stream()
-                .collect(Collectors.groupingBy(
-                        v -> v.getPropertyPath().toString(),
-                        Collectors.mapping(ConstraintViolation::getMessage, Collectors.toList())
-                ));
+                .map(fieldError -> fieldError.getPropertyPath().toString()+": "+ fieldError.getMessage())
+                .collect(Collectors.toList());
 
         return build(HttpStatus.BAD_REQUEST, errors);
     }
@@ -136,7 +129,7 @@ public class ExceptionHandlerAdvice {
      * @param errors error message list
      * @return response entity with unified payload
      */
-    private ResponseEntity<@NotNull ApiResponseDTO<Void>> build(HttpStatus status, Object errors) {
+    private ResponseEntity<@NotNull ApiResponseDTO<Void>> build(HttpStatus status, List<String> errors) {
         return ResponseEntity.status(status).body(ApiResponseDTO.failure(errors));
     }
 

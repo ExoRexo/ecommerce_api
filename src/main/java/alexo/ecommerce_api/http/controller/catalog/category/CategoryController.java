@@ -4,7 +4,7 @@ import alexo.ecommerce_api.dto.service.internal.catalog.category.tree.NodeDTO;
 import alexo.ecommerce_api.service.internal.catalog.category.CategoryService;
 import alexo.ecommerce_api.dto.service.internal.catalog.category.CategoryResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.catalog.category.create.CreateRequestDTO;
-import alexo.ecommerce_api.dto.service.internal.catalog.category.update.UpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.update.CategoryUpdateRequestDTO;
 import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -32,7 +32,7 @@ public class CategoryController {
 
     @PutMapping
     @PreAuthorize("hasAuthority('PERMISSION_CATALOG_CATEGORY_UPDATE')")
-    public ResponseEntity<@NotNull ApiResponseDTO<CategoryResponseDTO>> updateCategory(@Valid @RequestBody UpdateRequestDTO request) {
+    public ResponseEntity<@NotNull ApiResponseDTO<CategoryResponseDTO>> updateCategory(@Valid @RequestBody CategoryUpdateRequestDTO request) {
         return ResponseEntity.ok(ApiResponseDTO.success(categoryService.updateCategory(request)));
     }
 

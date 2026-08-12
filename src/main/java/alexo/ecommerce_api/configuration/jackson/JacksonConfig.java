@@ -1,11 +1,10 @@
 package alexo.ecommerce_api.configuration.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.openapitools.jackson.nullable.JsonNullableModule;
+import org.springdoc.core.properties.SpringDocConfigProperties;
+import org.springdoc.core.providers.ObjectMapperProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 /**
  * Configures Jackson mapper used by API serialization.
@@ -14,23 +13,28 @@ import org.springframework.context.annotation.Primary;
 public class JacksonConfig {
 
     /**
-     * Registers Java Time module for {@code Instant} and other temporal types.
+     * Override default Spring Doc Object mapper provider and add the JsonNullableModule - otherwise the OpenAPI JSON
+     * Spec interprets the JsonNullable wrong
      *
-     * @return Jackson module instance
+     * @param springDocConfigProperties given config properties in application yaml
+     * @return provider for spring doc generation
      */
     @Bean
-    public JavaTimeModule javaTimeModule() {
-        return new JavaTimeModule();
+    public ObjectMapperProvider springdocObjectMapperProvider(SpringDocConfigProperties springDocConfigProperties) {
+        ObjectMapperProvider objectMapperProvider = new ObjectMapperProvider(springDocConfigProperties);
+        objectMapperProvider.jsonMapper().registerModule(jsonNullableModule());
+        return objectMapperProvider;
     }
 
     /**
-     * Provides primary object mapper for the application.
+     * Register JsonNullableModule for openapi generation in springdoc (above) and for the default object mapper
+     * used to serialize/deserialize JSON Payloads via web requests - otherwise the application is not able to mmap
+     * JsonNullable<Type> fields
      *
-     * @return configured object mapper
+     * @return json nullable module
      */
     @Bean
-    @Primary
-    public ObjectMapper objectMapper(JavaTimeModule javaTimeModule) {
-        return new ObjectMapper().registerModule(javaTimeModule).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    public JsonNullableModule jsonNullableModule() {
+        return new JsonNullableModule();
     }
 }

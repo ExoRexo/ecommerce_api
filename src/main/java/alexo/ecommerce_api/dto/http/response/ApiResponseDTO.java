@@ -1,6 +1,7 @@
 package alexo.ecommerce_api.dto.http.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.Instant;
 import java.util.List;
@@ -14,13 +15,20 @@ import java.util.List;
  * @param date response creation timestamp in UTC
  */
 public record ApiResponseDTO<T>(
-        @JsonInclude(JsonInclude.Include.NON_NULL) T payload,
-        @JsonInclude(JsonInclude.Include.NON_EMPTY) Object errors,
-        @JsonInclude(JsonInclude.Include.ALWAYS) Instant date
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        T payload,
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        List<String> errors,
+
+        @JsonInclude(JsonInclude.Include.ALWAYS)
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        Instant date
 ) {
 
     public ApiResponseDTO {
-        errors = errors == null ? List.of() : errors;
         date = date == null ? Instant.now() : date;
     }
 
@@ -38,7 +46,7 @@ public record ApiResponseDTO<T>(
         return success(null);
     }
 
-    public static ApiResponseDTO<Void> failure(Object errors) {
+    public static ApiResponseDTO<Void> failure(List<String> errors) {
         return new ApiResponseDTO<>(null, errors, null);
     }
 }

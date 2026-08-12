@@ -1,10 +1,10 @@
 package alexo.ecommerce_api.http.controller.inventory.warehouse;
 
 import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.request.WarehouseCreateRequestDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.response.WarehouseCreateResponseDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.request.WarehouseUpdateRequestDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.response.WarehouseUpdateResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.WarehouseCreateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.WarehouseCreateResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.WarehouseUpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.WarehouseUpdateResponseDTO;
 import alexo.ecommerce_api.service.internal.inventory.warehouse.WarehouseService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

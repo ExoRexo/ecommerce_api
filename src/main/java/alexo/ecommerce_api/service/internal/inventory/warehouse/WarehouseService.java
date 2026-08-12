@@ -1,10 +1,9 @@
 package alexo.ecommerce_api.service.internal.inventory.warehouse;
 
-import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.request.WarehouseCreateRequestDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.response.AddressDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.response.WarehouseCreateResponseDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.request.WarehouseUpdateRequestDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.response.WarehouseUpdateResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.WarehouseCreateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.WarehouseCreateResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.WarehouseUpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.WarehouseUpdateResponseDTO;
 import alexo.ecommerce_api.entity.inventory.Warehouse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ public class WarehouseService {
         return new WarehouseCreateResponseDTO(
                 warehouse.getId(),
                 warehouse.getName(),
-                new AddressDTO(
+                new WarehouseCreateResponseDTO.AddressDTO(
                         warehouse.getAddress().getAddress(),
                         warehouse.getAddress().getMailIndex(),
                         warehouse.getAddress().getCountry(),
@@ -39,7 +38,7 @@ public class WarehouseService {
         return new WarehouseUpdateResponseDTO(
                 warehouse.getId(),
                 warehouse.getName(),
-                new alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.response.AddressDTO (
+                new WarehouseUpdateResponseDTO.AddressDTO(
                         warehouse.getAddress().getAddress(),
                         warehouse.getAddress().getMailIndex(),
                         warehouse.getAddress().getCountry(),

@@ -5,7 +5,7 @@ import alexo.ecommerce_api.entity.catalog.Category;
 import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
 import alexo.ecommerce_api.dto.service.internal.catalog.category.CategoryResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.catalog.category.create.CreateRequestDTO;
-import alexo.ecommerce_api.dto.service.internal.catalog.category.update.UpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.update.CategoryUpdateRequestDTO;
 import alexo.ecommerce_api.service.internal.catalog.category.CategoryService;
 import jakarta.persistence.EntityExistsException;
 import org.junit.jupiter.api.Test;
@@ -113,7 +113,7 @@ class CategoryServiceTest {
     @Test
     void updateCategory_changeName_updatesAndReturnsResponse() {
         Category category = new Category(1L, "Old Category Name X", null);
-        UpdateRequestDTO request = new UpdateRequestDTO(1L, "New Category Name X", JsonNullable.undefined());
+        CategoryUpdateRequestDTO request = new CategoryUpdateRequestDTO(1L, "New Category Name X", JsonNullable.undefined());
 
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
         when(categoryRepository.findByNameAndIdIsNotAndParentIdIs("New Category Name X", 1L, null)).thenReturn(Optional.empty());
@@ -131,7 +131,7 @@ class CategoryServiceTest {
     void updateCategory_clearParent_setsParentToNull() {
         Category parent = new Category(10L, "Electronics And Gadgets", null);
         Category category = new Category(1L, "Mobile Phones Category", parent);
-        UpdateRequestDTO request = new UpdateRequestDTO(1L, null, JsonNullable.of(null));
+        CategoryUpdateRequestDTO request = new CategoryUpdateRequestDTO(1L, null, JsonNullable.of(null));
 
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
         when(categoryRepository.findByNameAndIdIsNotAndParentIdIs("Mobile Phones Category", 1L, null)).thenReturn(Optional.empty());
@@ -148,7 +148,7 @@ class CategoryServiceTest {
         Category oldParent = new Category(10L, "Electronics And Gadgets", null);
         Category newParent = new Category(20L, "Computing And Accessories", null);
         Category category = new Category(1L, "Laptop Category Name", oldParent);
-        UpdateRequestDTO request = new UpdateRequestDTO(1L, null, JsonNullable.of(20L));
+        CategoryUpdateRequestDTO request = new CategoryUpdateRequestDTO(1L, null, JsonNullable.of(20L));
 
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
         when(categoryRepository.findById(20L)).thenReturn(Optional.of(newParent));
@@ -165,7 +165,7 @@ class CategoryServiceTest {
     void updateCategory_nameConflicts_throwsEntityExistsException() {
         Category category = new Category(1L, "Old Category Name X", null);
         Category existing = new Category(2L, "Conflicting Name XX", null);
-        UpdateRequestDTO request = new UpdateRequestDTO(1L, "Conflicting Name XX", JsonNullable.undefined());
+        CategoryUpdateRequestDTO request = new CategoryUpdateRequestDTO(1L, "Conflicting Name XX", JsonNullable.undefined());
 
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
         when(categoryRepository.findByNameAndIdIsNotAndParentIdIs("Conflicting Name XX", 1L, null)).thenReturn(Optional.of(existing));
@@ -177,7 +177,7 @@ class CategoryServiceTest {
 
     @Test
     void updateCategory_categoryNotFound_throwsNoSuchElementException() {
-        UpdateRequestDTO request = new UpdateRequestDTO(999L, "Some Category Name", JsonNullable.undefined());
+        CategoryUpdateRequestDTO request = new CategoryUpdateRequestDTO(999L, "Some Category Name", JsonNullable.undefined());
 
         when(categoryRepository.findById(999L)).thenReturn(Optional.empty());
 

@@ -7,7 +7,7 @@ import alexo.ecommerce_api.http.response.ApiPayloadSerializer;
 import alexo.ecommerce_api.service.internal.catalog.category.CategoryService;
 import alexo.ecommerce_api.dto.service.internal.catalog.category.CategoryResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.catalog.category.create.CreateRequestDTO;
-import alexo.ecommerce_api.dto.service.internal.catalog.category.update.UpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.update.CategoryUpdateRequestDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,7 +151,7 @@ class CategoryControllerTest {
                 """;
         CategoryResponseDTO response = new CategoryResponseDTO(1L, "New Category Name X", null);
 
-        when(categoryService.updateCategory(any(UpdateRequestDTO.class))).thenReturn(response);
+        when(categoryService.updateCategory(any(CategoryUpdateRequestDTO.class))).thenReturn(response);
 
         mockMvc.perform(put("/api/catalog/category")
                         .with(csrf())

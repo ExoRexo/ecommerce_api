@@ -6,7 +6,7 @@ import alexo.ecommerce_api.entity.catalog.Category;
 import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
 import alexo.ecommerce_api.dto.service.internal.catalog.category.CategoryResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.catalog.category.create.CreateRequestDTO;
-import alexo.ecommerce_api.dto.service.internal.catalog.category.update.UpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.update.CategoryUpdateRequestDTO;
 import jakarta.persistence.EntityExistsException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,14 +71,12 @@ public class CategoryService {
      * @return category response
      */
     @Transactional
-    public CategoryResponseDTO updateCategory(UpdateRequestDTO updateRequestDTO) {
+    public CategoryResponseDTO updateCategory(CategoryUpdateRequestDTO updateRequestDTO) {
         Objects.requireNonNull(updateRequestDTO);
 
         Long categoryId = updateRequestDTO.categoryId();
 
         Category category = categoryRepository.findById(categoryId).orElseThrow();
-
-        String categoryName = updateRequestDTO.name();
 
         if (updateRequestDTO.parentId().isPresent()) {
             Long parentId = updateRequestDTO.parentId().get();
@@ -91,9 +89,8 @@ public class CategoryService {
             }
         }
 
-        if (categoryName != null) {
-            categoryName = categoryName.trim();
-            category.setName(categoryName);
+        if (updateRequestDTO.name().isPresent()) {
+            category.setName(updateRequestDTO.name().get().trim());
         }
 
         Category parent = category.getParent();
