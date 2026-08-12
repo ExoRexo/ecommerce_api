@@ -3,6 +3,8 @@ package alexo.ecommerce_api.service.internal.inventory.warehouse;
 import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.request.WarehouseCreateRequestDTO;
 import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.response.AddressDTO;
 import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.response.WarehouseCreateResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.request.WarehouseUpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.response.WarehouseUpdateResponseDTO;
 import alexo.ecommerce_api.entity.inventory.Warehouse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,21 @@ public class WarehouseService {
                 warehouse.getId(),
                 warehouse.getName(),
                 new AddressDTO(
+                        warehouse.getAddress().getAddress(),
+                        warehouse.getAddress().getMailIndex(),
+                        warehouse.getAddress().getCountry(),
+                        warehouse.getAddress().getCity()
+                )
+        );
+    }
+
+    public WarehouseUpdateResponseDTO updateWarehouse(WarehouseUpdateRequestDTO requestDTO) {
+        Warehouse warehouse = warehouseTransactionalService.updateWarehouse(requestDTO);
+
+        return new WarehouseUpdateResponseDTO(
+                warehouse.getId(),
+                warehouse.getName(),
+                new alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.response.AddressDTO (
                         warehouse.getAddress().getAddress(),
                         warehouse.getAddress().getMailIndex(),
                         warehouse.getAddress().getCountry(),
