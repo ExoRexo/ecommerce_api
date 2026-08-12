@@ -19,8 +19,5 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, Long> {
     })
     Optional<Warehouse> findByIdForUpdate(Long id);
 
-
-//    findByIdForUpdate
-
 }
 
