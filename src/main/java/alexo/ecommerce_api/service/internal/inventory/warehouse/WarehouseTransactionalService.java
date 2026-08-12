@@ -52,7 +52,7 @@ public class WarehouseTransactionalService {
     }
 
     @Transactional
-    public Warehouse updateWarehouse(WarehouseUpdateRequestDTO requestDTO) {
+    protected Warehouse updateWarehouse(WarehouseUpdateRequestDTO requestDTO) {
         Objects.requireNonNull(requestDTO, "request dto cannot be null");
 
         Warehouse warehouse = warehouseRepository.findByIdForUpdate(requestDTO.warehouseId()).orElseThrow(() -> new EntityNotFoundException("warehouse with id [" + requestDTO.warehouseId() + "] is not found"));

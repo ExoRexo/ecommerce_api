@@ -5,6 +5,7 @@ import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.Wareh
 import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.WarehouseUpdateRequestDTO;
 import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.WarehouseUpdateResponseDTO;
 import alexo.ecommerce_api.entity.inventory.Warehouse;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -16,7 +17,7 @@ public class WarehouseService {
 
     private final WarehouseTransactionalService warehouseTransactionalService;
 
-    public WarehouseCreateResponseDTO createWarehouse(WarehouseCreateRequestDTO requestDTO) {
+    public WarehouseCreateResponseDTO createWarehouse(@Valid WarehouseCreateRequestDTO requestDTO) {
 
         Warehouse warehouse = warehouseTransactionalService.persistWarehouse(requestDTO);
 
@@ -32,7 +33,7 @@ public class WarehouseService {
         );
     }
 
-    public WarehouseUpdateResponseDTO updateWarehouse(WarehouseUpdateRequestDTO requestDTO) {
+    public WarehouseUpdateResponseDTO updateWarehouse(@Valid WarehouseUpdateRequestDTO requestDTO) {
         Warehouse warehouse = warehouseTransactionalService.updateWarehouse(requestDTO);
 
         return new WarehouseUpdateResponseDTO(
