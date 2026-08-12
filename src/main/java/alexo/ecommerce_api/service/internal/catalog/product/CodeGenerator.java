@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.catalog.product;
+package alexo.ecommerce_api.service.internal.catalog.product;
 
 import org.springframework.stereotype.Service;
 

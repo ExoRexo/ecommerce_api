@@ -1,10 +1,10 @@
 package alexo.ecommerce_api.http.controller.auth;
 
 import alexo.ecommerce_api.entity.identity.User;
-import alexo.ecommerce_api.service.identity.authentication.login.LoginService;
+import alexo.ecommerce_api.service.internal.identity.authentication.login.LoginService;
 import alexo.ecommerce_api.dto.service.identity.authentication.login.AuthLoginRequestDTO;
 import alexo.ecommerce_api.dto.service.identity.authentication.login.AuthTokenResponseDTO;
-import alexo.ecommerce_api.service.identity.authentication.signup.SignupService;
+import alexo.ecommerce_api.service.internal.identity.authentication.signup.SignupService;
 import alexo.ecommerce_api.dto.service.identity.authentication.signup.request.UserSignupRequestDTO;
 import alexo.ecommerce_api.dto.service.identity.authentication.signup.response.StatusTypeDTO;
 import alexo.ecommerce_api.dto.service.identity.authentication.signup.response.UserSignupResponseDTO;

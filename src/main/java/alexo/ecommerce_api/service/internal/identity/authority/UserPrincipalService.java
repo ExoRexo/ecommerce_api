@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.identity.authority;
+package alexo.ecommerce_api.service.internal.identity.authority;
 
 import alexo.ecommerce_api.dto.service.identity.UserPrincipalDTO;
 import alexo.ecommerce_api.enums.entity.PermissionCode;

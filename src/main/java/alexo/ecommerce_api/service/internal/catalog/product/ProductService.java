@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.catalog.product;
+package alexo.ecommerce_api.service.internal.catalog.product;
 
 import alexo.ecommerce_api.cache.catalog.category.CategoryCacheService;
 import alexo.ecommerce_api.cache.catalog.product.ProductCacheService;
@@ -19,7 +19,7 @@ import alexo.ecommerce_api.enums.entity.ProductStatusCode;
 import alexo.ecommerce_api.enums.entity.RoleCode;
 import alexo.ecommerce_api.repository.catalog.ProductRepository;
 import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
-import alexo.ecommerce_api.service.identity.authority.AuthorizationService;
+import alexo.ecommerce_api.service.internal.identity.authority.AuthorizationService;
 import alexo.ecommerce_api.specification.catalog.product.ProductSpecifications;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;

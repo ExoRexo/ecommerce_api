@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.identity.authentication.signup;
+package alexo.ecommerce_api.service.internal.identity.authentication.signup;
 
 import alexo.ecommerce_api.entity.customer.Customer;
 import alexo.ecommerce_api.enums.entity.PermissionCode;
@@ -10,7 +10,7 @@ import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.entity.identity.UserStatusType;
 import alexo.ecommerce_api.repository.customer.CustomerRepository;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
-import alexo.ecommerce_api.service.identity.authority.UserAuthorityService;
+import alexo.ecommerce_api.service.internal.identity.authority.UserAuthorityService;
 import alexo.ecommerce_api.cache.identity.status.UserStatusCacheService;
 import alexo.ecommerce_api.dto.service.identity.authentication.signup.UserCreationDTO;
 import alexo.ecommerce_api.dto.service.identity.authentication.signup.request.UserSignupRequestDTO;

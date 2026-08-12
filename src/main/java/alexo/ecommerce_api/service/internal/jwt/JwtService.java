@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.configuration.security.jwt;
+package alexo.ecommerce_api.service.internal.jwt;
 
 import alexo.ecommerce_api.dto.configuration.security.jwt.JwtPropertiesDTO;
 import alexo.ecommerce_api.mapper.enums.EnumCodeMapper;

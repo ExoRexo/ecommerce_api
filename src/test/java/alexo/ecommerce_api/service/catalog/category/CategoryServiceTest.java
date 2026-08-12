@@ -6,6 +6,7 @@ import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
 import alexo.ecommerce_api.dto.service.catalog.category.CategoryResponseDTO;
 import alexo.ecommerce_api.dto.service.catalog.category.create.CreateRequestDTO;
 import alexo.ecommerce_api.dto.service.catalog.category.update.UpdateRequestDTO;
+import alexo.ecommerce_api.service.internal.catalog.category.CategoryService;
 import jakarta.persistence.EntityExistsException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

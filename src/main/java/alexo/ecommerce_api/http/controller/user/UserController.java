@@ -13,7 +13,7 @@ import alexo.ecommerce_api.dto.service.identity.user.roles.ReplaceUserRolesReque
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
-import alexo.ecommerce_api.service.identity.authority.UserAuthorityService;
+import alexo.ecommerce_api.service.internal.identity.authority.UserAuthorityService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;

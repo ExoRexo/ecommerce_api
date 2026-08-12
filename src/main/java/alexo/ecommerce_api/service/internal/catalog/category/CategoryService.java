@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.catalog.category;
+package alexo.ecommerce_api.service.internal.catalog.category;
 
 import alexo.ecommerce_api.cache.catalog.category.CategoryCacheService;
 import alexo.ecommerce_api.dto.service.catalog.category.tree.NodeDTO;
