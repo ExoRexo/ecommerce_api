@@ -2,9 +2,9 @@ package alexo.ecommerce_api.service.internal.identity.authentication.login;
 
 import alexo.ecommerce_api.service.internal.identity.authority.UserPrincipalService;
 import alexo.ecommerce_api.service.internal.jwt.JwtService;
-import alexo.ecommerce_api.dto.service.identity.UserPrincipalDTO;
-import alexo.ecommerce_api.dto.service.identity.authentication.login.AuthLoginRequestDTO;
-import alexo.ecommerce_api.dto.service.identity.authentication.login.AuthTokenResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.identity.UserPrincipalDTO;
+import alexo.ecommerce_api.dto.service.internal.identity.authentication.login.AuthLoginRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.identity.authentication.login.AuthTokenResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,6 +1,6 @@
 package alexo.ecommerce_api.specification.catalog.product;
 
-import alexo.ecommerce_api.dto.service.catalog.product.list.request.FiltersDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.product.list.request.FiltersDTO;
 import alexo.ecommerce_api.entity.catalog.Product;
 import jakarta.persistence.criteria.Predicate;
 import org.jetbrains.annotations.NotNull;

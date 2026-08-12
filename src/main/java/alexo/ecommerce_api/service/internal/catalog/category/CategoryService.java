@@ -1,12 +1,12 @@
 package alexo.ecommerce_api.service.internal.catalog.category;
 
 import alexo.ecommerce_api.cache.catalog.category.CategoryCacheService;
-import alexo.ecommerce_api.dto.service.catalog.category.tree.NodeDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.tree.NodeDTO;
 import alexo.ecommerce_api.entity.catalog.Category;
 import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
-import alexo.ecommerce_api.dto.service.catalog.category.CategoryResponseDTO;
-import alexo.ecommerce_api.dto.service.catalog.category.create.CreateRequestDTO;
-import alexo.ecommerce_api.dto.service.catalog.category.update.UpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.CategoryResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.create.CreateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.update.UpdateRequestDTO;
 import jakarta.persistence.EntityExistsException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;

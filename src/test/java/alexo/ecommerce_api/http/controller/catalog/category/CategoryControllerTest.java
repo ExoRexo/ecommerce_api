@@ -5,9 +5,9 @@ import alexo.ecommerce_api.service.internal.identity.authority.UserPrincipalServ
 import alexo.ecommerce_api.service.internal.jwt.JwtService;
 import alexo.ecommerce_api.http.response.ApiPayloadSerializer;
 import alexo.ecommerce_api.service.internal.catalog.category.CategoryService;
-import alexo.ecommerce_api.dto.service.catalog.category.CategoryResponseDTO;
-import alexo.ecommerce_api.dto.service.catalog.category.create.CreateRequestDTO;
-import alexo.ecommerce_api.dto.service.catalog.category.update.UpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.CategoryResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.create.CreateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.update.UpdateRequestDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

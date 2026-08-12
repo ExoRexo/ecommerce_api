@@ -1,13 +1,13 @@
 package alexo.ecommerce_api.http.controller.catalog.product;
 
 import alexo.ecommerce_api.dto.http.response.PageResponseDTO;
-import alexo.ecommerce_api.dto.service.catalog.product.ProductResponseDTO;
-import alexo.ecommerce_api.dto.service.catalog.product.create.request.ProductCreateRequestDTO;
-import alexo.ecommerce_api.dto.service.catalog.product.create.response.StatusTypeDTO;
-import alexo.ecommerce_api.dto.service.catalog.product.list.request.FiltersDTO;
-import alexo.ecommerce_api.dto.service.catalog.product.list.request.PaginationDTO;
-import alexo.ecommerce_api.dto.service.catalog.product.list.request.SortDTO;
-import alexo.ecommerce_api.dto.service.catalog.product.update.request.ProductUpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.product.ProductResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.product.create.request.ProductCreateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.product.create.response.StatusTypeDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.product.list.request.FiltersDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.product.list.request.PaginationDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.product.list.request.SortDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.product.update.request.ProductUpdateRequestDTO;
 import alexo.ecommerce_api.enums.entity.ProductStatusCode;
 import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import alexo.ecommerce_api.service.internal.catalog.product.ProductService;

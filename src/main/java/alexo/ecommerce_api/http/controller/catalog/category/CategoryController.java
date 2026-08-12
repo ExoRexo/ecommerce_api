@@ -1,10 +1,10 @@
 package alexo.ecommerce_api.http.controller.catalog.category;
 
-import alexo.ecommerce_api.dto.service.catalog.category.tree.NodeDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.tree.NodeDTO;
 import alexo.ecommerce_api.service.internal.catalog.category.CategoryService;
-import alexo.ecommerce_api.dto.service.catalog.category.CategoryResponseDTO;
-import alexo.ecommerce_api.dto.service.catalog.category.create.CreateRequestDTO;
-import alexo.ecommerce_api.dto.service.catalog.category.update.UpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.CategoryResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.create.CreateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.catalog.category.update.UpdateRequestDTO;
 import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

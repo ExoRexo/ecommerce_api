@@ -1,15 +1,15 @@
 package alexo.ecommerce_api.http.controller.user;
 
-import alexo.ecommerce_api.dto.service.identity.UserPrincipalDTO;
-import alexo.ecommerce_api.dto.service.identity.user.MeAuthoritiesResponseDTO;
-import alexo.ecommerce_api.dto.service.identity.user.permissions.AddUserPermissionsRequestDTO;
-import alexo.ecommerce_api.dto.service.identity.user.permissions.RemoveUserPermissionsRequestDTO;
-import alexo.ecommerce_api.dto.service.identity.user.profile.MeProfileResponseDTO;
-import alexo.ecommerce_api.dto.service.identity.user.profile.StatusTypeDTO;
-import alexo.ecommerce_api.dto.service.identity.user.permissions.ReplaceUserPermissionsRequestDTO;
-import alexo.ecommerce_api.dto.service.identity.user.roles.AddUserRolesRequestDTO;
-import alexo.ecommerce_api.dto.service.identity.user.roles.RemoveUserRolesRequestDTO;
-import alexo.ecommerce_api.dto.service.identity.user.roles.ReplaceUserRolesRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.identity.UserPrincipalDTO;
+import alexo.ecommerce_api.dto.service.internal.identity.user.MeAuthoritiesResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.identity.user.permissions.AddUserPermissionsRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.identity.user.permissions.RemoveUserPermissionsRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.identity.user.profile.MeProfileResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.identity.user.profile.StatusTypeDTO;
+import alexo.ecommerce_api.dto.service.internal.identity.user.permissions.ReplaceUserPermissionsRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.identity.user.roles.AddUserRolesRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.identity.user.roles.RemoveUserRolesRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.identity.user.roles.ReplaceUserRolesRequestDTO;
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;

@@ -4,7 +4,7 @@ import alexo.ecommerce_api.dto.configuration.security.jwt.JwtPropertiesDTO;
 import alexo.ecommerce_api.mapper.enums.EnumCodeMapper;
 import alexo.ecommerce_api.enums.entity.PermissionCode;
 import alexo.ecommerce_api.enums.entity.RoleCode;
-import alexo.ecommerce_api.dto.service.identity.UserPrincipalDTO;
+import alexo.ecommerce_api.dto.service.internal.identity.UserPrincipalDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
