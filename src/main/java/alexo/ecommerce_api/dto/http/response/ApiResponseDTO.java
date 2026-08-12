@@ -2,6 +2,7 @@ package alexo.ecommerce_api.dto.http.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.util.Assert;
 
 import java.time.Instant;
 import java.util.List;
@@ -47,6 +48,8 @@ public record ApiResponseDTO<T>(
     }
 
     public static ApiResponseDTO<Void> failure(List<String> errors) {
+        Assert.notNull(errors, "errors must be not null");
+
         return new ApiResponseDTO<>(null, errors, null);
     }
 }
