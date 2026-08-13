@@ -14,10 +14,10 @@ import org.springframework.util.Assert;
 public class ProductStockManagementService {
     private final TransactionalProductStockService transactionalProductStockService;
 
-    public ProductStockUpdateResponseDTO updateProductStockOnWarehouse(@Valid ProductStockUpdateRequestDTO request) {
+    public ProductStockUpdateResponseDTO updateProductPhysicalStockOnWarehouse(@Valid ProductStockUpdateRequestDTO request) {
         Assert.notNull(request, "request must be not null");
 
-        WarehouseStockTransaction warehouseStockTransaction = transactionalProductStockService.updateProductStockOnWarehouse(request);
+        WarehouseStockTransaction warehouseStockTransaction = transactionalProductStockService.updateProductPhysicalStockOnWarehouse(request);
 
         return new ProductStockUpdateResponseDTO(
                 warehouseStockTransaction.getId(),

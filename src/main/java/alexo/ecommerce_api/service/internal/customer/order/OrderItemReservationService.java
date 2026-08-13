@@ -178,7 +178,7 @@ public class OrderItemReservationService {
                         .orElseThrow(() -> new EntityNotFoundException("reservation status type with code[FINISHED] is not found"))
         );
 
-        productStockManagementService.updateProductStockOnWarehouse(new ProductStockUpdateRequestDTO(
+        productStockManagementService.updateProductPhysicalStockOnWarehouse(new ProductStockUpdateRequestDTO(
                 productId,
                 warehouseId,
                 - orderItemWarehouseReservation.getReservedQuantity(),

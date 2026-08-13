@@ -1,5 +1,6 @@
 package alexo.ecommerce_api.entity.catalog;
 
+import alexo.ecommerce_api.entity.customer.cart.CartItem;
 import alexo.ecommerce_api.entity.inventory.ProductWarehouseStock;
 import jakarta.persistence.*;
 import lombok.*;
@@ -58,6 +59,9 @@ public class Product {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
     private Set<ProductWarehouseStock> warehouseStocks;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
+    private Set<CartItem> cartItems;
 
     @Override
     public final boolean equals(Object o) {

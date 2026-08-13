@@ -1,10 +1,12 @@
 package alexo.ecommerce_api.service.internal.identity.authentication.signup;
 
 import alexo.ecommerce_api.entity.customer.Customer;
+import alexo.ecommerce_api.entity.customer.cart.CustomerCart;
 import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.entity.identity.UserStatusType;
+import alexo.ecommerce_api.repository.customer.CustomerCartRepository;
 import alexo.ecommerce_api.repository.customer.CustomerRepository;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
 import alexo.ecommerce_api.service.internal.identity.authority.UserAuthorityService;
@@ -31,6 +33,7 @@ public class SignupService {
     private final UserStatusCacheService userStatusCacheService;
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CustomerCartRepository customerCartRepository;
 
     @Transactional
     public User createUser(
@@ -120,6 +123,8 @@ public class SignupService {
         Customer customer = new Customer();
         customer.setUser(user);
         customerRepository.save(customer);
+
+        customerCartRepository.save(CustomerCart.builder().customer(customer).build());
 
         return user;
     }
