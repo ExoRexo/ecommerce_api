@@ -86,7 +86,7 @@ public class WarehouseStockTransactionPurposeType {
 
     @Getter
     @AllArgsConstructor
-    public enum WarehouseStockTransactionOperationCode implements EnumDescription, EnumLabel {
+    public enum WarehouseStockTransactionOperationCode implements EnumCode, EnumDescription, EnumLabel {
         INCREASE("Приход", "Приход единиц товара на склад"),
         DECREASE("Расход", "Расход единиц товара на складе");
 

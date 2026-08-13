@@ -8,7 +8,6 @@ import alexo.ecommerce_api.entity.inventory.ProductWarehouseStock;
 import alexo.ecommerce_api.entity.inventory.Warehouse;
 import alexo.ecommerce_api.entity.inventory.WarehouseStockTransaction;
 import alexo.ecommerce_api.entity.inventory.WarehouseStockTransactionPurposeType;
-import alexo.ecommerce_api.exception.persistance.UserNotFoundException;
 import alexo.ecommerce_api.exception.service.inventory.product_stock_management.StockUpdateException;
 import alexo.ecommerce_api.repository.catalog.ProductRepository;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
