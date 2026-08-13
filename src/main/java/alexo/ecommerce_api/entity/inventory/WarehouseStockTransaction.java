@@ -60,6 +60,10 @@ public class WarehouseStockTransaction {
     private WarehouseStockTransactionPurposeType purposeType;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "product_warehouse_stock_id", nullable = false)
+    private ProductWarehouseStock productWarehouseStock;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

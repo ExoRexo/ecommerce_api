@@ -3,7 +3,6 @@ package alexo.ecommerce_api.service.internal.identity.authority;
 import alexo.ecommerce_api.dto.service.internal.identity.UserPrincipalDTO;
 import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,7 +32,7 @@ final public class AuthorizationService {
                         authorityWithPrefix.equals(a.getAuthority()));
     }
 
-    public @NotNull UserPrincipalDTO getCurrentUserPrincipalFromAuthentication() {
+    public @Nullable UserPrincipalDTO getCurrentUserPrincipalFromAuthentication() {
         Authentication authentication = getAuthentication();
 
         if (authentication == null || authentication.getPrincipal() == null) {

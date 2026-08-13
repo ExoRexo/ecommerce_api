@@ -2,6 +2,7 @@ CREATE TABLE warehouse_stock_transactions (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     product_id BIGINT NOT NULL REFERENCES products(id),
     warehouse_id BIGINT NOT NULL REFERENCES warehouses(id),
+    product_warehouse_stock_id BIGINT NOT NULL REFERENCES product_wh_stocks(id),
     old_quantity INT NOT NULL,
     new_quantity INT NOT NULL,
     delta INT NOT NULL,
@@ -13,3 +14,4 @@ CREATE TABLE warehouse_stock_transactions (
 CREATE INDEX idx_wh_stock_tx_product_id ON warehouse_stock_transactions(product_id);
 CREATE INDEX idx_wh_stock_tx_warehouse_id ON warehouse_stock_transactions(warehouse_id);
 CREATE INDEX idx_wh_stock_tx_user_id ON warehouse_stock_transactions(user_id);
+CREATE INDEX idx_wh_stock_tx_product_warehouse_stock_id ON warehouse_stock_transactions(product_warehouse_stock_id);

@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -68,11 +69,9 @@ public class TransactionalProductStockService {
         WarehouseStockTransactionPurposeType purposeType = Optional.ofNullable(warehouseCacheService.getWarehouseStockTransactionPurposeTypes().get(request.purposeCode()))
                 .orElseThrow(() -> new EntityNotFoundException("transaction purpose with code [" + request.purposeCode() + "] is not found"));
 
-        Long userId = authorizationService.getCurrentUserPrincipalFromAuthentication().getId();
+        Long userId = Objects.requireNonNull(authorizationService.getCurrentUserPrincipalFromAuthentication()).getId();
 
-        User user = userRepository
-                .findById(userId)
-                .orElseThrow(() -> UserNotFoundException.fromUserId(userId));
+        User user = userRepository.getReferenceById(userId);
 
         Product product = productRepository
                 .findById(request.productId())
@@ -117,8 +116,6 @@ public class TransactionalProductStockService {
             stock.setPhysicalQuantity(newQuantity);
         }
 
-        productWarehouseStockRepository.save(stock);
-
         WarehouseStockTransaction warehouseStockTransaction = warehouseStockTransactionRepository.save(
                 WarehouseStockTransaction
                         .builder()
@@ -129,6 +126,7 @@ public class TransactionalProductStockService {
                         .delta(delta)
                         .purposeType(purposeType)
                         .user(user)
+                        .productWarehouseStock(productWarehouseStockRepository.save(stock))
                         .build()
         );
 
