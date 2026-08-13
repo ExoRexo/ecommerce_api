@@ -1,7 +1,7 @@
 package alexo.ecommerce_api.entity.identity;
 
+import alexo.ecommerce_api.contract.enums.EnumCode;
 import alexo.ecommerce_api.entity.converter.UserStatusCodeConverter;
-import alexo.ecommerce_api.enums.entity.UserStatusCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -9,11 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
@@ -58,5 +54,15 @@ public class UserStatusType {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    /**
+     * User account status values stored in user_status_types.code.
+     */
+    @Getter
+    @RequiredArgsConstructor
+    public enum UserStatusCode implements EnumCode {
+        ACTIVE,
+        UNACTIVE
     }
 }

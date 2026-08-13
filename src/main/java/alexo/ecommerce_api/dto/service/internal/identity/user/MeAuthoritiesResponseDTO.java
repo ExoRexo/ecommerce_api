@@ -1,12 +1,12 @@
 package alexo.ecommerce_api.dto.service.internal.identity.user;
 
-import alexo.ecommerce_api.enums.entity.PermissionCode;
-import alexo.ecommerce_api.enums.entity.RoleCode;
+import alexo.ecommerce_api.entity.identity.Permission;
+import alexo.ecommerce_api.entity.identity.Role;
 
 import java.util.List;
 
 public record MeAuthoritiesResponseDTO(
-        List<RoleCode> roles,
-        List<PermissionCode> permissions
+        List<Role.RoleCode> roles,
+        List<Permission.PermissionCode> permissions
 ) {
 }

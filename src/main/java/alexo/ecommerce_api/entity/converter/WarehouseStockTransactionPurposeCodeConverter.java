@@ -1,16 +1,16 @@
 package alexo.ecommerce_api.entity.converter;
 
-import alexo.ecommerce_api.enums.entity.WarehouseStockTransactionPurposeCode;
+import alexo.ecommerce_api.entity.inventory.WarehouseStockTransactionPurposeType;
 import jakarta.persistence.Converter;
 
 /**
- * JPA converter for {@link WarehouseStockTransactionPurposeCode}.
+ * JPA converter for {@link WarehouseStockTransactionPurposeType.WarehouseStockTransactionPurposeCode}.
  */
 @Converter
 public class WarehouseStockTransactionPurposeCodeConverter
-    extends AbstractEnumCodeAttributeConverter<WarehouseStockTransactionPurposeCode> {
+    extends AbstractEnumCodeAttributeConverter<WarehouseStockTransactionPurposeType.WarehouseStockTransactionPurposeCode> {
 
     public WarehouseStockTransactionPurposeCodeConverter() {
-        super(WarehouseStockTransactionPurposeCode.class);
+        super(WarehouseStockTransactionPurposeType.WarehouseStockTransactionPurposeCode.class);
     }
 }

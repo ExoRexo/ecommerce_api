@@ -1,7 +1,9 @@
 package alexo.ecommerce_api.entity.inventory;
 
+import alexo.ecommerce_api.contract.enums.EnumCode;
+import alexo.ecommerce_api.contract.enums.EnumDescription;
+import alexo.ecommerce_api.contract.enums.EnumLabel;
 import alexo.ecommerce_api.entity.converter.WarehouseStockTransactionPurposeCodeConverter;
-import alexo.ecommerce_api.enums.entity.WarehouseStockTransactionPurposeCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -9,11 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
@@ -58,5 +56,41 @@ public class WarehouseStockTransactionPurposeType {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    /**
+     * Warehouse stock transaction intents stored in wh_st_transaction_purpose_types.code.
+     */
+    @Getter
+    @AllArgsConstructor
+    public enum WarehouseStockTransactionPurposeCode implements EnumCode {
+        SALE(
+                new WarehouseStockTransactionOperationCode[]{
+                        WarehouseStockTransactionOperationCode.DECREASE
+                }
+        ),
+        PURCHASE(
+                new WarehouseStockTransactionOperationCode[]{
+                        WarehouseStockTransactionOperationCode.INCREASE
+                }
+        ),
+        INVENTORY_ADJUSTMENT(
+                new WarehouseStockTransactionOperationCode[]{
+                        WarehouseStockTransactionOperationCode.INCREASE,
+                        WarehouseStockTransactionOperationCode.DECREASE
+                }
+        );
+
+        private final WarehouseStockTransactionOperationCode[] allowedOperations;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum WarehouseStockTransactionOperationCode implements EnumDescription, EnumLabel {
+        INCREASE("Приход", "Приход единиц товара на склад"),
+        DECREASE("Расход", "Расход единиц товара на складе");
+
+        private final String label;
+        private final String description;
     }
 }

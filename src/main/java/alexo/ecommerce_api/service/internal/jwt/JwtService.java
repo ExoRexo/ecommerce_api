@@ -1,9 +1,9 @@
 package alexo.ecommerce_api.service.internal.jwt;
 
 import alexo.ecommerce_api.dto.configuration.security.jwt.JwtPropertiesDTO;
+import alexo.ecommerce_api.entity.identity.Permission;
+import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.mapper.enums.EnumCodeMapper;
-import alexo.ecommerce_api.enums.entity.PermissionCode;
-import alexo.ecommerce_api.enums.entity.RoleCode;
 import alexo.ecommerce_api.dto.service.internal.identity.UserPrincipalDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -63,8 +63,8 @@ public class JwtService {
      * @return user principal
      */
     public UserPrincipalDTO getPrincipalFromToken(String token) {
-        List<RoleCode> roles = extractRoles(token);
-        List<PermissionCode> permissions = extractPermissions(token);
+        List<Role.RoleCode> roles = extractRoles(token);
+        List<Permission.PermissionCode> permissions = extractPermissions(token);
 
         return new UserPrincipalDTO(
                 extractUserId(token),
@@ -90,8 +90,8 @@ public class JwtService {
         return Jwts.builder()
                 .subject(principal.getUsername())
                 .claim(CLAIM_USER_ID, principal.getId())
-                .claim(CLAIM_ROLES, principal.getRoles().stream().map(RoleCode::getCode).toList())
-                .claim(CLAIM_PERMISSIONS, principal.getPermissions().stream().map(PermissionCode::getCode).toList())
+                .claim(CLAIM_ROLES, principal.getRoles().stream().map(Role.RoleCode::getCode).toList())
+                .claim(CLAIM_PERMISSIONS, principal.getPermissions().stream().map(Permission.PermissionCode::getCode).toList())
                 .claim(CLAIM_IS_ENABLED, principal.isEnabled())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiresAt))
@@ -156,8 +156,8 @@ public class JwtService {
      * @param token signed JWT token
      * @return immutable list of role codes
      */
-    private List<RoleCode> extractRoles(String token) {
-        return extractStringListClaim(token, CLAIM_ROLES).stream().map((String permissionCode) -> EnumCodeMapper.fromCode(RoleCode.class, permissionCode)).toList();
+    private List<Role.RoleCode> extractRoles(String token) {
+        return extractStringListClaim(token, CLAIM_ROLES).stream().map((String permissionCode) -> EnumCodeMapper.fromCode(Role.RoleCode.class, permissionCode)).toList();
     }
 
     /**
@@ -166,8 +166,8 @@ public class JwtService {
      * @param token signed JWT token
      * @return immutable list of permission codes
      */
-    private List<PermissionCode> extractPermissions(String token) {
-        return extractStringListClaim(token, CLAIM_PERMISSIONS).stream().map((String permissionCode) -> EnumCodeMapper.fromCode(PermissionCode.class, permissionCode)).toList();
+    private List<Permission.PermissionCode> extractPermissions(String token) {
+        return extractStringListClaim(token, CLAIM_PERMISSIONS).stream().map((String permissionCode) -> EnumCodeMapper.fromCode(Permission.PermissionCode.class, permissionCode)).toList();
     }
 
     /**
@@ -220,7 +220,7 @@ public class JwtService {
      * @param permissions permission codes from token
      * @return immutable authority collection
      */
-    private List<? extends GrantedAuthority> buildAuthorities(List<RoleCode> roles, List<PermissionCode> permissions) {
+    private List<? extends GrantedAuthority> buildAuthorities(List<Role.RoleCode> roles, List<Permission.PermissionCode> permissions) {
         LinkedHashSet<GrantedAuthority> authorities = new LinkedHashSet<>();
 
         roles.stream()

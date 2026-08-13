@@ -1,15 +1,15 @@
 package alexo.ecommerce_api.entity.converter;
 
-import alexo.ecommerce_api.enums.entity.RoleCode;
+import alexo.ecommerce_api.entity.identity.Role;
 import jakarta.persistence.Converter;
 
 /**
- * JPA converter for {@link RoleCode}.
+ * JPA converter for {@link Role.RoleCode}.
  */
 @Converter
-public class RoleCodeConverter extends AbstractEnumCodeAttributeConverter<RoleCode> {
+public class RoleCodeConverter extends AbstractEnumCodeAttributeConverter<Role.RoleCode> {
 
     public RoleCodeConverter() {
-        super(RoleCode.class);
+        super(Role.RoleCode.class);
     }
 }

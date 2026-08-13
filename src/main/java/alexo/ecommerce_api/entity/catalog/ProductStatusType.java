@@ -1,7 +1,7 @@
 package alexo.ecommerce_api.entity.catalog;
 
+import alexo.ecommerce_api.contract.enums.EnumCode;
 import alexo.ecommerce_api.entity.converter.ProductStatusCodeConverter;
-import alexo.ecommerce_api.enums.entity.ProductStatusCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -48,5 +48,15 @@ public class ProductStatusType {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    /**
+     * Product status values stored in product_status_types.code.
+     */
+    @Getter
+    @AllArgsConstructor
+    public enum ProductStatusCode implements EnumCode {
+        ACTIVE,
+        UNACTIVE
     }
 }

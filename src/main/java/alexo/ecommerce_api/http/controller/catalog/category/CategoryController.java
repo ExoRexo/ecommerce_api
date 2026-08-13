@@ -23,7 +23,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_CATEGORY_CREATE')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_CATALOG_CATEGORY_CREATE')")
     public ResponseEntity<@NotNull ApiResponseDTO<CategoryResponseDTO>> createCategory(@Valid @RequestBody CreateRequestDTO request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -31,25 +31,25 @@ public class CategoryController {
     }
 
     @PutMapping
-    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_CATEGORY_UPDATE')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_CATALOG_CATEGORY_UPDATE')")
     public ResponseEntity<@NotNull ApiResponseDTO<CategoryResponseDTO>> updateCategory(@Valid @RequestBody CategoryUpdateRequestDTO request) {
         return ResponseEntity.ok(ApiResponseDTO.success(categoryService.updateCategory(request)));
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_CATEGORY_READ_LIST')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_CATALOG_CATEGORY_READ_LIST')")
     public ResponseEntity<@NotNull ApiResponseDTO<List<CategoryResponseDTO>>> getCategoryList() {
         return ResponseEntity.ok(ApiResponseDTO.success(categoryService.getCategoryList()));
     }
 
     @GetMapping("/tree")
-    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_CATEGORY_READ_TREE')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_CATALOG_CATEGORY_READ_TREE')")
     public ResponseEntity<@NotNull ApiResponseDTO<List<NodeDTO>>> getCategoryTree() {
         return ResponseEntity.ok(ApiResponseDTO.success(categoryService.getCategoryTree()));
     }
 
     @GetMapping("/{categoryId}")
-    @PreAuthorize("hasAuthority('PERMISSION_CATALOG_CATEGORY_READ_CONCRETE')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_CATALOG_CATEGORY_READ_CONCRETE')")
     public ResponseEntity<@NotNull ApiResponseDTO<CategoryResponseDTO>> getCategory(@PathVariable Long categoryId) {
         return ResponseEntity.ok(ApiResponseDTO.success(categoryService.getCategory(categoryId)));
     }

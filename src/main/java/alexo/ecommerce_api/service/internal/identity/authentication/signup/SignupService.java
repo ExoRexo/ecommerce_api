@@ -1,9 +1,6 @@
 package alexo.ecommerce_api.service.internal.identity.authentication.signup;
 
 import alexo.ecommerce_api.entity.customer.Customer;
-import alexo.ecommerce_api.enums.entity.PermissionCode;
-import alexo.ecommerce_api.enums.entity.RoleCode;
-import alexo.ecommerce_api.enums.entity.UserStatusCode;
 import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.entity.identity.User;
@@ -38,17 +35,17 @@ public class SignupService {
     @Transactional
     public User createUser(
         @NotNull UserSignupRequestDTO userSignupRequestDTO,
-        @Nullable ArrayList<RoleCode> roleCodesAdditional,
-        @Nullable ArrayList<PermissionCode> permissionCodesAdditional
+        @Nullable ArrayList<Role.RoleCode> roleCodesAdditional,
+        @Nullable ArrayList<Permission.PermissionCode> permissionCodesAdditional
     )
     {
         if (userRepository.existsByEmail(userSignupRequestDTO.email())) {
             throw new IllegalArgumentException("Пользователь с почтой " + userSignupRequestDTO.email() + " уже существует");
         }
 
-        UserStatusType userStatusType = Objects.requireNonNull(userStatusCacheService.getStatusTypes().get(UserStatusCode.ACTIVE));
+        UserStatusType userStatusType = Objects.requireNonNull(userStatusCacheService.getStatusTypes().get(UserStatusType.UserStatusCode.ACTIVE));
 
-        Role customerRole = Objects.requireNonNull(userAuthorityService.getRoleByCode(RoleCode.CUSTOMER));
+        Role customerRole = Objects.requireNonNull(userAuthorityService.getRoleByCode(Role.RoleCode.CUSTOMER));
 
         HashSet<Role> roleHashSet = new HashSet<>();
         roleHashSet.add(customerRole);
@@ -56,7 +53,7 @@ public class SignupService {
         if (roleCodesAdditional != null && !roleCodesAdditional.isEmpty()) {
             HashSet<Role> additionalRoles = new HashSet<>();
 
-            for (RoleCode roleCode : roleCodesAdditional) {
+            for (Role.RoleCode roleCode : roleCodesAdditional) {
                 Role additionalRole = Objects.requireNonNull(userAuthorityService.getRoleByCode(roleCode));
 
                 additionalRoles.add(additionalRole);
@@ -69,7 +66,7 @@ public class SignupService {
         if (permissionCodesAdditional != null && !permissionCodesAdditional.isEmpty()) {
             HashSet<Permission> additionalPermissions = new HashSet<>(permissionCodesAdditional.size());
 
-            for (PermissionCode permissionCode : permissionCodesAdditional) {
+            for (Permission.PermissionCode permissionCode : permissionCodesAdditional) {
                 Permission additionalPermission = userAuthorityService.getPermissionByCode(permissionCode);
 
                 if (additionalPermission == null) {

@@ -1,6 +1,6 @@
 package alexo.ecommerce_api.dto.service.internal.identity.user.permissions;
 
-import alexo.ecommerce_api.enums.entity.PermissionCode;
+import alexo.ecommerce_api.entity.identity.Permission;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.UniqueElements;
 
@@ -12,6 +12,6 @@ public record ReplaceUserPermissionsRequestDTO(
 
         @NotNull
         @UniqueElements
-        List<PermissionCode> permissionCodes
+        List<Permission.PermissionCode> permissionCodes
 ) {
 }

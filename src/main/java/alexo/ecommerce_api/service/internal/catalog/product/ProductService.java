@@ -14,9 +14,8 @@ import alexo.ecommerce_api.dto.service.internal.catalog.product.update.request.P
 import alexo.ecommerce_api.entity.catalog.Category;
 import alexo.ecommerce_api.entity.catalog.Product;
 import alexo.ecommerce_api.entity.catalog.ProductStatusType;
-import alexo.ecommerce_api.enums.entity.PermissionCode;
-import alexo.ecommerce_api.enums.entity.ProductStatusCode;
-import alexo.ecommerce_api.enums.entity.RoleCode;
+import alexo.ecommerce_api.entity.identity.Permission;
+import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.repository.catalog.ProductRepository;
 import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
 import alexo.ecommerce_api.service.internal.identity.authority.AuthorizationService;
@@ -66,7 +65,7 @@ public class ProductService {
                     .description(request.description())
                     .priceRub(request.priceRub())
                     .code(codeGenerator.generateCode())
-                    .statusType(Optional.ofNullable(productCacheService.getProductStatuses().get(ProductStatusCode.ACTIVE)).orElseThrow())
+                    .statusType(Optional.ofNullable(productCacheService.getProductStatuses().get(ProductStatusType.ProductStatusCode.ACTIVE)).orElseThrow())
                     .category(categoryRepository.findById(request.categoryId()).orElseThrow())
                     .build()
         );
@@ -99,9 +98,9 @@ public class ProductService {
         if (request.priceRub().isPresent()) {
 
             if (
-                !authorizationService.hasRoleAuthority(RoleCode.ADMIN)
+                !authorizationService.hasRoleAuthority(Role.RoleCode.ADMIN)
                 &&
-                !authorizationService.hasPermissionAuthority(PermissionCode.CATALOG_PRODUCT_UPDATE_PRICE_RUB)
+                !authorizationService.hasPermissionAuthority(Permission.PermissionCode.CATALOG_PRODUCT_UPDATE_PRICE_RUB)
             ) {
                 throw new AccessDeniedException("you cannot change price");
             }

@@ -8,7 +8,7 @@ import alexo.ecommerce_api.dto.service.internal.catalog.product.list.request.Fil
 import alexo.ecommerce_api.dto.service.internal.catalog.product.list.request.PaginationDTO;
 import alexo.ecommerce_api.dto.service.internal.catalog.product.list.request.SortDTO;
 import alexo.ecommerce_api.dto.service.internal.catalog.product.update.request.ProductUpdateRequestDTO;
-import alexo.ecommerce_api.enums.entity.ProductStatusCode;
+import alexo.ecommerce_api.entity.catalog.ProductStatusType;
 import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import alexo.ecommerce_api.service.internal.catalog.product.ProductService;
 import jakarta.validation.Valid;
@@ -58,7 +58,7 @@ public class ProductController {
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "description", required = false) String description,
             @RequestParam(name = "priceRub", required = false) BigDecimal priceRub,
-            @RequestParam(name = "statusCode", required = false) ProductStatusCode statusCode,
+            @RequestParam(name = "statusCode", required = false) ProductStatusType.ProductStatusCode statusCode,
             @RequestParam(name = "categoryId", required = false) Long categoryId,
             @RequestParam(name = "code", required = false) String code,
             @RequestParam(name = "page", defaultValue = "0") Integer page,

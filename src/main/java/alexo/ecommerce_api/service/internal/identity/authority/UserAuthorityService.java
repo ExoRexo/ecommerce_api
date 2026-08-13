@@ -3,8 +3,6 @@ package alexo.ecommerce_api.service.internal.identity.authority;
 import alexo.ecommerce_api.cache.identity.authority.PermissionCacheService;
 import alexo.ecommerce_api.cache.identity.authority.RoleCacheService;
 import alexo.ecommerce_api.entity.identity.*;
-import alexo.ecommerce_api.enums.entity.PermissionCode;
-import alexo.ecommerce_api.enums.entity.RoleCode;
 import alexo.ecommerce_api.repository.identity.UserPermissionRepository;
 import alexo.ecommerce_api.repository.identity.UserRoleRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +26,7 @@ public class UserAuthorityService {
      * @param code permissions of the user
      * @return nullable, cached entity of permission
      */
-    public Permission getPermissionByCode(PermissionCode code) {
+    public Permission getPermissionByCode(Permission.PermissionCode code) {
         return this.permissionCacheService.getPermissions().get(code);
     }
 
@@ -36,7 +34,7 @@ public class UserAuthorityService {
      * @param code role of the user
      * @return nullable, cached entity of role
      */
-    public Role getRoleByCode(RoleCode code) {
+    public Role getRoleByCode(Role.RoleCode code) {
         return this.roleCacheService.getRoles().get(code);
     }
 

@@ -1,7 +1,7 @@
 package alexo.ecommerce_api.entity.customer;
 
+import alexo.ecommerce_api.contract.enums.EnumCode;
 import alexo.ecommerce_api.entity.converter.OrderItemReservationStatusCodeConverter;
-import alexo.ecommerce_api.enums.entity.OrderItemReservationStatusCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -9,11 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
@@ -58,5 +54,16 @@ public class OrderItemReservationStatusType {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    /**
+     * Reservation lifecycle statuses stored in order_item_reservation_status_types.code.
+     */
+    @Getter
+    @RequiredArgsConstructor
+    public enum OrderItemReservationStatusCode implements EnumCode {
+        ACTIVE,
+        CANCELLED,
+        FINISHED
     }
 }

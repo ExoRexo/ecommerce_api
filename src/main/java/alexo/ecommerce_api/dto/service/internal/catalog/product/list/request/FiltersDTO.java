@@ -1,6 +1,6 @@
 package alexo.ecommerce_api.dto.service.internal.catalog.product.list.request;
 
-import alexo.ecommerce_api.enums.entity.ProductStatusCode;
+import alexo.ecommerce_api.entity.catalog.ProductStatusType;
 
 import java.math.BigDecimal;
 
@@ -9,7 +9,7 @@ public record FiltersDTO(
         String name,
         String description,
         BigDecimal priceRub,
-        ProductStatusCode statusCode,
+        ProductStatusType.ProductStatusCode statusCode,
         Long categoryId,
         String code
 ) {

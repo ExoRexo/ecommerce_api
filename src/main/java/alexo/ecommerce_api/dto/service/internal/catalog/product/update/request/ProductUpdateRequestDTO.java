@@ -1,6 +1,6 @@
 package alexo.ecommerce_api.dto.service.internal.catalog.product.update.request;
 
-import alexo.ecommerce_api.enums.entity.ProductStatusCode;
+import alexo.ecommerce_api.entity.catalog.ProductStatusType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -32,7 +32,7 @@ public record ProductUpdateRequestDTO(
 
         @NotNull
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-        JsonNullable<ProductStatusCode> statusCode,
+        JsonNullable<ProductStatusType.ProductStatusCode> statusCode,
 
         @NotNull
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)

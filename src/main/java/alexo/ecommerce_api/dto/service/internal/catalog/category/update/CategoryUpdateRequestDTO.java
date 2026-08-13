@@ -9,7 +9,7 @@ public record CategoryUpdateRequestDTO(
         @NotNull
         Long categoryId,
 
-        @Size(min = 10, max = 100)
+        @Size(min = 2, max = 100)
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         JsonNullable<String> name,
 

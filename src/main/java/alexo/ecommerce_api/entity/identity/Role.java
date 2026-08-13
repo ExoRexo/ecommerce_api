@@ -1,7 +1,7 @@
 package alexo.ecommerce_api.entity.identity;
 
+import alexo.ecommerce_api.contract.enums.EnumCode;
 import alexo.ecommerce_api.entity.converter.RoleCodeConverter;
-import alexo.ecommerce_api.enums.entity.RoleCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -57,5 +57,16 @@ public class Role {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    /**
+     * Role values stored in roles.code.
+     */
+    @Getter
+    @RequiredArgsConstructor
+    public enum RoleCode implements EnumCode {
+        ADMIN,
+        MANAGER,
+        CUSTOMER
     }
 }

@@ -1,8 +1,8 @@
 package alexo.ecommerce_api.dto.service.internal.identity;
 
-import alexo.ecommerce_api.enums.entity.PermissionCode;
-import alexo.ecommerce_api.enums.entity.RoleCode;
-import alexo.ecommerce_api.enums.entity.UserStatusCode;
+import alexo.ecommerce_api.entity.identity.Permission;
+import alexo.ecommerce_api.entity.identity.Role;
+import alexo.ecommerce_api.entity.identity.UserStatusType;
 import alexo.ecommerce_api.entity.identity.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,8 +22,8 @@ public class UserPrincipalDTO implements UserDetails {
     private final String username;
     private final String password;
     private final boolean enabled;
-    private final List<RoleCode> roles;
-    private final List<PermissionCode> permissions;
+    private final List<Role.RoleCode> roles;
+    private final List<Permission.PermissionCode> permissions;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public UserPrincipalDTO(
@@ -31,8 +31,8 @@ public class UserPrincipalDTO implements UserDetails {
             String username,
             String password,
             boolean enabled,
-            List<RoleCode> roles,
-            List<PermissionCode> permissions,
+            List<Role.RoleCode> roles,
+            List<Permission.PermissionCode> permissions,
             Collection<? extends GrantedAuthority> authorities
     ) {
         this.id = id;
@@ -44,7 +44,7 @@ public class UserPrincipalDTO implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserPrincipalDTO from(User user, List<RoleCode> roles, List<PermissionCode> permissions) {
+    public static UserPrincipalDTO from(User user, List<Role.RoleCode> roles, List<Permission.PermissionCode> permissions) {
         LinkedHashSet<GrantedAuthority> authorities = new LinkedHashSet<>();
 
         roles.stream()
@@ -58,7 +58,7 @@ public class UserPrincipalDTO implements UserDetails {
                 .forEach(authorities::add);
 
         boolean enabled = user.getStatusType() != null
-                && user.getStatusType().getCode() == UserStatusCode.ACTIVE;
+                && user.getStatusType().getCode() == UserStatusType.UserStatusCode.ACTIVE;
 
         return new UserPrincipalDTO(
                 user.getId(),

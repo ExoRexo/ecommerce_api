@@ -1,5 +1,6 @@
 package alexo.ecommerce_api.entity.catalog;
 
+import alexo.ecommerce_api.entity.inventory.ProductWarehouseStock;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,6 +9,7 @@ import org.hibernate.proxy.HibernateProxy;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Sellable catalog item.
@@ -53,6 +55,9 @@ public class Product {
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp
     private OffsetDateTime createdAt;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
+    private Set<ProductWarehouseStock> warehouseStocks;
 
     @Override
     public final boolean equals(Object o) {

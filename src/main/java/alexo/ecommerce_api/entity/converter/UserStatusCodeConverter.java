@@ -1,15 +1,15 @@
 package alexo.ecommerce_api.entity.converter;
 
-import alexo.ecommerce_api.enums.entity.UserStatusCode;
+import alexo.ecommerce_api.entity.identity.UserStatusType;
 import jakarta.persistence.Converter;
 
 /**
- * JPA converter for {@link UserStatusCode}.
+ * JPA converter for {@link UserStatusType.UserStatusCode}.
  */
 @Converter
-public class UserStatusCodeConverter extends AbstractEnumCodeAttributeConverter<UserStatusCode> {
+public class UserStatusCodeConverter extends AbstractEnumCodeAttributeConverter<UserStatusType.UserStatusCode> {
 
     public UserStatusCodeConverter() {
-        super(UserStatusCode.class);
+        super(UserStatusType.UserStatusCode.class);
     }
 }

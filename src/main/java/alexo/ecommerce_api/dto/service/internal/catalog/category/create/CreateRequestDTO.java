@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 public record CreateRequestDTO(
         @NotBlank
-        @Size(min = 10, max = 100)
+        @Size(min = 2, max = 100)
         String name,
 
         Long parentId

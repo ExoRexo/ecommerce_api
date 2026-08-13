@@ -1,8 +1,6 @@
 package alexo.ecommerce_api.service.internal.identity.authority;
 
 import alexo.ecommerce_api.dto.service.internal.identity.UserPrincipalDTO;
-import alexo.ecommerce_api.enums.entity.PermissionCode;
-import alexo.ecommerce_api.enums.entity.RoleCode;
 import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.entity.identity.User;
@@ -37,12 +35,12 @@ public class UserPrincipalService implements UserDetailsService {
     private UserPrincipalDTO buildPrincipal(User user) {
         Set<Role> roles = user.getRoles();
 
-        List<RoleCode> roleCodes = roles
+        List<Role.RoleCode> roleCodes = roles
                 .stream()
                 .map(Role::getCode)
                 .toList();
 
-        Set<PermissionCode> directPermissions = user
+        Set<Permission.PermissionCode> directPermissions = user
                 .getDirectPermissions()
                 .stream()
                 .map(Permission::getCode)

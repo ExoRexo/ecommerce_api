@@ -1,16 +1,16 @@
 package alexo.ecommerce_api.entity.converter;
 
-import alexo.ecommerce_api.enums.entity.OrderItemReservationStatusCode;
+import alexo.ecommerce_api.entity.customer.OrderItemReservationStatusType;
 import jakarta.persistence.Converter;
 
 /**
- * JPA converter for {@link OrderItemReservationStatusCode}.
+ * JPA converter for {@link OrderItemReservationStatusType.OrderItemReservationStatusCode}.
  */
 @Converter
 public class OrderItemReservationStatusCodeConverter
-    extends AbstractEnumCodeAttributeConverter<OrderItemReservationStatusCode> {
+    extends AbstractEnumCodeAttributeConverter<OrderItemReservationStatusType.OrderItemReservationStatusCode> {
 
     public OrderItemReservationStatusCodeConverter() {
-        super(OrderItemReservationStatusCode.class);
+        super(OrderItemReservationStatusType.OrderItemReservationStatusCode.class);
     }
 }

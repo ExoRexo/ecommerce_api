@@ -1,15 +1,15 @@
 package alexo.ecommerce_api.entity.converter;
 
-import alexo.ecommerce_api.enums.entity.PermissionCode;
+import alexo.ecommerce_api.entity.identity.Permission;
 import jakarta.persistence.Converter;
 
 /**
- * JPA converter for {@link PermissionCode}.
+ * JPA converter for {@link Permission.PermissionCode}.
  */
 @Converter
-public class PermissionCodeConverter extends AbstractEnumCodeAttributeConverter<PermissionCode> {
+public class PermissionCodeConverter extends AbstractEnumCodeAttributeConverter<Permission.PermissionCode> {
 
     public PermissionCodeConverter() {
-        super(PermissionCode.class);
+        super(Permission.PermissionCode.class);
     }
 }
