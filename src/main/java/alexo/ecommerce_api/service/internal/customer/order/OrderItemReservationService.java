@@ -89,7 +89,7 @@ public class OrderItemReservationService {
         OrderItemWarehouseReservation orderItemWarehouseReservation = orderItemWarehouseReservationRepository.save(
                 OrderItemWarehouseReservation.builder()
                         .orderItem(orderItem)
-                        .reservedQuantity(reservedQuantity)
+                        .reservedQuantity(quantityToReserve)
                         .warehouse(warehouseRepository.getReferenceById(warehouseId))
                         .statusType(
                                 Optional.ofNullable(orderCacheService.getOrderItemReservationStatusTypes().get(OrderItemReservationStatusType.OrderItemReservationStatusCode.ACTIVE))
