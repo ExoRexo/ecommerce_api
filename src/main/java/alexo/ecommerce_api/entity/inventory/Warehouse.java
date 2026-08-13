@@ -29,6 +29,8 @@ import java.util.Objects;
 @Builder
 public class Warehouse {
 
+    public static final Long WAREHOUSE_ID_THAT_JUST_EXISTS = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
