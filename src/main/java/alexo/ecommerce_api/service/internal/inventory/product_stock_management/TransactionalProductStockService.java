@@ -71,14 +71,8 @@ public class TransactionalProductStockService {
         Long userId = Objects.requireNonNull(authorizationService.getCurrentUserPrincipalFromAuthentication()).getId();
 
         User user = userRepository.getReferenceById(userId);
-
-        Product product = productRepository
-                .findById(request.productId())
-                .orElseThrow(() -> new EntityNotFoundException("product with id [" + request.productId() + "] is not found"));
-
-        Warehouse warehouse = warehouseRepository
-                .findById(request.warehouseId())
-                .orElseThrow(() -> new EntityNotFoundException("warehouse with id [" + request.warehouseId() + "] is not found"));
+        Product product = productRepository.getReferenceById(request.productId());
+        Warehouse warehouse = warehouseRepository.getReferenceById(request.warehouseId());
 
         int oldQuantity = stock == null
                 ? 0
