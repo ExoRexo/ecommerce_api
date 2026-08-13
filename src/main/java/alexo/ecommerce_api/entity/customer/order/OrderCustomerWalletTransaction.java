@@ -1,5 +1,6 @@
-package alexo.ecommerce_api.entity.customer;
+package alexo.ecommerce_api.entity.customer.order;
 
+import alexo.ecommerce_api.entity.customer.wallet.CustomerWalletTransaction;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;

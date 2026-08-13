@@ -19,5 +19,10 @@ public interface ProductWarehouseStockRepository extends JpaRepository<ProductWa
       and s.warehouse.id = :warehouseId
 """)
     Optional<ProductWarehouseStock> findByProductIdAndWarehouseIdForUpdate(Long productId, Long warehouseId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from ProductWarehouseStock p where p.warehouse.id = ?1 and p.product.id = ?2")
+    Optional<ProductWarehouseStock> findByWarehouse_IdAndProduct_IdForUpdate(Long warehouseId, Long productId);
+
 }
 

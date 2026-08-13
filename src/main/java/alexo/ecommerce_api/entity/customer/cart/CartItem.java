@@ -1,5 +1,6 @@
-package alexo.ecommerce_api.entity.customer;
+package alexo.ecommerce_api.entity.customer.cart;
 
+import alexo.ecommerce_api.entity.catalog.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
+import jakarta.persistence.UniqueConstraint;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
@@ -21,37 +22,34 @@ import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 
 /**
- * Wallet balance mutation event.
+ * Product line inside customer cart.
  */
 @Entity
-@Table(name = "customer_wallet_transactions")
+@Table(
+    name = "cart_items",
+    uniqueConstraints = @UniqueConstraint(name = "uq_cart_product", columnNames = {"cart_id", "product_id"})
+)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CustomerWalletTransaction {
+public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "wallet_id", nullable = false)
-    private CustomerWallet wallet;
-
-    @Column(name = "old_balance", nullable = false, precision = 10, scale = 2)
-    private BigDecimal oldBalance;
-
-    @Column(name = "new_balance", nullable = false, precision = 10, scale = 2)
-    private BigDecimal newBalance;
-
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal delta;
+    @Column(nullable = false)
+    private Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "purpose_type_id", nullable = false)
-    private CustomerWalletTransactionPurposeType purposeType;
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "cart_id", nullable = false)
+    private CustomerCart cart;
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
@@ -63,8 +61,8 @@ public class CustomerWalletTransaction {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        CustomerWalletTransaction that = (CustomerWalletTransaction) o;
-        return getId() != null && Objects.equals(getId(), that.getId());
+        CartItem cartItem = (CartItem) o;
+        return getId() != null && Objects.equals(getId(), cartItem.getId());
     }
 
     @Override

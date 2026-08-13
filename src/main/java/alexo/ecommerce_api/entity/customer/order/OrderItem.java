@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.entity.customer;
+package alexo.ecommerce_api.entity.customer.order;
 
 import alexo.ecommerce_api.entity.catalog.Product;
 import jakarta.persistence.Column;

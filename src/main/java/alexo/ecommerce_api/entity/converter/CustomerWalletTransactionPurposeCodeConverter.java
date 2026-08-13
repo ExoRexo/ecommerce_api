@@ -1,6 +1,6 @@
 package alexo.ecommerce_api.entity.converter;
 
-import alexo.ecommerce_api.entity.customer.CustomerWalletTransactionPurposeType;
+import alexo.ecommerce_api.entity.customer.wallet.CustomerWalletTransactionPurposeType;
 import jakarta.persistence.Converter;
 
 /**

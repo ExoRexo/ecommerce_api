@@ -1,10 +1,13 @@
-package alexo.ecommerce_api.entity.customer;
+package alexo.ecommerce_api.entity.customer.order;
 
+import alexo.ecommerce_api.entity.customer.Customer;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,24 +19,28 @@ import org.hibernate.proxy.HibernateProxy;
 import java.util.Objects;
 
 /**
- * Shopping cart attached to a customer.
+ * Customer order header.
  */
 @Entity
-@Table(name = "customer_carts")
+@Table(name = "customer_orders")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CustomerCart {
+public class CustomerOrder {
 
     @Id
-    private Long customerId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @OneToOne(optional = false)
-    @MapsId
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "status_type_id", nullable = false)
+    private CustomerOrderStatusType statusType;
 
     @Override
     public final boolean equals(Object o) {
@@ -42,8 +49,8 @@ public class CustomerCart {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        CustomerCart that = (CustomerCart) o;
-        return getCustomerId() != null && Objects.equals(getCustomerId(), that.getCustomerId());
+        CustomerOrder that = (CustomerOrder) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
     }
 
     @Override

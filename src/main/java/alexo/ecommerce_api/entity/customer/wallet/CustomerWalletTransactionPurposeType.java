@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.entity.customer;
+package alexo.ecommerce_api.entity.customer.wallet;
 
 import alexo.ecommerce_api.contract.enums.EnumCode;
 import alexo.ecommerce_api.entity.converter.CustomerWalletTransactionPurposeCodeConverter;

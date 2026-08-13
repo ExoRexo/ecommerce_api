@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.entity.customer;
+package alexo.ecommerce_api.entity.customer.wallet;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 import lombok.AllArgsConstructor;
@@ -20,27 +21,40 @@ import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 
 /**
- * Wallet with current customer balance.
+ * Wallet balance mutation event.
  */
 @Entity
-@Table(name = "customer_wallets")
+@Table(name = "customer_wallet_transactions")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CustomerWallet {
+public class CustomerWalletTransaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    @JoinColumn(name = "wallet_id", nullable = false)
+    private CustomerWallet wallet;
+
+    @Column(name = "old_balance", nullable = false, precision = 10, scale = 2)
+    private BigDecimal oldBalance;
+
+    @Column(name = "new_balance", nullable = false, precision = 10, scale = 2)
+    private BigDecimal newBalance;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal balance;
+    private BigDecimal delta;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "purpose_type_id", nullable = false)
+    private CustomerWalletTransactionPurposeType purposeType;
+
+    @Column(name = "created_at", nullable = false)
+    private OffsetDateTime createdAt;
 
     @Override
     public final boolean equals(Object o) {
@@ -49,7 +63,7 @@ public class CustomerWallet {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        CustomerWallet that = (CustomerWallet) o;
+        CustomerWalletTransaction that = (CustomerWalletTransaction) o;
         return getId() != null && Objects.equals(getId(), that.getId());
     }
 

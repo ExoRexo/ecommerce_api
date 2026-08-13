@@ -1,6 +1,6 @@
 package alexo.ecommerce_api.entity.converter;
 
-import alexo.ecommerce_api.entity.customer.OrderItemReservationStatusType;
+import alexo.ecommerce_api.entity.customer.order.OrderItemReservationStatusType;
 import jakarta.persistence.Converter;
 
 /**

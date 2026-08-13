@@ -1,44 +1,47 @@
-package alexo.ecommerce_api.entity.customer;
+package alexo.ecommerce_api.entity.customer.wallet;
 
-import alexo.ecommerce_api.contract.enums.EnumCode;
-import alexo.ecommerce_api.entity.converter.OrderItemReservationStatusCodeConverter;
+import alexo.ecommerce_api.entity.customer.Customer;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.*;
-import org.hibernate.proxy.HibernateProxy;
-
+import java.math.BigDecimal;
 import java.util.Objects;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.proxy.HibernateProxy;
+
 /**
- * Dictionary row describing reservation status.
+ * Wallet with current customer balance.
  */
 @Entity
-@Table(name = "order_item_reservation_status_types")
+@Table(name = "customer_wallets")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderItemReservationStatusType {
+public class CustomerWallet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Short id;
+    private Long id;
 
-    @Convert(converter = OrderItemReservationStatusCodeConverter.class)
-    @Column(nullable = false, unique = true, length = 50)
-    private OrderItemReservationStatusCode code;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
 
-    @Column(nullable = false, length = 120)
-    private String label;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String description;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal balance;
 
     @Override
     public final boolean equals(Object o) {
@@ -47,23 +50,12 @@ public class OrderItemReservationStatusType {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        OrderItemReservationStatusType that = (OrderItemReservationStatusType) o;
+        CustomerWallet that = (CustomerWallet) o;
         return getId() != null && Objects.equals(getId(), that.getId());
     }
 
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
-    }
-
-    /**
-     * Reservation lifecycle statuses stored in order_item_reservation_status_types.code.
-     */
-    @Getter
-    @RequiredArgsConstructor
-    public enum OrderItemReservationStatusCode implements EnumCode {
-        ACTIVE,
-        CANCELLED,
-        FINISHED
     }
 }

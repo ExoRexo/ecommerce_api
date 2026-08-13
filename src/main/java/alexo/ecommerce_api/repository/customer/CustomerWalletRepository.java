@@ -1,6 +1,6 @@
 package alexo.ecommerce_api.repository.customer;
 
-import alexo.ecommerce_api.entity.customer.CustomerWallet;
+import alexo.ecommerce_api.entity.customer.wallet.CustomerWallet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
