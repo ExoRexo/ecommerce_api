@@ -86,6 +86,11 @@ public class OrderService {
 
         cartItemRepository.deleteAll(cartItems);
 
+        order.setStatusType(
+                Optional.ofNullable(orderCacheService.getCustomerOrderStatusTypes().get(CustomerOrderStatusType.CustomerOrderStatusCode.PENDING_PAYMENT))
+                        .orElseThrow((() -> new EntityNotFoundException("customer status type with code [PENDING_PAYMENT] is not found")))
+        );
+
         return new OrderCreationResponseDTO(
                 new OrderCreationResponseDTO.CustomerOrderDTO(
                         order.getId(),
