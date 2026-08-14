@@ -32,6 +32,8 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserPrincipalService userPrincipalService;
     private final PasswordEncoder passwordEncoder;
+    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+    private final RestAccessDeniedHandler restAccessDeniedHandler;
 
     /**
      * Main security filter chain.
@@ -55,6 +57,11 @@ public class SecurityConfig {
 
                         // All other endpoints require authentication
                         .anyRequest().authenticated()
+                )
+
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(restAuthenticationEntryPoint)
+                        .accessDeniedHandler(restAccessDeniedHandler)
                 )
 
                 // Stateless session (required for JWT)

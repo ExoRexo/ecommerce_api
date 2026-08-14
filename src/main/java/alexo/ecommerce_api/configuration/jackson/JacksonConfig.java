@@ -5,6 +5,7 @@ import org.springdoc.core.properties.SpringDocConfigProperties;
 import org.springdoc.core.providers.ObjectMapperProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Configures Jackson mapper used by API serialization.
@@ -24,6 +25,11 @@ public class JacksonConfig {
         ObjectMapperProvider objectMapperProvider = new ObjectMapperProvider(springDocConfigProperties);
         objectMapperProvider.jsonMapper().registerModule(jsonNullableModule());
         return objectMapperProvider;
+    }
+
+    @Bean
+    public ObjectMapper objectMapper(SpringDocConfigProperties springDocConfigProperties) {
+        return springdocObjectMapperProvider(springDocConfigProperties).jsonMapper();
     }
 
     /**
