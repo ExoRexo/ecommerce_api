@@ -104,4 +104,15 @@ public class OrderService {
         );
     }
 
+    public void cancelOrder(Long orderId) {
+        customerOrderRepository.findByIdForCancelForUpdate(orderId);
+
+        // determine that that order is active for now
+        // lock order for update
+        // find
+
+//        orderItemReservationService.cancelOrderItemReservation();
+
+    }
+
 }

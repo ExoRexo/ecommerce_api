@@ -1,18 +1,12 @@
 package alexo.ecommerce_api.entity.customer.order;
 
 import alexo.ecommerce_api.entity.catalog.Product;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Objects;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,6 +48,9 @@ public class OrderItem {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
     private CustomerOrder order;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "orderItem")
+    private Set<OrderItemWarehouseReservation> warehouseReservations;
 
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp

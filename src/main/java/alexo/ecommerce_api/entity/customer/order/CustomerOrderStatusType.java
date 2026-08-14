@@ -62,10 +62,12 @@ public class CustomerOrderStatusType {
     @Getter
     @RequiredArgsConstructor
     public enum CustomerOrderStatusCode implements EnumCode {
-        CREATED,
-        PENDING_PAYMENT,
-        PAID,
-        COMPLETED,
-        CANCELLED
+        CREATED(false),
+        PENDING_PAYMENT(false),
+        PAID(false),
+        COMPLETED(true),
+        CANCELLED(true);
+
+        private final boolean isFinal;
     }
 }
