@@ -1,6 +1,8 @@
 package alexo.ecommerce_api.service.internal.customer.order;
 
 import alexo.ecommerce_api.cache.customer.order.OrderCacheService;
+import alexo.ecommerce_api.dto.service.internal.customer.order.cancellation.OrderCancellationResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.customer.order.completion.OrderCompletionResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.creation.OrderCreationResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.item_reservation.OrderItemReservationRequestDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.item_reservation.OrderItemReservationResponseDTO;
@@ -8,8 +10,14 @@ import alexo.ecommerce_api.entity.customer.cart.CartItem;
 import alexo.ecommerce_api.entity.customer.order.CustomerOrder;
 import alexo.ecommerce_api.entity.customer.order.CustomerOrderStatusType;
 import alexo.ecommerce_api.entity.customer.order.OrderItem;
+import alexo.ecommerce_api.entity.customer.order.OrderItemWarehouseReservation;
 import alexo.ecommerce_api.entity.inventory.Warehouse;
+import alexo.ecommerce_api.exception.service.customer.order.reservation.OrderCancellationException;
+import alexo.ecommerce_api.exception.service.customer.order.reservation.OrderCompletionException;
 import alexo.ecommerce_api.exception.service.customer.order.reservation.OrderCreationException;
+import alexo.ecommerce_api.mapper.customer.order.cancellation.OrderCancellationMapper;
+import alexo.ecommerce_api.mapper.customer.order.completion.OrderCompletionMapper;
+import alexo.ecommerce_api.mapper.customer.order.creation.OrderCreationMapper;
 import alexo.ecommerce_api.repository.customer.CartItemRepository;
 import alexo.ecommerce_api.repository.customer.CustomerOrderRepository;
 import alexo.ecommerce_api.repository.customer.CustomerRepository;
@@ -91,28 +99,81 @@ public class OrderService {
                         .orElseThrow((() -> new EntityNotFoundException("customer status type with code [PENDING_PAYMENT] is not found")))
         );
 
-        return new OrderCreationResponseDTO(
-                new OrderCreationResponseDTO.CustomerOrderDTO(
-                        order.getId(),
-                        new OrderCreationResponseDTO.CustomerOrderDTO.StatusTypeDTO(
-                                order.getStatusType().getLabel(),
-                                order.getStatusType().getDescription(),
-                                order.getStatusType().getCode()
-                        )
-                ),
-                reservationResponseDTOS
-        );
+        return OrderCreationMapper.fromOrder(order, reservationResponseDTOS);
     }
 
-    public void cancelOrder(Long orderId) {
-        customerOrderRepository.findByIdForCancelForUpdate(orderId);
+    @Transactional
+    public OrderCancellationResponseDTO cancelOrder(Long orderId) {
+        CustomerOrder order = customerOrderRepository.findByIdForCancelForUpdate(orderId)
+                .orElseThrow((() -> new EntityNotFoundException("order with id[" + orderId + "] is not found")));
 
-        // determine that that order is active for now
-        // lock order for update
-        // find
+        CustomerOrderStatusType.CustomerOrderStatusCode statusCode = order.getStatusType().getCode();
 
-//        orderItemReservationService.cancelOrderItemReservation();
+        if (
+                statusCode != CustomerOrderStatusType.CustomerOrderStatusCode.CREATED
+                        && statusCode != CustomerOrderStatusType.CustomerOrderStatusCode.PENDING_PAYMENT
+        ) {
+            throw OrderCancellationException.orderIsNotInCreatedOrPendingPaymentStatus(orderId);
+        }
 
+        List<OrderItem> orderItems = orderItemRepository.findByOrderIdForCancelForUpdate(order.getId());
+
+        List<OrderItemReservationResponseDTO> orderItemReservationResponseDTOS = new ArrayList<>(orderItems.size());
+
+        for (OrderItem item : orderItems) {
+
+            for (OrderItemWarehouseReservation warehouseReservation : item.getWarehouseReservations()) {
+                orderItemReservationResponseDTOS.add(
+                        orderItemReservationService.cancelOrderItemReservation(warehouseReservation.getId())
+                );
+            }
+
+        }
+
+        order.setStatusType(
+                Optional.ofNullable(orderCacheService.getCustomerOrderStatusTypes().get(CustomerOrderStatusType.CustomerOrderStatusCode.CANCELLED))
+                        .orElseThrow((() -> new EntityNotFoundException("customer status type with code [CANCELLED] is not found")))
+        );
+
+        return OrderCancellationMapper.fromOrder(order, orderItemReservationResponseDTOS);
+    }
+
+    /**
+     * this method can be called from some kind of internal service,
+     * web-hook, event e.t.c, which signalizes to method, that this order must be completed
+     *
+     * @param orderId customer order primary key
+     * @return completion response dto
+     */
+    @Transactional
+    public OrderCompletionResponseDTO completeOrder(Long orderId) {
+        CustomerOrder order = customerOrderRepository.findByIdForCompleteForUpdate(orderId)
+                .orElseThrow((() -> new EntityNotFoundException("order with id[" + orderId + "] is not found")));
+
+        if (order.getStatusType().getCode() != CustomerOrderStatusType.CustomerOrderStatusCode.PAID) {
+            throw OrderCompletionException.orderIsNotInPaidStatus(orderId);
+        }
+
+        List<OrderItem> orderItems = orderItemRepository.findByOrderIdForCompleteForUpdate(order.getId());
+
+        List<OrderItemReservationResponseDTO> orderItemReservationResponseDTOS = new ArrayList<>(orderItems.size());
+
+        for (OrderItem item : orderItems) {
+
+            for (OrderItemWarehouseReservation warehouseReservation : item.getWarehouseReservations()) {
+                orderItemReservationResponseDTOS.add(
+                        orderItemReservationService.finishOrderItemReservation(warehouseReservation.getId())
+                );
+            }
+
+        }
+
+        order.setStatusType(
+                Optional.ofNullable(orderCacheService.getCustomerOrderStatusTypes().get(CustomerOrderStatusType.CustomerOrderStatusCode.COMPLETED))
+                        .orElseThrow((() -> new EntityNotFoundException("customer status type with code [COMPLETED] is not found")))
+        );
+
+        return OrderCompletionMapper.fromOrder(order, orderItemReservationResponseDTOS);
     }
 
 }

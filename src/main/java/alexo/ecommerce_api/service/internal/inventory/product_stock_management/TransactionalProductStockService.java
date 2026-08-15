@@ -21,6 +21,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -28,7 +29,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-@Valid
+@Validated
 public class TransactionalProductStockService {
 
     private final ProductRepository productRepository;
@@ -40,7 +41,7 @@ public class TransactionalProductStockService {
     private final WarehouseStockTransactionRepository warehouseStockTransactionRepository;
 
     @Transactional
-    protected WarehouseStockTransaction updateProductPhysicalStockOnWarehouse(@NotNull ProductStockUpdateRequestDTO request) throws RuntimeException {
+    protected WarehouseStockTransaction updateProductPhysicalStockOnWarehouse(@NotNull @Valid ProductStockUpdateRequestDTO request) throws RuntimeException {
         int delta = request.deltaQuantity();
 
         WarehouseStockTransactionPurposeType.WarehouseStockTransactionPurposeCode purposeCode = request.purposeCode();

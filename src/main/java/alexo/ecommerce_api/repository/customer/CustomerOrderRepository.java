@@ -15,11 +15,21 @@ public interface CustomerOrderRepository extends JpaRepository<CustomerOrder, Lo
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @EntityGraph(attributePaths = {
-            "items"
+            "statusType"
     })
     @Query("""
     select c from CustomerOrder c where c.id = ?1
 """)
     Optional<CustomerOrder> findByIdForCancelForUpdate(Long id);
+
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @EntityGraph(attributePaths = {
+            "statusType"
+    })
+    @Query("""
+    select c from CustomerOrder c where c.id = ?1
+""")
+    Optional<CustomerOrder> findByIdForCompleteForUpdate(Long id);
 }
 

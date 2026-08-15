@@ -178,13 +178,6 @@ public class OrderItemReservationService {
                         .orElseThrow(() -> new EntityNotFoundException("reservation status type with code[FINISHED] is not found"))
         );
 
-        productStockManagementService.updateProductPhysicalStockOnWarehouse(new ProductStockUpdateRequestDTO(
-                productId,
-                warehouseId,
-                - orderItemWarehouseReservation.getReservedQuantity(),
-                WarehouseStockTransactionPurposeType.WarehouseStockTransactionPurposeCode.SALE
-        ));
-
         ProductWarehouseStock stock = productWarehouseStockRepository
                 .findByProductIdAndWarehouseIdForUpdate(
                         productId,
@@ -193,6 +186,13 @@ public class OrderItemReservationService {
                 .orElseThrow(() -> new EntityNotFoundException("stock item with productId[" + productId + "] and warehouseId["+warehouseId+"] is not found"));
 
         stock.setReservedQuantity(stock.getReservedQuantity() - orderItemWarehouseReservation.getReservedQuantity());
+
+        productStockManagementService.updateProductPhysicalStockOnWarehouse(new ProductStockUpdateRequestDTO(
+                productId,
+                warehouseId,
+                - orderItemWarehouseReservation.getReservedQuantity(),
+                WarehouseStockTransactionPurposeType.WarehouseStockTransactionPurposeCode.SALE
+        ));
 
         return OrderItemWarehouseReservationMapper.fromOrderItemWarehouseReservationToOrderItemReservationResponseDTO(orderItemWarehouseReservationRepository
                 .findByIdForItemReservationResponse(orderItemWarehouseReservationId)
