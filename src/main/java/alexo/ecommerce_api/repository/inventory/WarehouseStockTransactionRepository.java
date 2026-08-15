@@ -33,6 +33,7 @@ select t from WarehouseStockTransaction t where t.id = :id
             "product",
             "warehouse.address",
             "purposeType",
+            "user",
     })
     @NotNull
     Page<@NotNull WarehouseStockTransaction> findAll(@NotNull Specification<@NotNull WarehouseStockTransaction> specification, @NotNull Pageable pageable);
