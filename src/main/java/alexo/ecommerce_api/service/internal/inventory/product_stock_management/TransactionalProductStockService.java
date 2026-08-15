@@ -1,8 +1,8 @@
 package alexo.ecommerce_api.service.internal.inventory.product_stock_management;
 
 import alexo.ecommerce_api.cache.inventory.warehouse.WarehouseCacheService;
-import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update_product_wh_stock.update.ProductStockUpdateRequestDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update_product_wh_stock.update.ProductStockUpdateResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update.ProductStockUpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update.ProductStockUpdateResponseDTO;
 import alexo.ecommerce_api.entity.catalog.Product;
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.entity.inventory.ProductWarehouseStock;

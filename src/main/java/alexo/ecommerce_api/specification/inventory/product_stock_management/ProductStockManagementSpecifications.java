@@ -1,6 +1,8 @@
 package alexo.ecommerce_api.specification.inventory.product_stock_management;
 
-import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update_product_wh_stock.transaction_list.TransactionListRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.stock_list.StockListRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.transaction_list.TransactionListRequestDTO;
+import alexo.ecommerce_api.entity.inventory.ProductWarehouseStock;
 import alexo.ecommerce_api.entity.inventory.WarehouseStockTransaction;
 import jakarta.persistence.criteria.Predicate;
 import org.jetbrains.annotations.NotNull;
@@ -77,6 +79,58 @@ public class ProductStockManagementSpecifications {
                 if (filtersDTO.createdAt() != null) {
                     predicates.add(
                             criteriaBuilder.equal(root.<OffsetDateTime>get("createdAt"), filtersDTO.createdAt())
+                    );
+                }
+
+                return criteriaBuilder.and(predicates);
+            };
+        }
+    }
+
+
+    public static class ProductStockListSpecification {
+
+        public static Specification<@NotNull ProductWarehouseStock> getSpecification(StockListRequestDTO.FiltersDTO filtersDTO) {
+            Objects.requireNonNull(filtersDTO);
+
+            return (root, query, criteriaBuilder) -> {
+                List<Predicate> predicates = new ArrayList<>();
+
+                if (filtersDTO.physicalQuantity() != null) {
+                    predicates.add(
+                            criteriaBuilder.equal(root.get("physicalQuantity"), filtersDTO.physicalQuantity())
+                    );
+                }
+
+                if (filtersDTO.reservedQuantity() != null) {
+                    predicates.add(
+                            criteriaBuilder.equal(root.get("reservedQuantity"), filtersDTO.reservedQuantity())
+                    );
+                }
+
+                if (filtersDTO.freeQuantity() != null) {
+                    predicates.add(
+                            criteriaBuilder.equal(
+                                    criteriaBuilder.diff(root.get("physicalQuantity"), root.get("reservedQuantity")), filtersDTO.freeQuantity()
+                            )
+                    );
+                }
+
+                if (filtersDTO.warehouseName() != null) {
+                    predicates.add(
+                            criteriaBuilder.equal(root.get("warehouse").get("name"), filtersDTO.warehouseName())
+                    );
+                }
+
+                if (filtersDTO.warehouseId() != null) {
+                    predicates.add(
+                            criteriaBuilder.equal(root.get("warehouse").get("id"), filtersDTO.warehouseId())
+                    );
+                }
+
+                if (filtersDTO.productId() != null) {
+                    predicates.add(
+                            criteriaBuilder.equal(root.get("product").get("id"), filtersDTO.productId())
                     );
                 }
 

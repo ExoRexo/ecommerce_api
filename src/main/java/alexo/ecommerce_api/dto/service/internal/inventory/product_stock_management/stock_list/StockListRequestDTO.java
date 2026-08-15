@@ -1,14 +1,11 @@
-package alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update_product_wh_stock.transaction_list;
+package alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.stock_list;
 
-import alexo.ecommerce_api.entity.inventory.WarehouseStockTransactionPurposeType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Sort;
 
-import java.time.OffsetDateTime;
-
-public record TransactionListRequestDTO(
+public record StockListRequestDTO(
         @NotNull @Valid SortDTO sortDTO,
         @NotNull @Valid PaginationDTO paginationDTO,
         @NotNull @Valid FiltersDTO filtersDTO
@@ -33,16 +30,12 @@ public record TransactionListRequestDTO(
     }
 
     public record FiltersDTO(
-            Long transactionId,
-            Integer oldQuantity,
-            Integer newQuantity,
-            Integer delta,
+            Long physicalQuantity,
+            Integer reservedQuantity,
+            Integer freeQuantity,
             String warehouseName,
             Long warehouseId,
-            WarehouseStockTransactionPurposeType.WarehouseStockTransactionPurposeCode purposeCode,
-            Long userId,
-            Long productId,
-            OffsetDateTime createdAt
+            Long productId
     ) {
     }
 }

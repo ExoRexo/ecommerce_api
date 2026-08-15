@@ -2,10 +2,12 @@ package alexo.ecommerce_api.http.controller.inventory.product_stock_management;
 
 import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import alexo.ecommerce_api.dto.http.response.PageResponseDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update_product_wh_stock.transaction_list.TransactionListRequestDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update_product_wh_stock.transaction_list.TransactionListResponseDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update_product_wh_stock.update.ProductStockUpdateRequestDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update_product_wh_stock.update.ProductStockUpdateResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.stock_list.StockListRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.stock_list.StockListResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.transaction_list.TransactionListRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.transaction_list.TransactionListResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update.ProductStockUpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update.ProductStockUpdateResponseDTO;
 import alexo.ecommerce_api.entity.inventory.WarehouseStockTransactionPurposeType;
 import alexo.ecommerce_api.service.internal.inventory.product_stock_management.ProductStockManagementService;
 import jakarta.validation.Valid;
@@ -27,6 +29,44 @@ public class ProductStockManagementController {
     //    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_PRODUCT_STOCK_MANAGEMENT_UPDATE_WAREHOUSE_STOCK')") // todo
     public ProductStockUpdateResponseDTO updateProductStockOnWarehouse(@Valid @RequestBody ProductStockUpdateRequestDTO request) {
         return productStockManagementService.updateProductPhysicalStockOnWarehouse(request);
+    }
+
+    @GetMapping("/product-warehouse-stocks-list")
+    //    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_PRODUCT_STOCK_MANAGEMENT_READ_PRODUCT_WH_STOCKS_LIST')") // todo
+    public ResponseEntity<@NotNull ApiResponseDTO<PageResponseDTO<StockListResponseDTO>>> getProductWarehouseStocksList(
+            @RequestParam(name = "sortField", defaultValue = "id") String sortField,
+            @RequestParam(name = "sortDirection", defaultValue = "DESC") Sort.Direction sortDirection,
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "size", defaultValue = "50") Integer size,
+            @RequestParam(name = "physicalQuantity", required = false) Long physicalQuantity,
+            @RequestParam(name = "reservedQuantity", required = false) Integer reservedQuantity,
+            @RequestParam(name = "freeQuantity", required = false) Integer freeQuantity,
+            @RequestParam(name = "warehouseName", required = false) String warehouseName,
+            @RequestParam(name = "warehouseId", required = false) Long warehouseId,
+            @RequestParam(name = "productId", required = false) Long productId
+    ) {
+        return ResponseEntity
+                .ok()
+                .body(ApiResponseDTO.success(productStockManagementService.getProductStockList(
+                        new StockListRequestDTO(
+                                new StockListRequestDTO.SortDTO(
+                                        sortField,
+                                        sortDirection
+                                ),
+                                new StockListRequestDTO.PaginationDTO(
+                                        page,
+                                        size
+                                ),
+                                new StockListRequestDTO.FiltersDTO(
+                                        physicalQuantity,
+                                        reservedQuantity,
+                                        freeQuantity,
+                                        warehouseName,
+                                        warehouseId,
+                                        productId
+                                )
+                        )
+                )));
     }
 
     @GetMapping("/warehouse-transactions-list")

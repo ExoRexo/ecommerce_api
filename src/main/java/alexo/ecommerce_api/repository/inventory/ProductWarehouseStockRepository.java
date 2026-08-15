@@ -2,15 +2,17 @@ package alexo.ecommerce_api.repository.inventory;
 
 import alexo.ecommerce_api.entity.inventory.ProductWarehouseStock;
 import jakarta.persistence.LockModeType;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Query;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface ProductWarehouseStockRepository extends JpaRepository<ProductWarehouseStock, Long> {
+public interface ProductWarehouseStockRepository extends JpaRepository<ProductWarehouseStock, Long>, JpaSpecificationExecutor<ProductWarehouseStock> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
     select s
@@ -23,6 +25,14 @@ public interface ProductWarehouseStockRepository extends JpaRepository<ProductWa
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from ProductWarehouseStock p where p.warehouse.id = ?1 and p.product.id = ?2")
     Optional<ProductWarehouseStock> findByWarehouse_IdAndProduct_IdForUpdate(Long warehouseId, Long productId);
+
+    @Override
+    @EntityGraph(attributePaths = {
+            "product",
+            "warehouse.address",
+    })
+    @NotNull
+    Page<@NotNull ProductWarehouseStock> findAll(@NotNull Specification<@NotNull ProductWarehouseStock> specification, @NotNull Pageable pageable);
 
 }
 

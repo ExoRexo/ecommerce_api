@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update_product_wh_stock.update;
+package alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update;
 
 import alexo.ecommerce_api.entity.inventory.WarehouseStockTransactionPurposeType;
 import alexo.ecommerce_api.validation.numeric.NotZero;
