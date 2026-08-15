@@ -1,7 +1,8 @@
 package alexo.ecommerce_api.service.internal.inventory.product_stock_management;
 
 import alexo.ecommerce_api.cache.inventory.warehouse.WarehouseCacheService;
-import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update_product_wh_stock.ProductStockUpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update_product_wh_stock.update.ProductStockUpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update_product_wh_stock.update.ProductStockUpdateResponseDTO;
 import alexo.ecommerce_api.entity.catalog.Product;
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.entity.inventory.ProductWarehouseStock;
@@ -9,6 +10,7 @@ import alexo.ecommerce_api.entity.inventory.Warehouse;
 import alexo.ecommerce_api.entity.inventory.WarehouseStockTransaction;
 import alexo.ecommerce_api.entity.inventory.WarehouseStockTransactionPurposeType;
 import alexo.ecommerce_api.exception.service.inventory.product_stock_management.StockUpdateException;
+import alexo.ecommerce_api.mapper.inventory.product_stock_management.ProductStockManagementMapper;
 import alexo.ecommerce_api.repository.catalog.ProductRepository;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
 import alexo.ecommerce_api.repository.inventory.ProductWarehouseStockRepository;
@@ -41,7 +43,7 @@ public class TransactionalProductStockService {
     private final WarehouseStockTransactionRepository warehouseStockTransactionRepository;
 
     @Transactional
-    protected WarehouseStockTransaction updateProductPhysicalStockOnWarehouse(@NotNull @Valid ProductStockUpdateRequestDTO request) throws RuntimeException {
+    protected ProductStockUpdateResponseDTO updateProductPhysicalStockOnWarehouse(@NotNull @Valid ProductStockUpdateRequestDTO request) throws RuntimeException {
         int delta = request.deltaQuantity();
 
         WarehouseStockTransactionPurposeType.WarehouseStockTransactionPurposeCode purposeCode = request.purposeCode();
@@ -124,8 +126,8 @@ public class TransactionalProductStockService {
                         .build()
         );
 
-        return warehouseStockTransactionRepository.findByIdForStockManagementResponse(warehouseStockTransaction.getId())
-                .orElseThrow(() -> new EntityNotFoundException("transaction with id [" + warehouseStockTransaction.getId() + "] is not found"));
+        return ProductStockManagementMapper.fromWarehouseStockTransactionToProductStockUpdateResponseDTO(warehouseStockTransactionRepository.findByIdForStockManagementResponse(warehouseStockTransaction.getId())
+                .orElseThrow(() -> new EntityNotFoundException("transaction with id [" + warehouseStockTransaction.getId() + "] is not found")));
     }
 
 }

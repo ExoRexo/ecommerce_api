@@ -3,7 +3,7 @@ package alexo.ecommerce_api.service.internal.customer.order;
 import alexo.ecommerce_api.cache.customer.order.OrderCacheService;
 import alexo.ecommerce_api.dto.service.internal.customer.order.item_reservation.OrderItemReservationRequestDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.item_reservation.OrderItemReservationResponseDTO;
-import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update_product_wh_stock.ProductStockUpdateRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.product_stock_management.update_product_wh_stock.update.ProductStockUpdateRequestDTO;
 import alexo.ecommerce_api.entity.customer.order.OrderItem;
 import alexo.ecommerce_api.entity.customer.order.OrderItemReservationStatusType;
 import alexo.ecommerce_api.entity.customer.order.OrderItemWarehouseReservation;
