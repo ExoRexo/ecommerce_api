@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.service.internal.catalog.category;
+package alexo.ecommerce_api.unit.service.internal.catalog.category;
 
 import alexo.ecommerce_api.cache.catalog.category.CategoryCacheService;
 import alexo.ecommerce_api.dto.service.internal.catalog.category.CategoryResponseDTO;
@@ -7,6 +7,7 @@ import alexo.ecommerce_api.dto.service.internal.catalog.category.tree.NodeDTO;
 import alexo.ecommerce_api.dto.service.internal.catalog.category.update.CategoryUpdateRequestDTO;
 import alexo.ecommerce_api.entity.catalog.Category;
 import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
+import alexo.ecommerce_api.service.internal.catalog.category.CategoryService;
 import jakarta.persistence.EntityExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
