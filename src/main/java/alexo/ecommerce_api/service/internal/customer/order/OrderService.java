@@ -5,6 +5,7 @@ import alexo.ecommerce_api.dto.http.response.PageResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.cancellation.OrderCancellationResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.completion.OrderCompletionResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.creation.OrderCreationResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.customer.order.details.OrderDetailsResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.item_reservation.OrderItemReservationRequestDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.item_reservation.OrderItemReservationResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.list.OrderListRequestDTO;
@@ -21,6 +22,7 @@ import alexo.ecommerce_api.exception.service.customer.order.reservation.OrderCre
 import alexo.ecommerce_api.mapper.customer.order.cancellation.OrderCancellationMapper;
 import alexo.ecommerce_api.mapper.customer.order.completion.OrderCompletionMapper;
 import alexo.ecommerce_api.mapper.customer.order.creation.OrderCreationMapper;
+import alexo.ecommerce_api.mapper.customer.order.details.OrderDetailsMapper;
 import alexo.ecommerce_api.mapper.customer.order.list.OrderListMapper;
 import alexo.ecommerce_api.repository.customer.CartItemRepository;
 import alexo.ecommerce_api.repository.customer.CustomerOrderRepository;
@@ -112,6 +114,17 @@ public class OrderService {
         );
 
         return OrderCreationMapper.fromOrder(order, reservationResponseDTOS);
+    }
+
+    public OrderDetailsResponseDTO getOrderDetails(Long orderId, Long customerUserId) {
+        CustomerOrder order = customerOrderRepository.findByIdForDetails(orderId)
+                .orElseThrow((() -> new EntityNotFoundException("order with id[" + orderId + "] is not found")));
+
+        if (customerUserId != null && !customerUserId.equals(order.getCustomer().getUserId())) {
+            throw new AccessDeniedException("order is not belongs to provided customer");
+        }
+
+        return OrderDetailsMapper.fromOrderToOrderDetailsResponseDTO(order);
     }
 
     public PageResponseDTO<OrderListResponseDTO> getOrderList(@Valid OrderListRequestDTO request)  {

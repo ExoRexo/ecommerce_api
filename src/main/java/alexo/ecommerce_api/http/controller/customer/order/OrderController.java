@@ -7,6 +7,8 @@ import alexo.ecommerce_api.dto.service.internal.customer.order.cancellation.Orde
 import alexo.ecommerce_api.dto.service.internal.customer.order.completion.OrderCompletionRequestDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.completion.OrderCompletionResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.creation.OrderCreationResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.customer.order.details.OrderDetailsRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.customer.order.details.OrderDetailsResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.list.OrderListRequestDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.list.OrderListResponseDTO;
 import alexo.ecommerce_api.entity.customer.order.CustomerOrderStatusType;
@@ -35,14 +37,29 @@ public class OrderController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(
-                    ApiResponseDTO.success(
-                            orderService
-                                    .createOrder(
-                                            Objects
-                                                    .requireNonNull(authorizationService.getCurrentUserPrincipalFromAuthentication())
-                                                    .getId()
-                                    )
-                    )
+                        ApiResponseDTO.success(
+                                orderService
+                                        .createOrder(
+                                                Objects
+                                                        .requireNonNull(authorizationService.getCurrentUserPrincipalFromAuthentication())
+                                                        .getId()
+                                        )
+                        )
+                );
+    }
+
+    @GetMapping("/me/order-details")
+    public ResponseEntity<@NotNull ApiResponseDTO<OrderDetailsResponseDTO>> getMyOrderDetails(@Valid @RequestBody OrderDetailsRequestDTO requestDTO) {
+        return ResponseEntity
+                .ok()
+                .body(ApiResponseDTO.success(
+                            orderService.getOrderDetails(
+                                    requestDTO.orderId(),
+                                    Objects
+                                            .requireNonNull(authorizationService.getCurrentUserPrincipalFromAuthentication())
+                                            .getId()
+                            )
+                        )
                 );
     }
 
@@ -52,10 +69,10 @@ public class OrderController {
             @RequestParam(name = "sortDirection", defaultValue = "DESC") Sort.Direction sortDirection,
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "size", defaultValue = "50") Integer size,
-            @RequestParam (name = "orderId", required = false) Long orderId,
-            @RequestParam (name = "statusCode", required = false) CustomerOrderStatusType.CustomerOrderStatusCode statusCode,
-            @RequestParam (name = "startDate", required = false) OffsetDateTime startDate,
-            @RequestParam (name = "endDate", required = false) OffsetDateTime endDate
+            @RequestParam(name = "orderId", required = false) Long orderId,
+            @RequestParam(name = "statusCode", required = false) CustomerOrderStatusType.CustomerOrderStatusCode statusCode,
+            @RequestParam(name = "startDate", required = false) OffsetDateTime startDate,
+            @RequestParam(name = "endDate", required = false) OffsetDateTime endDate
     ) {
         return ResponseEntity
                 .ok()

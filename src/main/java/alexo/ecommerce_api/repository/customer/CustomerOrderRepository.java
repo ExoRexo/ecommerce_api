@@ -39,5 +39,16 @@ public interface CustomerOrderRepository extends JpaRepository<CustomerOrder, Lo
     })
     @NotNull
     Page<@NotNull CustomerOrder> findAll(@NotNull Specification<@NotNull CustomerOrder> specification, @NotNull Pageable pageable);
+
+    @EntityGraph(attributePaths = {
+            "statusType",
+            "items",
+            "items.product",
+            "items.warehouseReservations.statusType",
+    })
+    @Query("""
+    select c from CustomerOrder c where c.id = ?1
+""")
+    Optional<CustomerOrder> findByIdForDetails(Long id);
 }
 
