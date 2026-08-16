@@ -3,8 +3,10 @@ package alexo.ecommerce_api.entity.customer.order;
 import alexo.ecommerce_api.entity.customer.Customer;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Set;
 
@@ -34,6 +36,10 @@ public class CustomerOrder {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")
     private Set<OrderItem> items;
+
+    @Column(name = "created_at", nullable = false)
+    @CreationTimestamp
+    private OffsetDateTime createdAt;
 
     @Override
     public final boolean equals(Object o) {

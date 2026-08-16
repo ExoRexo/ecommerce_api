@@ -1,11 +1,14 @@
 package alexo.ecommerce_api.service.internal.customer.order;
 
 import alexo.ecommerce_api.cache.customer.order.OrderCacheService;
+import alexo.ecommerce_api.dto.http.response.PageResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.cancellation.OrderCancellationResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.completion.OrderCompletionResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.creation.OrderCreationResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.item_reservation.OrderItemReservationRequestDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.item_reservation.OrderItemReservationResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.customer.order.list.OrderListRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.customer.order.list.OrderListResponseDTO;
 import alexo.ecommerce_api.entity.customer.cart.CartItem;
 import alexo.ecommerce_api.entity.customer.order.CustomerOrder;
 import alexo.ecommerce_api.entity.customer.order.CustomerOrderStatusType;
@@ -18,12 +21,21 @@ import alexo.ecommerce_api.exception.service.customer.order.reservation.OrderCre
 import alexo.ecommerce_api.mapper.customer.order.cancellation.OrderCancellationMapper;
 import alexo.ecommerce_api.mapper.customer.order.completion.OrderCompletionMapper;
 import alexo.ecommerce_api.mapper.customer.order.creation.OrderCreationMapper;
+import alexo.ecommerce_api.mapper.customer.order.list.OrderListMapper;
 import alexo.ecommerce_api.repository.customer.CartItemRepository;
 import alexo.ecommerce_api.repository.customer.CustomerOrderRepository;
 import alexo.ecommerce_api.repository.customer.CustomerRepository;
 import alexo.ecommerce_api.repository.customer.OrderItemRepository;
+import alexo.ecommerce_api.specification.customer.order.OrderSpecifications;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -102,10 +114,34 @@ public class OrderService {
         return OrderCreationMapper.fromOrder(order, reservationResponseDTOS);
     }
 
+    public PageResponseDTO<OrderListResponseDTO> getOrderList(@Valid OrderListRequestDTO request)  {
+        Assert.notNull(request, "request must be not null");
+
+        List<Sort.Order> orders = new ArrayList<>();
+
+        orders.add(new Sort.Order(request.sortDTO().direction(), request.sortDTO().field()));
+
+        PageRequest pageRequest = PageRequest.of(
+                request.paginationDTO().page(),
+                request.paginationDTO().size(),
+                Sort.by(orders)
+        );
+
+        Specification<@NotNull CustomerOrder> specification = OrderSpecifications.OrderListSpecification.getSpecification(request.filtersDTO());
+
+        Page<@NotNull CustomerOrder> ordersPage = customerOrderRepository.findAll(specification, pageRequest);
+
+        return PageResponseDTO.from(ordersPage.map(OrderListMapper::fromCustomerOrderToOrderListResponseDTO));
+    }
+
     @Transactional
-    public OrderCancellationResponseDTO cancelOrder(Long orderId) {
+    public OrderCancellationResponseDTO cancelOrder(Long orderId, Long customerUserId) {
         CustomerOrder order = customerOrderRepository.findByIdForCancelForUpdate(orderId)
                 .orElseThrow((() -> new EntityNotFoundException("order with id[" + orderId + "] is not found")));
+
+        if (customerUserId != null && !customerUserId.equals(order.getCustomer().getUserId())) {
+            throw new AccessDeniedException("order is not belongs to provided customer");
+        }
 
         CustomerOrderStatusType.CustomerOrderStatusCode statusCode = order.getStatusType().getCode();
 
