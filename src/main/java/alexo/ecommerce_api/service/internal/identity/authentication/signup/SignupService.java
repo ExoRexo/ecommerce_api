@@ -2,12 +2,14 @@ package alexo.ecommerce_api.service.internal.identity.authentication.signup;
 
 import alexo.ecommerce_api.entity.customer.Customer;
 import alexo.ecommerce_api.entity.customer.cart.CustomerCart;
+import alexo.ecommerce_api.entity.customer.wallet.CustomerWallet;
 import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.entity.identity.UserStatusType;
 import alexo.ecommerce_api.repository.customer.CustomerCartRepository;
 import alexo.ecommerce_api.repository.customer.CustomerRepository;
+import alexo.ecommerce_api.repository.customer.CustomerWalletRepository;
 import alexo.ecommerce_api.repository.identity.user.UserRepository;
 import alexo.ecommerce_api.service.internal.identity.authority.UserAuthorityService;
 import alexo.ecommerce_api.cache.identity.status.UserStatusCacheService;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
@@ -34,6 +37,7 @@ public class SignupService {
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
     private final CustomerCartRepository customerCartRepository;
+    private final CustomerWalletRepository customerWalletRepository;
 
     @Transactional
     public User createUser(
@@ -125,6 +129,7 @@ public class SignupService {
         customerRepository.save(customer);
 
         customerCartRepository.save(CustomerCart.builder().customer(customer).build());
+        customerWalletRepository.save(CustomerWallet.builder().customer(customer).balance(BigDecimal.valueOf(0L)).build());
 
         return user;
     }

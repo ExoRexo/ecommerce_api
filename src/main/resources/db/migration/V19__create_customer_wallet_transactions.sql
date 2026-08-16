@@ -1,6 +1,6 @@
 CREATE TABLE customer_wallet_transactions (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    wallet_id BIGINT NOT NULL REFERENCES customer_wallets(id),
+    wallet_id BIGINT NOT NULL REFERENCES customer_wallets(customer_id),
     old_balance NUMERIC(10, 2) NOT NULL,
     new_balance NUMERIC(10, 2) NOT NULL,
     delta NUMERIC(10, 2) NOT NULL,

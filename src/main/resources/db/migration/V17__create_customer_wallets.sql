@@ -1,6 +1,5 @@
 CREATE TABLE customer_wallets (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    customer_id BIGINT NOT NULL REFERENCES customers(user_id) ON DELETE CASCADE,
+    customer_id BIGINT PRIMARY KEY REFERENCES customers(user_id) ON DELETE CASCADE,
     balance NUMERIC(10, 2) NOT NULL DEFAULT 0.00
 );
 
