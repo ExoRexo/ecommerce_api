@@ -1,20 +1,33 @@
 package alexo.ecommerce_api.service.internal.customer.cart;
 
+import alexo.ecommerce_api.dto.http.response.PageResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.customer.cart.produt_list.CartProductListRequestDTO;
+import alexo.ecommerce_api.dto.service.internal.customer.cart.produt_list.CartProductListResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.cart.update_product_qty.UpdateProductQuantityInCartRequestDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.cart.update_product_qty.UpdateProductQuantityInCartResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.list.RequestDTO;
+import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.list.WarehouseListResponseDTO;
 import alexo.ecommerce_api.entity.customer.cart.CartItem;
+import alexo.ecommerce_api.entity.inventory.Warehouse;
 import alexo.ecommerce_api.repository.catalog.ProductRepository;
 import alexo.ecommerce_api.repository.customer.CartItemRepository;
 import alexo.ecommerce_api.repository.customer.CustomerCartRepository;
 import alexo.ecommerce_api.service.internal.identity.authority.AuthorizationService;
+import alexo.ecommerce_api.specification.inventory.warehouse.WarehouseSpecifications;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -58,6 +71,27 @@ public class CartService {
                 cartItem.getProduct().getId(),
                 cartItem.getQuantity()
         );
+    }
+
+    public PageResponseDTO<CartProductListResponseDTO> getCartProductList(@Valid CartProductListRequestDTO request)  {
+        Assert.notNull(request, "request must be not null");
+
+        List<Sort.Order> orders = new ArrayList<>();
+
+        orders.add(new Sort.Order(request.sortDTO().direction(), request.sortDTO().field()));
+
+        PageRequest pageRequest = PageRequest.of(
+                request.paginationDTO().page(),
+                request.paginationDTO().size(),
+                Sort.by(orders)
+        );
+
+        Page<@NotNull CartItem> cartItemsPage = cartItemRepository.findAll(pageRequest);
+
+        return PageResponseDTO.from(cartItemsPage.map(cartItem -> new CartProductListResponseDTO(
+                cartItem.getProduct().getId(),
+                cartItem.getQuantity()
+        )));
     }
 
 }

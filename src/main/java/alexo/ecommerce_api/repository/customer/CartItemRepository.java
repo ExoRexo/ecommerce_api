@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CartItemRepository extends JpaRepository<CartItem, Long> {
+public interface CartItemRepository extends JpaRepository<CartItem, Long>, JpaSpecificationExecutor<CartItem> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select c from CartItem c where c.cart.customerId = ?1 and c.product.id = ?2")
