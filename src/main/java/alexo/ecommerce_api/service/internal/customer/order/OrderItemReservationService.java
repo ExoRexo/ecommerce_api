@@ -61,7 +61,7 @@ public class OrderItemReservationService {
             );
         }
 
-        Optional<ProductWarehouseStock> productWarehouseStockOption = productWarehouseStockRepository.findByWarehouse_IdAndProduct_IdForUpdate(warehouseId, productId);
+        Optional<ProductWarehouseStock> productWarehouseStockOption = productWarehouseStockRepository.findByProductIdAndWarehouseIdForUpdate(productId, warehouseId);
 
         if (productWarehouseStockOption.isEmpty()) {
             throw OrderItemReservationException.warehouseProductStockForProductAndWarehouseNotFound(warehouseId, productId);
@@ -127,7 +127,7 @@ public class OrderItemReservationService {
         warehouseId = orderItemWarehouseReservation.getWarehouse().getId();
         productId = orderItemWarehouseReservation.getOrderItem().getProduct().getId();
 
-        Optional<ProductWarehouseStock> productWarehouseStockOption = productWarehouseStockRepository.findByWarehouse_IdAndProduct_IdForUpdate(warehouseId, productId);
+        Optional<ProductWarehouseStock> productWarehouseStockOption = productWarehouseStockRepository.findByProductIdAndWarehouseIdForUpdate(productId, warehouseId);
 
         if (productWarehouseStockOption.isEmpty()) {
             throw OrderItemReservationCancellationException.warehouseProductStockForProductAndWarehouseNotFound(warehouseId, productId);
