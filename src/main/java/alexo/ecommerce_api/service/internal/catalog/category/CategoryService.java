@@ -76,7 +76,7 @@ public class CategoryService {
 
         Long categoryId = updateRequestDTO.categoryId();
 
-        Category category = categoryRepository.findById(categoryId).orElseThrow();
+        Category category = categoryRepository.findByIdForUpdate(categoryId).orElseThrow();
 
         if (updateRequestDTO.parentId().isPresent()) {
             Long parentId = updateRequestDTO.parentId().get();
@@ -84,8 +84,7 @@ public class CategoryService {
             if (parentId == null) {
                 category.setParent(null);
             } else {
-                Category parent = categoryRepository.findById(parentId).orElseThrow();
-                category.setParent(parent);
+                category.setParent(categoryRepository.getReferenceById(parentId));
             }
         }
 

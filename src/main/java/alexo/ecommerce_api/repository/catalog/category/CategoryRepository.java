@@ -1,8 +1,10 @@
 package alexo.ecommerce_api.repository.catalog.category;
 
 import alexo.ecommerce_api.entity.catalog.Category;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -110,5 +112,11 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     select c from Category c
 """)
     List<Category> findAllWithParent();
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+    select c from Category c where c.id = :id
+""")
+    Optional<Category> findByIdForUpdate(Long id);
 }
 
