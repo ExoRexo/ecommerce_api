@@ -13,7 +13,7 @@ import alexo.ecommerce_api.exception.service.customer.order.reservation.OrderIte
 import alexo.ecommerce_api.exception.service.customer.order.reservation.OrderItemReservationException;
 import alexo.ecommerce_api.exception.service.customer.order.reservation.OrderItemReservationFinishingException;
 import alexo.ecommerce_api.mapper.customer.order.item_reservation.OrderItemWarehouseReservationMapper;
-import alexo.ecommerce_api.repository.customer.OrderItemRepository;
+import alexo.ecommerce_api.repository.customer.order_item.OrderItemRepository;
 import alexo.ecommerce_api.repository.customer.OrderItemWarehouseReservationRepository;
 import alexo.ecommerce_api.repository.inventory.ProductWarehouseStockRepository;
 import alexo.ecommerce_api.repository.inventory.WarehouseRepository;

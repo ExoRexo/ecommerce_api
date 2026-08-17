@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.repository.customer;
+package alexo.ecommerce_api.repository.customer.order_item;
 
 import alexo.ecommerce_api.entity.customer.order.OrderItem;
 import jakarta.persistence.LockModeType;
@@ -35,5 +35,13 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     where o.order.id = :id
 """)
     List<OrderItem> findByOrderIdForCompleteForUpdate(Long id);
+
+    @Query("""
+    select SUM(o.priceTotalRub) as priceTotalRubSum, o.order.id as orderId
+    from OrderItem o
+    where o.order.id = :id
+    group by o.order.id
+""")
+    Optional<TotalAmountByOrderIdProjection> findTotalAmountByOrderId(Long id);
 }
 

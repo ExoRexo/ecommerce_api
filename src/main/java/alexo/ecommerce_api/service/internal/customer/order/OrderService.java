@@ -16,9 +16,9 @@ import alexo.ecommerce_api.entity.customer.order.CustomerOrderStatusType;
 import alexo.ecommerce_api.entity.customer.order.OrderItem;
 import alexo.ecommerce_api.entity.customer.order.OrderItemWarehouseReservation;
 import alexo.ecommerce_api.entity.inventory.Warehouse;
-import alexo.ecommerce_api.exception.service.customer.order.reservation.OrderCancellationException;
-import alexo.ecommerce_api.exception.service.customer.order.reservation.OrderCompletionException;
-import alexo.ecommerce_api.exception.service.customer.order.reservation.OrderCreationException;
+import alexo.ecommerce_api.exception.service.customer.order.OrderCancellationException;
+import alexo.ecommerce_api.exception.service.customer.order.OrderCompletionException;
+import alexo.ecommerce_api.exception.service.customer.order.OrderCreationException;
 import alexo.ecommerce_api.mapper.customer.order.cancellation.OrderCancellationMapper;
 import alexo.ecommerce_api.mapper.customer.order.completion.OrderCompletionMapper;
 import alexo.ecommerce_api.mapper.customer.order.creation.OrderCreationMapper;
@@ -27,8 +27,9 @@ import alexo.ecommerce_api.mapper.customer.order.list.OrderListMapper;
 import alexo.ecommerce_api.repository.customer.CartItemRepository;
 import alexo.ecommerce_api.repository.customer.CustomerOrderRepository;
 import alexo.ecommerce_api.repository.customer.CustomerRepository;
-import alexo.ecommerce_api.repository.customer.OrderItemRepository;
+import alexo.ecommerce_api.repository.customer.order_item.OrderItemRepository;
 import alexo.ecommerce_api.specification.customer.order.OrderSpecifications;
+import alexo.ecommerce_api.util.MathUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -58,6 +59,7 @@ public class OrderService {
     private final OrderCacheService orderCacheService;
     private final CustomerOrderRepository customerOrderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final OrderTransactionService orderTransactionService;
 
     @Transactional
     public OrderCreationResponseDTO createOrder(Long customerId) {
@@ -112,6 +114,31 @@ public class OrderService {
                 Optional.ofNullable(orderCacheService.getCustomerOrderStatusTypes().get(CustomerOrderStatusType.CustomerOrderStatusCode.PENDING_PAYMENT))
                         .orElseThrow((() -> new EntityNotFoundException("customer status type with code [PENDING_PAYMENT] is not found")))
         );
+
+        Long orderId = order.getId();
+
+        BigDecimal amountToWithdraw = orderItemRepository.findTotalAmountByOrderId(orderId)
+                .orElseThrow((() -> new EntityNotFoundException("projection for order items for orderId["+orderId+"] is not found")))
+                .getPriceTotalRubSum();
+
+        // try to subtract money from user wallet
+        BigDecimal leftoversToPayAfterWithdraw = orderTransactionService.withdrawAccessibleAmountFromCustomerWalletOnOrderCreation(
+                amountToWithdraw,
+                customerId,
+                orderId
+        );
+
+        // if leftovers is 0, it means that order is fully paid in one transaction from user wallet,
+        // otherwise, it means that it still not paid yet
+        int compareResult = leftoversToPayAfterWithdraw.compareTo(MathUtil.BIG_DECIMAL_ZERO_SCALE_2);
+        if (compareResult < 0) {
+            throw OrderCreationException.leftoversAfterWithdrawBecomeLessThan0(customerId);
+        } else if (compareResult == 0) {
+            order.setStatusType(
+                    Optional.ofNullable(orderCacheService.getCustomerOrderStatusTypes().get(CustomerOrderStatusType.CustomerOrderStatusCode.PAID))
+                            .orElseThrow((() -> new EntityNotFoundException("customer status type with code [PAID] is not found")))
+            );
+        }
 
         return OrderCreationMapper.fromOrder(order, reservationResponseDTOS);
     }

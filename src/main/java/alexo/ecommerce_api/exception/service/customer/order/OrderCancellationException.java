@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.exception.service.customer.order.reservation;
+package alexo.ecommerce_api.exception.service.customer.order;
 
 public class OrderCancellationException extends RuntimeException {
     public OrderCancellationException(String message) {

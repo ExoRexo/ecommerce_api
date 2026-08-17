@@ -1,4 +1,4 @@
-package alexo.ecommerce_api.exception.service.customer.order.reservation;
+package alexo.ecommerce_api.exception.service.customer.order;
 
 public class OrderCompletionException extends RuntimeException {
     public OrderCompletionException(String message) {
