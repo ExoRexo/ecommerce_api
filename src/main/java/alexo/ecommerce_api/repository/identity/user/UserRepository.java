@@ -45,12 +45,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
         where u.email = :email
     """)
     Optional<User> findByEmailForUserDetails(String email);
-
-    @Query("""
-        select u.email, u.passwordHash
-        from User u
-        where u.email = :email
-    """)
-    Optional<User> findByEmailForUserDetailsBuild(String email);
 }
 
