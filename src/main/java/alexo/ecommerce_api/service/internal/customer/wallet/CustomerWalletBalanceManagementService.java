@@ -3,6 +3,7 @@ package alexo.ecommerce_api.service.internal.customer.wallet;
 import alexo.ecommerce_api.cache.customer.wallet.CustomerWalletCacheService;
 import alexo.ecommerce_api.dto.service.internal.customer.wallet.update_balance.CustomerWalletUpdateBalanceRequestDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.wallet.update_balance.CustomerWalletUpdateBalanceResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.customer.wallet.update_balance.WithdrawMaximumAccessibleFromCustomerWalletRequestDTO;
 import alexo.ecommerce_api.entity.customer.wallet.CustomerWallet;
 import alexo.ecommerce_api.entity.customer.wallet.CustomerWalletTransaction;
 import alexo.ecommerce_api.entity.customer.wallet.CustomerWalletTransactionPurposeType;
@@ -16,7 +17,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
@@ -36,65 +36,135 @@ public class CustomerWalletBalanceManagementService {
     private final UserRepository userRepository;
     private final AuthorizationService authorizationService;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public CustomerWalletUpdateBalanceResponseDTO updateCustomerWalletBalance(@Valid CustomerWalletUpdateBalanceRequestDTO requestDTO) {
+    @Transactional
+    public CustomerWalletUpdateBalanceResponseDTO updateCustomerWalletBalance(
+            @Valid CustomerWalletUpdateBalanceRequestDTO requestDTO
+    ) {
         Assert.notNull(requestDTO, "request must be not null");
 
-        BigDecimal delta = requestDTO.delta();
-        Long customerId = requestDTO.customerId();
+        CustomerWallet customerWallet = findWalletForUpdate(requestDTO.customerId());
 
-        CustomerWallet customerWallet = customerWalletRepository.findByCustomer_UserId_ForUpdate(customerId)
-                .orElseThrow((() -> new EntityNotFoundException("customer wallet for customerId[" + customerId + "] is not found")));
+        return updateCustomerWalletBalance(
+                customerWallet,
+                requestDTO.delta()
+        );
+    }
 
-        BigDecimal newBalance = customerWallet.getBalance().add(delta);
+    @Transactional
+    public CustomerWalletUpdateBalanceResponseDTO withdrawMaximumAccessibleFromCustomerWalletBalance(
+            @Valid WithdrawMaximumAccessibleFromCustomerWalletRequestDTO requestDTO
+    ) {
+        Assert.notNull(requestDTO, "request must be not null");
 
-        if (newBalance.compareTo(MathUtil.BIG_DECIMAL_ZERO_SCALE_2) < 0) {
-            throw CustomerWalletBalanceUpdateException.customerWalletBalanceBecomeLessThanZeroAfterBalanceUpdate(delta, newBalance, customerId);
-        }
+        CustomerWallet customerWallet = findWalletForUpdate(requestDTO.customerId());
 
-        CustomerWalletTransactionPurposeType.CustomerWalletTransactionPurposeCode purposeCode = delta.compareTo(MathUtil.BIG_DECIMAL_ZERO_SCALE_2) < 0
-                ? CustomerWalletTransactionPurposeType.CustomerWalletTransactionPurposeCode.WITHDRAWAL
-                : CustomerWalletTransactionPurposeType.CustomerWalletTransactionPurposeCode.TOP_UP;
-
-        CustomerWalletTransaction customerWalletTransaction = customerWalletTransactionRepository.save(
-                CustomerWalletTransaction.builder()
-                        .wallet(customerWallet)
-                        .oldBalance(customerWallet.getBalance())
-                        .newBalance(newBalance)
-                        .delta(delta)
-                        .purposeType(
-                                Optional
-                                        .ofNullable(
-                                                customerWalletCacheService.getCustomerWalletTransactionPurposeTypes().get(purposeCode)
-                                        )
-                                        .orElseThrow((() -> new EntityNotFoundException("customer wallet transaction purpose for code[" + purposeCode + "] is not found")))
-                        )
-                        .user(userRepository.getReferenceById(Objects.requireNonNull(authorizationService.getCurrentUserPrincipalFromAuthentication()).getId()))
-                        .build()
+        BigDecimal actualDelta = calculateAccessibleDelta(
+                customerWallet.getBalance(),
+                requestDTO.delta()
         );
 
+        return updateCustomerWalletBalance(
+                customerWallet,
+                actualDelta
+        );
+    }
+
+    private CustomerWallet findWalletForUpdate(Long customerId) {
+        return customerWalletRepository.findByCustomer_UserId_ForUpdate(customerId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "customer wallet for customerId[" + customerId + "] is not found"
+                        )
+                );
+    }
+
+    private BigDecimal calculateAccessibleDelta(
+            BigDecimal balance,
+            BigDecimal requestedDelta
+    ) {
+        if (balance.add(requestedDelta)
+                .compareTo(MathUtil.BIG_DECIMAL_ZERO_SCALE_2) >= 0) {
+            return requestedDelta;
+        }
+
+        return balance.negate();
+    }
+
+    private CustomerWalletUpdateBalanceResponseDTO updateCustomerWalletBalance(
+            CustomerWallet customerWallet,
+            BigDecimal delta
+    ) {
+        BigDecimal oldBalance = customerWallet.getBalance();
+        BigDecimal newBalance = oldBalance.add(delta);
+
+        if (newBalance.compareTo(MathUtil.BIG_DECIMAL_ZERO_SCALE_2) < 0) {
+            throw CustomerWalletBalanceUpdateException.customerWalletBalanceBecomeLessThanZeroAfterBalanceUpdate(
+                    delta,
+                    newBalance,
+                    customerWallet.getCustomer().getUserId()
+            );
+        }
+
+        CustomerWalletTransactionPurposeType.CustomerWalletTransactionPurposeCode purposeCode =
+                delta.compareTo(MathUtil.BIG_DECIMAL_ZERO_SCALE_2) < 0
+                        ? CustomerWalletTransactionPurposeType.CustomerWalletTransactionPurposeCode.WITHDRAWAL
+                        : CustomerWalletTransactionPurposeType.CustomerWalletTransactionPurposeCode.TOP_UP;
+
+        CustomerWalletTransactionPurposeType purposeType =
+                Optional.ofNullable(
+                        customerWalletCacheService
+                                .getCustomerWalletTransactionPurposeTypes()
+                                .get(purposeCode)
+                ).orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "customer wallet transaction purpose for code[" + purposeCode + "] is not found"
+                        )
+                );
+
+        Long currentUserId = Objects.requireNonNull(authorizationService.getCurrentUserPrincipalFromAuthentication()).getId();
+
+        CustomerWalletTransaction customerWalletTransaction =
+                customerWalletTransactionRepository.save(
+                        CustomerWalletTransaction.builder()
+                                .wallet(customerWallet)
+                                .oldBalance(oldBalance)
+                                .newBalance(newBalance)
+                                .delta(delta)
+                                .purposeType(purposeType)
+                                .user(userRepository.getReferenceById(currentUserId))
+                                .build()
+                );
+
         customerWallet.setBalance(newBalance);
+
         Long customerWalletTransactionId = customerWalletTransaction.getId();
 
-        customerWalletTransaction = customerWalletTransactionRepository.findById_ForWalletUpdateResponse(customerWalletTransactionId)
-                .orElseThrow((() -> new EntityNotFoundException("customer wallet transaction with id[" + customerWalletTransactionId + "] is not found")));
+        CustomerWalletTransaction transaction = customerWalletTransactionRepository
+                .findById_ForWalletUpdateResponse(customerWalletTransactionId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "customer wallet transaction with id["
+                                        + customerWalletTransactionId
+                                        + "] is not found"
+                        )
+                );
 
         return new CustomerWalletUpdateBalanceResponseDTO(
-                customerWalletTransaction.getId(),
-                customerWalletTransaction.getOldBalance(),
-                customerWalletTransaction.getNewBalance(),
-                customerWalletTransaction.getDelta(),
+                transaction.getId(),
+                transaction.getOldBalance(),
+                transaction.getNewBalance(),
+                transaction.getDelta(),
                 new CustomerWalletUpdateBalanceResponseDTO.UserDTO(
-                        customerWalletTransaction.getUser().getId(),
-                        customerWalletTransaction.getUser().getFirstName(),
-                        customerWalletTransaction.getUser().getLastName()
+                        transaction.getUser().getId(),
+                        transaction.getUser().getFirstName(),
+                        transaction.getUser().getLastName()
                 ),
                 new CustomerWalletUpdateBalanceResponseDTO.PurposeTypeDTO(
-                        customerWalletTransaction.getPurposeType().getLabel(),
-                        customerWalletTransaction.getPurposeType().getDescription(),
-                        customerWalletTransaction.getPurposeType().getCode()
+                        transaction.getPurposeType().getLabel(),
+                        transaction.getPurposeType().getDescription(),
+                        transaction.getPurposeType().getCode()
                 ),
-                customerWalletTransaction.getCreatedAt()
+                transaction.getCreatedAt()
         );
     }
 

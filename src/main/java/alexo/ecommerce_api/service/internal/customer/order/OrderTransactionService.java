@@ -1,10 +1,9 @@
 package alexo.ecommerce_api.service.internal.customer.order;
 
-import alexo.ecommerce_api.dto.service.internal.customer.wallet.update_balance.CustomerWalletUpdateBalanceRequestDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.wallet.update_balance.CustomerWalletUpdateBalanceResponseDTO;
+import alexo.ecommerce_api.dto.service.internal.customer.wallet.update_balance.WithdrawMaximumAccessibleFromCustomerWalletRequestDTO;
 import alexo.ecommerce_api.entity.customer.order.OrderCustomerWalletTransaction;
 import alexo.ecommerce_api.exception.service.customer.order.OrderTransactionException;
-import alexo.ecommerce_api.exception.service.customer.wallet.CustomerWalletBalanceUpdateException;
 import alexo.ecommerce_api.repository.customer.CustomerOrderRepository;
 import alexo.ecommerce_api.repository.customer.CustomerWalletTransactionRepository;
 import alexo.ecommerce_api.repository.customer.OrderCustomerWalletTransactionRepository;
@@ -32,17 +31,10 @@ public class OrderTransactionService {
         Assert.notNull(amountToWithdraw, "amountToWithdraw must be not null");
         Assert.notNull(customerId, "customerId must be not null");
 
-        CustomerWalletUpdateBalanceResponseDTO updateBalanceResponseDTO;
-
-        try {
-            updateBalanceResponseDTO = customerWalletBalanceManagementService.updateCustomerWalletBalance(new CustomerWalletUpdateBalanceRequestDTO(
-                    customerId,
-                    amountToWithdraw.negate()
-            ));
-            // if it is not enough money on user's balance
-        } catch (CustomerWalletBalanceUpdateException _) {
-            return amountToWithdraw;
-        }
+        CustomerWalletUpdateBalanceResponseDTO updateBalanceResponseDTO = customerWalletBalanceManagementService.withdrawMaximumAccessibleFromCustomerWalletBalance(new WithdrawMaximumAccessibleFromCustomerWalletRequestDTO(
+                customerId,
+                amountToWithdraw.negate()
+        ));
 
         if (updateBalanceResponseDTO == null
                 || updateBalanceResponseDTO.delta() == null
