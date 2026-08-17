@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -71,9 +70,7 @@ public class TransactionalProductStockService {
         WarehouseStockTransactionPurposeType purposeType = Optional.ofNullable(warehouseCacheService.getWarehouseStockTransactionPurposeTypes().get(request.purposeCode()))
                 .orElseThrow(() -> new EntityNotFoundException("transaction purpose with code [" + request.purposeCode() + "] is not found"));
 
-        Long userId = authorizationService.getCurrentUserIdFromAuthentication();
-
-        User user = userRepository.getReferenceById(userId);
+        User user = userRepository.getReferenceById(authorizationService.getCurrentUserIdFromAuthentication());
         Product product = productRepository.getReferenceById(request.productId());
         Warehouse warehouse = warehouseRepository.getReferenceById(request.warehouseId());
 
