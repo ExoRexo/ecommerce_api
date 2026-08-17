@@ -37,6 +37,9 @@ public class CustomerOrder {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")
     private Set<OrderItem> items;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order")
+    private Set<OrderCustomerWalletTransaction> walletTransactions;
+
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp
     private OffsetDateTime createdAt;

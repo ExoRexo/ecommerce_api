@@ -16,7 +16,8 @@ public interface CustomerOrderRepository extends JpaRepository<CustomerOrder, Lo
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @EntityGraph(attributePaths = {
-            "statusType"
+            "statusType",
+            "walletTransactions.customerWalletTransaction"
     })
     @Query("""
     select c from CustomerOrder c where c.id = ?1

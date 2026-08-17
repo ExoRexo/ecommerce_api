@@ -11,10 +11,7 @@ import alexo.ecommerce_api.dto.service.internal.customer.order.item_reservation.
 import alexo.ecommerce_api.dto.service.internal.customer.order.list.OrderListRequestDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.order.list.OrderListResponseDTO;
 import alexo.ecommerce_api.entity.customer.cart.CartItem;
-import alexo.ecommerce_api.entity.customer.order.CustomerOrder;
-import alexo.ecommerce_api.entity.customer.order.CustomerOrderStatusType;
-import alexo.ecommerce_api.entity.customer.order.OrderItem;
-import alexo.ecommerce_api.entity.customer.order.OrderItemWarehouseReservation;
+import alexo.ecommerce_api.entity.customer.order.*;
 import alexo.ecommerce_api.entity.inventory.Warehouse;
 import alexo.ecommerce_api.exception.service.customer.order.OrderCancellationException;
 import alexo.ecommerce_api.exception.service.customer.order.OrderCompletionException;
@@ -192,6 +189,16 @@ public class OrderService {
             throw OrderCancellationException.orderIsNotInCreatedOrPendingPaymentStatus(orderId);
         }
 
+        if (!order.getWalletTransactions().isEmpty()) {
+
+            orderTransactionService.returnAmountOnCustomerWallet(
+                    getAmountToReturn(order).abs(),
+                    order.getCustomer().getUserId(),
+                    order.getId()
+            );
+
+        }
+
         List<OrderItem> orderItems = orderItemRepository.findByOrderIdForCancelForUpdate(order.getId());
 
         List<OrderItemReservationResponseDTO> orderItemReservationResponseDTOS = new ArrayList<>(orderItems.size());
@@ -212,6 +219,24 @@ public class OrderService {
         );
 
         return OrderCancellationMapper.fromOrder(order, orderItemReservationResponseDTOS);
+    }
+
+    private @NotNull BigDecimal getAmountToReturn(CustomerOrder order) {
+        BigDecimal amountToReturn = BigDecimal.valueOf(0L, 2);
+
+        for (OrderCustomerWalletTransaction walletTransaction : order.getWalletTransactions()) {
+
+            BigDecimal delta = walletTransaction.getCustomerWalletTransaction().getDelta();
+
+            // if it was a top-up, in some case, it's no need to add it to returning sum
+            if (delta.compareTo(MathUtil.BIG_DECIMAL_ZERO_SCALE_2) > 0) {
+                continue;
+            }
+
+            amountToReturn = amountToReturn.add(walletTransaction.getCustomerWalletTransaction().getDelta());
+        }
+
+        return amountToReturn;
     }
 
     /**

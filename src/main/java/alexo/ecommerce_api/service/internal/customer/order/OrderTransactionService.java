@@ -1,5 +1,6 @@
 package alexo.ecommerce_api.service.internal.customer.order;
 
+import alexo.ecommerce_api.dto.service.internal.customer.wallet.update_balance.CustomerWalletUpdateBalanceRequestDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.wallet.update_balance.CustomerWalletUpdateBalanceResponseDTO;
 import alexo.ecommerce_api.dto.service.internal.customer.wallet.update_balance.WithdrawMaximumAccessibleFromCustomerWalletRequestDTO;
 import alexo.ecommerce_api.entity.customer.order.OrderCustomerWalletTransaction;
@@ -30,6 +31,7 @@ public class OrderTransactionService {
     public BigDecimal withdrawAccessibleAmountFromCustomerWalletOnOrderCreation(BigDecimal amountToWithdraw, Long customerId, Long orderId) {
         Assert.notNull(amountToWithdraw, "amountToWithdraw must be not null");
         Assert.notNull(customerId, "customerId must be not null");
+        Assert.notNull(orderId, "orderId must be not null");
 
         CustomerWalletUpdateBalanceResponseDTO updateBalanceResponseDTO = customerWalletBalanceManagementService.withdrawMaximumAccessibleFromCustomerWalletBalance(new WithdrawMaximumAccessibleFromCustomerWalletRequestDTO(
                 customerId,
@@ -51,5 +53,33 @@ public class OrderTransactionService {
         );
 
         return amountToWithdraw.abs().subtract(updateBalanceResponseDTO.delta().abs());
+    }
+
+    @Transactional
+    public CustomerWalletUpdateBalanceResponseDTO returnAmountOnCustomerWallet(BigDecimal amountToReturn, Long customerId, Long orderId) {
+        Assert.notNull(amountToReturn, "amountToReturn must be not null");
+        Assert.notNull(customerId, "customerId must be not null");
+        Assert.notNull(orderId, "orderId must be not null");
+
+        CustomerWalletUpdateBalanceResponseDTO updateBalanceResponseDTO = customerWalletBalanceManagementService.updateCustomerWalletBalance(new CustomerWalletUpdateBalanceRequestDTO(
+                customerId,
+                amountToReturn
+        ));
+
+        if (updateBalanceResponseDTO == null
+                || updateBalanceResponseDTO.delta() == null
+                || updateBalanceResponseDTO.transactionId() == null
+        ) {
+            throw OrderTransactionException.updateBalanceResponseDTOIsNullDuringSubtractionFromUserWallet(customerId, orderId);
+        }
+
+        orderCustomerWalletTransactionRepository.save(
+                OrderCustomerWalletTransaction.builder()
+                        .order(customerOrderRepository.getReferenceById(orderId))
+                        .customerWalletTransaction(customerWalletTransactionRepository.getReferenceById(updateBalanceResponseDTO.transactionId()))
+                        .build()
+        );
+
+        return updateBalanceResponseDTO;
     }
 }
