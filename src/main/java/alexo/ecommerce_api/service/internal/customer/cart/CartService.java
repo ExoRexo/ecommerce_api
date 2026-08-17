@@ -85,7 +85,8 @@ public class CartService {
 
         return PageResponseDTO.from(cartItemsPage.map(cartItem -> new CartProductListResponseDTO(
                 cartItem.getProduct().getId(),
-                cartItem.getQuantity()
+                cartItem.getQuantity(),
+                cartItem.getProduct().getPriceRub()
         )));
     }
 

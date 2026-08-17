@@ -2,6 +2,9 @@ package alexo.ecommerce_api.repository.customer;
 
 import alexo.ecommerce_api.entity.customer.cart.CartItem;
 import jakarta.persistence.LockModeType;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -26,6 +29,10 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long>, JpaSp
     @Query("delete from CartItem c where c.cart.customerId = ?1 and c.product.id = ?2")
     void deleteByCart_CustomerIdAndProduct_Id(Long customerId, Long id);
 
-
+    @Override
+    @EntityGraph(attributePaths = {
+            "product"
+    })
+    Page<@NotNull CartItem> findAll(@NotNull Pageable pageable);
 }
 
