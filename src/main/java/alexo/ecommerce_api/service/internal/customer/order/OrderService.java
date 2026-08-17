@@ -192,7 +192,7 @@ public class OrderService {
         if (!order.getWalletTransactions().isEmpty()) {
 
             orderTransactionService.returnAmountOnCustomerWallet(
-                    getAmountToReturn(order).abs(),
+                    getAmountToReturn(order),
                     order.getCustomer().getUserId(),
                     order.getId()
             );
@@ -236,7 +236,7 @@ public class OrderService {
             amountToReturn = amountToReturn.add(walletTransaction.getCustomerWalletTransaction().getDelta());
         }
 
-        return amountToReturn;
+        return amountToReturn.abs();
     }
 
     /**
