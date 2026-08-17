@@ -1,6 +1,8 @@
 package alexo.ecommerce_api.entity.customer.wallet;
 
 import alexo.ecommerce_api.contract.enums.EnumCode;
+import alexo.ecommerce_api.contract.enums.EnumDescription;
+import alexo.ecommerce_api.contract.enums.EnumLabel;
 import alexo.ecommerce_api.entity.converter.CustomerWalletTransactionPurposeCodeConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
