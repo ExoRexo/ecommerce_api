@@ -22,7 +22,6 @@ import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -121,7 +120,7 @@ public class CustomerWalletBalanceManagementService {
                         )
                 );
 
-        Long currentUserId = Objects.requireNonNull(authorizationService.getCurrentUserPrincipalFromAuthentication()).getId();
+        Long currentUserId = authorizationService.getCurrentUserIdFromAuthentication();
 
         CustomerWalletTransaction customerWalletTransaction =
                 customerWalletTransactionRepository.save(

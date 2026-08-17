@@ -39,11 +39,7 @@ public class OrderController {
                 .body(
                         ApiResponseDTO.success(
                                 orderService
-                                        .createOrder(
-                                                Objects
-                                                        .requireNonNull(authorizationService.getCurrentUserPrincipalFromAuthentication())
-                                                        .getId()
-                                        )
+                                        .createOrder(authorizationService.getCurrentUserIdFromAuthentication())
                         )
                 );
     }
@@ -55,9 +51,7 @@ public class OrderController {
                 .body(ApiResponseDTO.success(
                             orderService.getOrderDetails(
                                     requestDTO.orderId(),
-                                    Objects
-                                            .requireNonNull(authorizationService.getCurrentUserPrincipalFromAuthentication())
-                                            .getId()
+                                    authorizationService.getCurrentUserIdFromAuthentication()
                             )
                         )
                 );
@@ -89,9 +83,7 @@ public class OrderController {
                                 new OrderListRequestDTO.FiltersDTO(
                                         orderId,
                                         statusCode,
-                                        Objects
-                                                .requireNonNull(authorizationService.getCurrentUserPrincipalFromAuthentication())
-                                                .getId(),
+                                        authorizationService.getCurrentUserIdFromAuthentication(),
                                         startDate,
                                         endDate
                                 )
@@ -105,9 +97,7 @@ public class OrderController {
                 .ok()
                 .body(ApiResponseDTO.success(orderService.cancelOrder(
                         requestDTO.orderId(),
-                        Objects
-                                .requireNonNull(authorizationService.getCurrentUserPrincipalFromAuthentication())
-                                .getId()
+                        authorizationService.getCurrentUserIdFromAuthentication()
                 )));
     }
 

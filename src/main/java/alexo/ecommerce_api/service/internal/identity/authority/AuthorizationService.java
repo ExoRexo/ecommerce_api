@@ -4,6 +4,7 @@ import alexo.ecommerce_api.dto.service.internal.identity.UserPrincipalDTO;
 import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -32,14 +33,18 @@ final public class AuthorizationService {
                         authorityWithPrefix.equals(a.getAuthority()));
     }
 
-    public @Nullable UserPrincipalDTO getCurrentUserPrincipalFromAuthentication() {
+    public UserPrincipalDTO getCurrentUserPrincipalFromAuthentication() {
         Authentication authentication = getAuthentication();
 
         if (authentication == null || authentication.getPrincipal() == null) {
-            return null;
+            throw new InsufficientAuthenticationException("Full authentication is required to access this resource");
         }
 
         return (UserPrincipalDTO) authentication.getPrincipal();
+    }
+
+    public Long getCurrentUserIdFromAuthentication() {
+        return getCurrentUserPrincipalFromAuthentication().getId();
     }
 
     private @Nullable Authentication getAuthentication() {

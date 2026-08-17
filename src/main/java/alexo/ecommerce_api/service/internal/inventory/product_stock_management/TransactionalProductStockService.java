@@ -71,7 +71,7 @@ public class TransactionalProductStockService {
         WarehouseStockTransactionPurposeType purposeType = Optional.ofNullable(warehouseCacheService.getWarehouseStockTransactionPurposeTypes().get(request.purposeCode()))
                 .orElseThrow(() -> new EntityNotFoundException("transaction purpose with code [" + request.purposeCode() + "] is not found"));
 
-        Long userId = Objects.requireNonNull(authorizationService.getCurrentUserPrincipalFromAuthentication()).getId();
+        Long userId = authorizationService.getCurrentUserIdFromAuthentication();
 
         User user = userRepository.getReferenceById(userId);
         Product product = productRepository.getReferenceById(request.productId());

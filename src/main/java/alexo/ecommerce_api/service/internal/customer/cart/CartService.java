@@ -41,7 +41,7 @@ public class CartService {
 
         Long productId = requestDTO.productId();
         Integer quantity = requestDTO.quantity();
-        Long userId = Objects.requireNonNull(authorizationService.getCurrentUserPrincipalFromAuthentication()).getId();
+        Long userId = authorizationService.getCurrentUserIdFromAuthentication();
 
         if (quantity == 0) {
             cartItemRepository.deleteByCart_CustomerIdAndProduct_Id(userId, productId);
