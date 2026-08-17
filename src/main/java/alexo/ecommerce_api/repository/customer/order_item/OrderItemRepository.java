@@ -21,6 +21,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     select o
     from OrderItem o
     where o.order.id = :id
+    order by o.id asc
 """)
     List<OrderItem> findByOrderIdForCancelForUpdate(Long id);
 
@@ -33,6 +34,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     select o
     from OrderItem o
     where o.order.id = :id
+    order by o.id asc
 """)
     List<OrderItem> findByOrderIdForCompleteForUpdate(Long id);
 
@@ -43,5 +45,13 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     group by o.order.id
 """)
     Optional<TotalAmountByOrderIdProjection> findTotalAmountByOrderId(Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+    select o
+    from OrderItem o
+    where o.id = :id
+""")
+    Optional<OrderItem> findByIdForUpdate(Long id);
 }
 

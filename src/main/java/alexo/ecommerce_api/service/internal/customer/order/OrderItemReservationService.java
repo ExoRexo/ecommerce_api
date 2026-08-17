@@ -46,7 +46,7 @@ public class OrderItemReservationService {
         Long warehouseId = request.warehouseId();
         Integer quantityToReserve = request.quantityToReserve();
 
-        OrderItem orderItem = orderItemRepository.findById(orderItemId)
+        OrderItem orderItem = orderItemRepository.findByIdForUpdate(orderItemId)
                 .orElseThrow(() -> new EntityNotFoundException("orderItem with id[" + orderItemId + "] is not found"));
         Long productId = orderItem.getProduct().getId();
 
