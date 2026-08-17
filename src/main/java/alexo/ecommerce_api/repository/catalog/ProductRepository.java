@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -33,5 +34,8 @@ select p from Product p where p.id = :id
             "category.parent"
     })
     Page<@NotNull Product> findAll(@NotNull Specification<@NotNull Product> specification, @NotNull Pageable pageable);
+
+    @Query("select p.id from Product p")
+    List<Long> findAllIds();
 }
 

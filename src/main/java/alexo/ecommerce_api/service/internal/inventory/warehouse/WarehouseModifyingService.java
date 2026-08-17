@@ -3,8 +3,11 @@ package alexo.ecommerce_api.service.internal.inventory.warehouse;
 import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.create.WarehouseCreateRequestDTO;
 import alexo.ecommerce_api.dto.service.internal.inventory.warehuose.update.WarehouseUpdateRequestDTO;
 import alexo.ecommerce_api.entity.inventory.Address;
+import alexo.ecommerce_api.entity.inventory.ProductWarehouseStock;
 import alexo.ecommerce_api.entity.inventory.Warehouse;
+import alexo.ecommerce_api.repository.catalog.ProductRepository;
 import alexo.ecommerce_api.repository.inventory.AddressRepository;
+import alexo.ecommerce_api.repository.inventory.ProductWarehouseStockRepository;
 import alexo.ecommerce_api.repository.inventory.WarehouseRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,6 +16,9 @@ import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -21,6 +27,8 @@ public class WarehouseModifyingService {
 
     private final WarehouseRepository warehouseRepository;
     private final AddressRepository addressRepository;
+    private final ProductRepository productRepository;
+    private final ProductWarehouseStockRepository productWarehouseStockRepository;
 
     @Transactional
     protected Warehouse persistWarehouse(WarehouseCreateRequestDTO requestDTO) {
@@ -34,7 +42,7 @@ public class WarehouseModifyingService {
             throw new EntityExistsException("address  [" + requestDTO.address().address().trim() + "] is already exists");
         }
 
-        return warehouseRepository.save(
+        Warehouse warehouse = warehouseRepository.save(
                 Warehouse.builder()
                         .name(requestDTO.name())
                         .address(
@@ -49,6 +57,28 @@ public class WarehouseModifyingService {
                         )
                         .build()
         );
+
+        List<Long> productIds = productRepository.findAllIds();
+
+        List<ProductWarehouseStock> productWarehouseStocks = new ArrayList<>(productIds.size());
+
+        for (Long productId : productIds) {
+
+            productWarehouseStocks.add(
+                    ProductWarehouseStock.builder()
+                            .product(productRepository.getReferenceById(productId))
+                            .warehouse(warehouse)
+                            .physicalQuantity(0)
+                            .reservedQuantity(0)
+                            .updatedAt(OffsetDateTime.now())
+                            .build()
+            );
+
+        }
+
+        productWarehouseStockRepository.saveAll(productWarehouseStocks);
+
+        return warehouse;
     }
 
     @Transactional

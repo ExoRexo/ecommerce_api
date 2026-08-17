@@ -16,8 +16,11 @@ import alexo.ecommerce_api.entity.catalog.Product;
 import alexo.ecommerce_api.entity.catalog.ProductStatusType;
 import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;
+import alexo.ecommerce_api.entity.inventory.ProductWarehouseStock;
 import alexo.ecommerce_api.repository.catalog.ProductRepository;
 import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
+import alexo.ecommerce_api.repository.inventory.ProductWarehouseStockRepository;
+import alexo.ecommerce_api.repository.inventory.WarehouseRepository;
 import alexo.ecommerce_api.service.internal.identity.authority.AuthorizationService;
 import alexo.ecommerce_api.specification.catalog.product.ProductSpecifications;
 import jakarta.persistence.EntityExistsException;
@@ -36,6 +39,7 @@ import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +55,8 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final CategoryCacheService categoryCacheService;
     private final AuthorizationService authorizationService;
+    private final WarehouseRepository warehouseRepository;
+    private final ProductWarehouseStockRepository productWarehouseStockRepository;
 
     @Transactional
     public ProductResponseDTO createProduct(@NotNull ProductCreateRequestDTO request) {
@@ -69,6 +75,24 @@ public class ProductService {
                     .category(categoryRepository.findById(request.categoryId()).orElseThrow())
                     .build()
         );
+
+        List<Long> warehouseIds = warehouseRepository.findAllIds();
+
+        List<ProductWarehouseStock> productWarehouseStocks = new ArrayList<>(warehouseIds.size());
+
+        for (Long warehouseId : warehouseIds) {
+            productWarehouseStocks.add(
+                    ProductWarehouseStock.builder()
+                            .product(product)
+                            .warehouse(warehouseRepository.getReferenceById(warehouseId))
+                            .physicalQuantity(0)
+                            .reservedQuantity(0)
+                            .updatedAt(OffsetDateTime.now())
+                            .build()
+            );
+        }
+
+        productWarehouseStockRepository.saveAll(productWarehouseStocks);
 
         return getProductResponseDTO(product);
     }

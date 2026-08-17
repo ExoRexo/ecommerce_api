@@ -23,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
-import java.util.Objects;
 
 @AllArgsConstructor
 @RestController
@@ -38,8 +37,7 @@ public class OrderController {
                 .status(HttpStatus.CREATED)
                 .body(
                         ApiResponseDTO.success(
-                                orderService
-                                        .createOrder(authorizationService.getCurrentUserIdFromAuthentication())
+                                orderService.createOrder(authorizationService.getCurrentUserIdFromAuthentication())
                         )
                 );
     }

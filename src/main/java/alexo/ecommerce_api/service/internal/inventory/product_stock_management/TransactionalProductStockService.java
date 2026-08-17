@@ -65,7 +65,7 @@ public class TransactionalProductStockService {
                         request.productId(),
                         request.warehouseId()
                 )
-                .orElse(null);
+                .orElseThrow(() -> new EntityNotFoundException("stock for productId[" + request.productId() + "] and warehouseId["+request.warehouseId()+"] is not found"));
 
         WarehouseStockTransactionPurposeType purposeType = Optional.ofNullable(warehouseCacheService.getWarehouseStockTransactionPurposeTypes().get(request.purposeCode()))
                 .orElseThrow(() -> new EntityNotFoundException("transaction purpose with code [" + request.purposeCode() + "] is not found"));
@@ -74,9 +74,7 @@ public class TransactionalProductStockService {
         Product product = productRepository.getReferenceById(request.productId());
         Warehouse warehouse = warehouseRepository.getReferenceById(request.warehouseId());
 
-        int oldQuantity = stock == null
-                ? 0
-                : stock.getPhysicalQuantity();
+        int oldQuantity = stock.getPhysicalQuantity();
         int newQuantity = oldQuantity + delta;
 
         if (newQuantity < 0) {
@@ -88,7 +86,7 @@ public class TransactionalProductStockService {
             );
         }
 
-        if (stock != null && newQuantity < stock.getReservedQuantity()) {
+        if (newQuantity < stock.getReservedQuantity()) {
             throw StockUpdateException.stockDecreaseResultIsLessThanCurrentReserves(
                     newQuantity,
                     request.deltaQuantity(),
@@ -98,16 +96,7 @@ public class TransactionalProductStockService {
             );
         }
 
-        if (stock == null) {
-            stock = ProductWarehouseStock.builder()
-                    .product(product)
-                    .warehouse(warehouse)
-                    .reservedQuantity(0)
-                    .physicalQuantity(newQuantity)
-                    .build();
-        } else {
-            stock.setPhysicalQuantity(newQuantity);
-        }
+        stock.setPhysicalQuantity(newQuantity);
 
         WarehouseStockTransaction warehouseStockTransaction = warehouseStockTransactionRepository.save(
                 WarehouseStockTransaction

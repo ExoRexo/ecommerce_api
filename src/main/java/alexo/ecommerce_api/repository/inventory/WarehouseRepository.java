@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -30,5 +31,8 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, Long>, Jpa
     })
     @NotNull
     Page<@NotNull Warehouse> findAll(@NotNull Specification<@NotNull Warehouse> specification, @NotNull Pageable pageable);
+
+    @Query("select w.id from Warehouse w")
+    List<Long> findAllIds();
 }
 
