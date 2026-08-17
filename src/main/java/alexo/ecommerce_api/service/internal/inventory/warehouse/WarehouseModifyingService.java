@@ -62,6 +62,8 @@ public class WarehouseModifyingService {
 
         List<ProductWarehouseStock> productWarehouseStocks = new ArrayList<>(productIds.size());
 
+        OffsetDateTime now = OffsetDateTime.now();
+
         for (Long productId : productIds) {
 
             productWarehouseStocks.add(
@@ -70,7 +72,7 @@ public class WarehouseModifyingService {
                             .warehouse(warehouse)
                             .physicalQuantity(0)
                             .reservedQuantity(0)
-                            .updatedAt(OffsetDateTime.now())
+                            .updatedAt(now)
                             .build()
             );
 
