@@ -1,8 +1,10 @@
 package alexo.ecommerce_api.http.controller.advice;
 
+import alexo.ecommerce_api.configuration.error.ErrorResponseProperties;
 import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
+import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,9 @@ import java.util.stream.Collectors;
  * Maps application exceptions to unified HTTP error responses.
  */
 @RestControllerAdvice
+@AllArgsConstructor
 public class ExceptionHandlerAdvice {
+    private final ErrorResponseProperties errorResponseProperties;
     /**
      * Handles bean validation errors from request body DTOs.
      *
@@ -141,7 +145,9 @@ public class ExceptionHandlerAdvice {
      * @return resolved message for response
      */
     private String resolveMessage(Exception exception, String fallback) {
-        if (exception.getMessage() == null || exception.getMessage().isBlank()) {
+        if (!errorResponseProperties.includeDetails()
+                || exception.getMessage() == null
+                || exception.getMessage().isBlank()) {
             return fallback;
         }
         return exception.getMessage();

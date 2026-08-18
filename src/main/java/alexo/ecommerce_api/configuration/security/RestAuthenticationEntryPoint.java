@@ -1,5 +1,6 @@
 package alexo.ecommerce_api.configuration.security;
 
+import alexo.ecommerce_api.configuration.error.ErrorResponseProperties;
 import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ import java.util.List;
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
+    private final ErrorResponseProperties errorResponseProperties;
 
     /**
      * Writes unified error envelope for authentication failures.
@@ -52,7 +54,9 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
      * @return exception message or default authentication message
      */
     private String resolveMessage(Exception exception) {
-        if (exception.getMessage() == null || exception.getMessage().isBlank()) {
+        if (!errorResponseProperties.includeDetails()
+                || exception.getMessage() == null
+                || exception.getMessage().isBlank()) {
             return "Authentication is required";
         }
         return exception.getMessage();

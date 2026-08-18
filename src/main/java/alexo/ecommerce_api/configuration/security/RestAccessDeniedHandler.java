@@ -1,5 +1,6 @@
 package alexo.ecommerce_api.configuration.security;
 
+import alexo.ecommerce_api.configuration.error.ErrorResponseProperties;
 import alexo.ecommerce_api.dto.http.response.ApiResponseDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +24,7 @@ import java.util.List;
 public class RestAccessDeniedHandler implements AccessDeniedHandler {
 
     private final ObjectMapper objectMapper;
+    private final ErrorResponseProperties errorResponseProperties;
 
     /**
      * Writes unified error envelope when authenticated user has no permission.
@@ -53,7 +55,9 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
      * @return exception message or default access denied message
      */
     private String resolveMessage(Exception exception) {
-        if (exception.getMessage() == null || exception.getMessage().isBlank()) {
+        if (!errorResponseProperties.includeDetails()
+                || exception.getMessage() == null
+                || exception.getMessage().isBlank()) {
             return "Access is denied";
         }
         return exception.getMessage();

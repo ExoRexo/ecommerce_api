@@ -1,0 +1,51 @@
+spring:
+  devtools:
+    restart:
+      enabled: true
+
+  docker:
+    compose:
+      enabled: true
+      lifecycle-management: start-and-stop
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:ecommerce_api}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:5}
+      minimum-idle: ${DB_POOL_MIN_IDLE:1}
+      connection-timeout: ${DB_CONNECTION_TIMEOUT_MS:10000}
+      validation-timeout: ${DB_VALIDATION_TIMEOUT_MS:3000}
+      idle-timeout: ${DB_IDLE_TIMEOUT_MS:600000}
+      max-lifetime: ${DB_MAX_LIFETIME_MS:1800000}
+      connection-init-sql: >-
+        SET lock_timeout = '${DB_LOCK_TIMEOUT:15s}';
+        SET statement_timeout = '${DB_STATEMENT_TIMEOUT:60s}';
+        SET idle_in_transaction_session_timeout = '${DB_IDLE_TRANSACTION_TIMEOUT:5min}'
+
+  jpa:
+    show-sql: true
+
+app:
+  errors:
+    include-details: true
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:local-only-secret-change-me-please-32-bytes}
+    expiration-ms: ${JWT_EXPIRATION_MS:3600000}
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.springframework.transaction: DEBUG
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
