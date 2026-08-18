@@ -1,0 +1,74 @@
+name: Verify and deploy
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ecommerce-api-production
+  cancel-in-progress: false
+
+jobs:
+  verify-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+
+      - name: Verify
+        run: ./mvnw verify --no-transfer-progress
+
+      - name: Prepare release
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_jar="$(find target -maxdepth 1 -type f -name 'ecommerce_api-*.jar' ! -name '*.jar.original' -print -quit)"
+          test -n "$source_jar"
+
+          release_name="ecommerce_api-${GITHUB_RUN_NUMBER}-${GITHUB_SHA:0:7}.jar"
+          cp "$source_jar" "target/$release_name"
+          echo "name=$release_name" >> "$GITHUB_OUTPUT"
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$SSH_PRIVATE_KEY"
+          test -n "$SSH_KNOWN_HOSTS"
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
+
+      - name: Upload and activate release
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
+          DEPLOY_USER: deploy
+          RELEASE_NAME: ${{ steps.release.outputs.name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$DEPLOY_HOST"
+          ssh_options=(-i ~/.ssh/id_ed25519 -o BatchMode=yes -o StrictHostKeyChecking=yes -p "$DEPLOY_PORT")
+          scp_options=(-i ~/.ssh/id_ed25519 -o BatchMode=yes -o StrictHostKeyChecking=yes -P "$DEPLOY_PORT")
+          scp "${scp_options[@]}" "target/$RELEASE_NAME" "$DEPLOY_USER@$DEPLOY_HOST:/opt/ecommerce-api/releases/$RELEASE_NAME"
+          ssh "${ssh_options[@]}" "$DEPLOY_USER@$DEPLOY_HOST" "sudo /usr/local/sbin/ecommerce-api-deploy '$RELEASE_NAME'"
