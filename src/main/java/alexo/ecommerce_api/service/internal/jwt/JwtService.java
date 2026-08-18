@@ -6,6 +6,7 @@ import alexo.ecommerce_api.entity.identity.Role;
 import alexo.ecommerce_api.mapper.enums.EnumCodeMapper;
 import alexo.ecommerce_api.dto.service.internal.identity.UserPrincipalDTO;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -180,7 +181,7 @@ public class JwtService {
         try {
             Claims claims = extractAllClaims(token);
             return hasRequiredClaims(claims) && !isTokenExpired(claims);
-        } catch (IllegalArgumentException ex) {
+        } catch (JwtException | IllegalArgumentException ex) {
             return false;
         }
     }

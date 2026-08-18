@@ -233,7 +233,7 @@ class CategoryServiceTest {
                     .parent(null)
                     .build();
 
-            when(categoryRepository.findById(1L))
+            when(categoryRepository.findByIdForUpdate(1L))
                     .thenReturn(Optional.of(category));
             when(categoryRepository.findByNameAndIdIsNotAndParentIdIs("Updated Electronics", 1L, null))
                     .thenReturn(Optional.empty());
@@ -267,10 +267,10 @@ class CategoryServiceTest {
                     .parent(null)
                     .build();
 
-            when(categoryRepository.findById(1L))
+            when(categoryRepository.findByIdForUpdate(1L))
                     .thenReturn(Optional.of(category));
-            when(categoryRepository.findById(2L))
-                    .thenReturn(Optional.of(parentCategory));
+            when(categoryRepository.getReferenceById(2L))
+                    .thenReturn(parentCategory);
             when(categoryRepository.findByNameAndIdIsNotAndParentIdIs("Electronics", 1L, 2L))
                     .thenReturn(Optional.empty());
             when(categoryRepository.save(any(Category.class)))
@@ -303,7 +303,7 @@ class CategoryServiceTest {
                     .parent(parentCategory)
                     .build();
 
-            when(categoryRepository.findById(1L))
+                        when(categoryRepository.findByIdForUpdate(1L))
                     .thenReturn(Optional.of(category));
             when(categoryRepository.findByNameAndIdIsNotAndParentIdIs("Electronics", 1L, null))
                     .thenReturn(Optional.empty());
@@ -337,10 +337,10 @@ class CategoryServiceTest {
                     .parent(null)
                     .build();
 
-            when(categoryRepository.findById(1L))
+            when(categoryRepository.findByIdForUpdate(1L))
                     .thenReturn(Optional.of(category));
-            when(categoryRepository.findById(2L))
-                    .thenReturn(Optional.of(parentCategory));
+            when(categoryRepository.getReferenceById(2L))
+                    .thenReturn(parentCategory);
             when(categoryRepository.findByNameAndIdIsNotAndParentIdIs("New Phones", 1L, 2L))
                     .thenReturn(Optional.empty());
             when(categoryRepository.save(any(Category.class)))
@@ -379,7 +379,7 @@ class CategoryServiceTest {
                     .parent(null)
                     .build();
 
-            when(categoryRepository.findById(1L))
+                        when(categoryRepository.findByIdForUpdate(1L))
                     .thenReturn(Optional.of(category));
             when(categoryRepository.findByNameAndIdIsNotAndParentIdIs("Devices", 1L, null))
                     .thenReturn(Optional.of(existingCategory));
@@ -402,7 +402,7 @@ class CategoryServiceTest {
                     JsonNullable.undefined()
             );
 
-            when(categoryRepository.findById(999L))
+            when(categoryRepository.findByIdForUpdate(999L))
                     .thenReturn(Optional.empty());
 
             // Act & Assert
@@ -426,14 +426,14 @@ class CategoryServiceTest {
                     .parent(null)
                     .build();
 
-            when(categoryRepository.findById(1L))
+            when(categoryRepository.findByIdForUpdate(1L))
                     .thenReturn(Optional.of(category));
-            when(categoryRepository.findById(999L))
-                    .thenReturn(Optional.empty());
+            when(categoryRepository.getReferenceById(999L))
+                    .thenThrow(new jakarta.persistence.EntityNotFoundException());
 
             // Act & Assert
             assertThatThrownBy(() -> categoryService.updateCategory(updateRequest))
-                    .isInstanceOf(java.util.NoSuchElementException.class);
+                    .isInstanceOf(jakarta.persistence.EntityNotFoundException.class);
             verify(categoryRepository, never()).save(any());
         }
 
@@ -461,7 +461,7 @@ class CategoryServiceTest {
                     .parent(null)
                     .build();
 
-            when(categoryRepository.findById(1L))
+                        when(categoryRepository.findByIdForUpdate(1L))
                     .thenReturn(Optional.of(category));
             when(categoryRepository.findByNameAndIdIsNotAndParentIdIs("Updated Electronics", 1L, null))
                     .thenReturn(Optional.empty());

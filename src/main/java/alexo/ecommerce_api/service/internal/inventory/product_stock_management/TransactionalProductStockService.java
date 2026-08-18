@@ -42,7 +42,7 @@ public class TransactionalProductStockService {
     private final WarehouseStockTransactionRepository warehouseStockTransactionRepository;
 
     @Transactional
-    protected ProductStockUpdateResponseDTO updateProductPhysicalStockOnWarehouse(@NotNull @Valid ProductStockUpdateRequestDTO request) throws RuntimeException {
+    public ProductStockUpdateResponseDTO updateProductPhysicalStockOnWarehouse(@NotNull @Valid ProductStockUpdateRequestDTO request) throws RuntimeException {
         int delta = request.deltaQuantity();
 
         WarehouseStockTransactionPurposeType.WarehouseStockTransactionPurposeCode purposeCode = request.purposeCode();

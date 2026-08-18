@@ -1,10 +1,9 @@
 package alexo.ecommerce_api;
 
+import alexo.ecommerce_api.integration.PostgresIntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class EcommerceApiApplicationTests {
+class EcommerceApiApplicationTests extends PostgresIntegrationTest {
 
 	@Test
 	void contextLoads() {

@@ -33,7 +33,7 @@ public class WarehouseModifyingService {
     private final AdvisoryLockRepository advisoryLockRepository;
 
     @Transactional
-    protected Warehouse persistWarehouse(WarehouseCreateRequestDTO requestDTO) {
+    public Warehouse persistWarehouse(WarehouseCreateRequestDTO requestDTO) {
         Objects.requireNonNull(requestDTO, "request dto cannot be null");
 
         advisoryLockRepository.acquireTransactionLock(AdvisoryLockRepository.LockCode.INVENTORY_PRODUCT_WAREHOUSE_STOCK_MATRIX_LOCK_KEY);
@@ -88,7 +88,7 @@ public class WarehouseModifyingService {
     }
 
     @Transactional
-    protected Warehouse updateWarehouse(WarehouseUpdateRequestDTO requestDTO) {
+    public Warehouse updateWarehouse(WarehouseUpdateRequestDTO requestDTO) {
         Objects.requireNonNull(requestDTO, "request dto cannot be null");
 
         Warehouse warehouse = warehouseRepository.findByIdForUpdate(requestDTO.warehouseId()).orElseThrow(() -> new EntityNotFoundException("warehouse with id [" + requestDTO.warehouseId() + "] is not found"));
