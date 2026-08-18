@@ -21,6 +21,7 @@ import alexo.ecommerce_api.repository.catalog.ProductRepository;
 import alexo.ecommerce_api.repository.catalog.category.CategoryRepository;
 import alexo.ecommerce_api.repository.inventory.ProductWarehouseStockRepository;
 import alexo.ecommerce_api.repository.inventory.WarehouseRepository;
+import alexo.ecommerce_api.repository.lock.AdvisoryLockRepository;
 import alexo.ecommerce_api.service.internal.identity.authority.AuthorizationService;
 import alexo.ecommerce_api.specification.catalog.product.ProductSpecifications;
 import jakarta.persistence.EntityExistsException;
@@ -57,9 +58,11 @@ public class ProductService {
     private final AuthorizationService authorizationService;
     private final WarehouseRepository warehouseRepository;
     private final ProductWarehouseStockRepository productWarehouseStockRepository;
+    private final AdvisoryLockRepository advisoryLockRepository;
 
     @Transactional
     public ProductResponseDTO createProduct(@NotNull ProductCreateRequestDTO request) {
+        advisoryLockRepository.acquireTransactionLock(AdvisoryLockRepository.LockCode.INVENTORY_PRODUCT_WAREHOUSE_STOCK_MATRIX_LOCK_KEY);
 
         if (productRepository.existsByNameAndCategory_Id(request.name(), request.categoryId())) {
             throw new EntityExistsException("product with name [" + request.name() + "] and category id [" + request.categoryId() +"] is already exists");

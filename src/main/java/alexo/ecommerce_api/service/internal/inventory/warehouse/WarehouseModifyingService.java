@@ -9,6 +9,7 @@ import alexo.ecommerce_api.repository.catalog.ProductRepository;
 import alexo.ecommerce_api.repository.inventory.AddressRepository;
 import alexo.ecommerce_api.repository.inventory.ProductWarehouseStockRepository;
 import alexo.ecommerce_api.repository.inventory.WarehouseRepository;
+import alexo.ecommerce_api.repository.lock.AdvisoryLockRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -29,10 +30,13 @@ public class WarehouseModifyingService {
     private final AddressRepository addressRepository;
     private final ProductRepository productRepository;
     private final ProductWarehouseStockRepository productWarehouseStockRepository;
+    private final AdvisoryLockRepository advisoryLockRepository;
 
     @Transactional
     protected Warehouse persistWarehouse(WarehouseCreateRequestDTO requestDTO) {
         Objects.requireNonNull(requestDTO, "request dto cannot be null");
+
+        advisoryLockRepository.acquireTransactionLock(AdvisoryLockRepository.LockCode.INVENTORY_PRODUCT_WAREHOUSE_STOCK_MATRIX_LOCK_KEY);
 
         if (warehouseRepository.existsByName(requestDTO.name().trim())) {
             throw new EntityExistsException("warehouse with name [" + requestDTO.name().trim() + "] is already exists");
