@@ -22,7 +22,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long>, JpaSp
     @EntityGraph(attributePaths = {
             "product"
     })
-    @Query("select c from CartItem c where c.cart.customerId = ?1 order by c.id asc")
+        @Query("select c from CartItem c where c.cart.customerId = ?1 order by c.product.id asc, c.id asc")
     List<CartItem> findAllByCart_CustomerIdForUpdate(Long customerId);
 
     @Modifying

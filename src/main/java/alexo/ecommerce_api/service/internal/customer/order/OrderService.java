@@ -43,6 +43,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -189,28 +190,21 @@ public class OrderService {
             throw OrderCancellationException.orderIsNotInCreatedOrPendingPaymentStatus(orderId);
         }
 
-        if (!order.getWalletTransactions().isEmpty()) {
+        List<OrderItem> orderItems = orderItemRepository.findByOrderIdForCancelForUpdate(order.getId());
 
+        List<OrderItemReservationResponseDTO> orderItemReservationResponseDTOS = new ArrayList<>();
+        for (OrderItemWarehouseReservation warehouseReservation : getReservationsInStockOrder(orderItems)) {
+            orderItemReservationResponseDTOS.add(
+                    orderItemReservationService.cancelOrderItemReservation(warehouseReservation.getId())
+            );
+        }
+
+        if (!order.getWalletTransactions().isEmpty()) {
             orderTransactionService.returnAmountOnCustomerWallet(
                     getAmountToReturn(order),
                     order.getCustomer().getUserId(),
                     order.getId()
             );
-
-        }
-
-        List<OrderItem> orderItems = orderItemRepository.findByOrderIdForCancelForUpdate(order.getId());
-
-        List<OrderItemReservationResponseDTO> orderItemReservationResponseDTOS = new ArrayList<>(orderItems.size());
-
-        for (OrderItem item : orderItems) {
-
-            for (OrderItemWarehouseReservation warehouseReservation : item.getWarehouseReservations()) {
-                orderItemReservationResponseDTOS.add(
-                        orderItemReservationService.cancelOrderItemReservation(warehouseReservation.getId())
-                );
-            }
-
         }
 
         order.setStatusType(
@@ -257,16 +251,11 @@ public class OrderService {
 
         List<OrderItem> orderItems = orderItemRepository.findByOrderIdForCompleteForUpdate(order.getId());
 
-        List<OrderItemReservationResponseDTO> orderItemReservationResponseDTOS = new ArrayList<>(orderItems.size());
-
-        for (OrderItem item : orderItems) {
-
-            for (OrderItemWarehouseReservation warehouseReservation : item.getWarehouseReservations()) {
-                orderItemReservationResponseDTOS.add(
-                        orderItemReservationService.finishOrderItemReservation(warehouseReservation.getId())
-                );
-            }
-
+        List<OrderItemReservationResponseDTO> orderItemReservationResponseDTOS = new ArrayList<>();
+        for (OrderItemWarehouseReservation warehouseReservation : getReservationsInStockOrder(orderItems)) {
+            orderItemReservationResponseDTOS.add(
+                    orderItemReservationService.finishOrderItemReservation(warehouseReservation.getId())
+            );
         }
 
         order.setStatusType(
@@ -275,6 +264,17 @@ public class OrderService {
         );
 
         return OrderCompletionMapper.fromOrder(order, orderItemReservationResponseDTOS);
+    }
+
+    private List<OrderItemWarehouseReservation> getReservationsInStockOrder(List<OrderItem> orderItems) {
+        return orderItems.stream()
+                .flatMap(orderItem -> orderItem.getWarehouseReservations().stream())
+                .sorted(Comparator
+                        .comparing((OrderItemWarehouseReservation reservation) ->
+                                reservation.getOrderItem().getProduct().getId())
+                        .thenComparing(reservation -> reservation.getWarehouse().getId())
+                        .thenComparing(OrderItemWarehouseReservation::getId))
+                .toList();
     }
 
 }
