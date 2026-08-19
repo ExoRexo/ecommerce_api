@@ -38,10 +38,15 @@ public class OrderTransactionService {
                 amountToWithdraw.negate()
         ));
 
-        if (updateBalanceResponseDTO == null
-                || updateBalanceResponseDTO.delta() == null
-                || updateBalanceResponseDTO.transactionId() == null
-        ) {
+        if (updateBalanceResponseDTO == null) {
+            throw OrderTransactionException.updateBalanceResponseDTOIsNullDuringSubtractionFromUserWallet(customerId, orderId);
+        }
+
+        if (updateBalanceResponseDTO.delta().compareTo(BigDecimal.ZERO) == 0) {
+            return amountToWithdraw.abs();
+        }
+
+        if (updateBalanceResponseDTO.transactionId() == null) {
             throw OrderTransactionException.updateBalanceResponseDTOIsNullDuringSubtractionFromUserWallet(customerId, orderId);
         }
 
@@ -66,10 +71,15 @@ public class OrderTransactionService {
                 amountToReturn
         ));
 
-        if (updateBalanceResponseDTO == null
-                || updateBalanceResponseDTO.delta() == null
-                || updateBalanceResponseDTO.transactionId() == null
-        ) {
+        if (updateBalanceResponseDTO == null) {
+            throw OrderTransactionException.updateBalanceResponseDTOIsNullDuringSubtractionFromUserWallet(customerId, orderId);
+        }
+
+        if (updateBalanceResponseDTO.delta().compareTo(BigDecimal.ZERO) == 0) {
+            return updateBalanceResponseDTO;
+        }
+
+        if (updateBalanceResponseDTO.transactionId() == null) {
             throw OrderTransactionException.updateBalanceResponseDTOIsNullDuringSubtractionFromUserWallet(customerId, orderId);
         }
 

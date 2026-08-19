@@ -96,6 +96,18 @@ public class CustomerWalletBalanceManagementService {
         BigDecimal oldBalance = customerWallet.getBalance();
         BigDecimal newBalance = oldBalance.add(delta);
 
+        if (delta.compareTo(MathUtil.BIG_DECIMAL_ZERO_SCALE_2) == 0) {
+            return new CustomerWalletUpdateBalanceResponseDTO(
+                    null,
+                    oldBalance,
+                    newBalance,
+                    delta,
+                    null,
+                    null,
+                    null
+            );
+        }
+
         if (newBalance.compareTo(MathUtil.BIG_DECIMAL_ZERO_SCALE_2) < 0) {
             throw CustomerWalletBalanceUpdateException.customerWalletBalanceBecomeLessThanZeroAfterBalanceUpdate(
                     delta,
