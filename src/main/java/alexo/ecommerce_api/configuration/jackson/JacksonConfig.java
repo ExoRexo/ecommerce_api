@@ -1,6 +1,7 @@
 package alexo.ecommerce_api.configuration.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.openapitools.jackson.nullable.JsonNullableModule;
 import org.springdoc.core.properties.SpringDocConfigProperties;
 import org.springdoc.core.providers.ObjectMapperProvider;
@@ -31,10 +32,10 @@ public class JacksonConfig {
 
     @Bean
     public ObjectMapper objectMapper(JsonNullableModule jsonNullableModule) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.findAndRegisterModules();
-        objectMapper.registerModule(jsonNullableModule);
-        return objectMapper;
+        return new ObjectMapper()
+                .findAndRegisterModules()
+                .registerModule(jsonNullableModule)
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     /**

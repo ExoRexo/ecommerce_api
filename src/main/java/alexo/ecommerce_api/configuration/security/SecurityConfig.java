@@ -53,7 +53,10 @@ public class SecurityConfig {
                 // Configure endpoint authorization
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
-                        .requestMatchers("/api/auth/signup", "/api/auth/login").permitAll()
+                    .requestMatchers("/api/auth/signup", "/api/auth/login").permitAll()
+
+                    // Health endpoint must stay public for CI/CD checks
+                    .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
 
                         // All other endpoints require authentication
                         .anyRequest().authenticated()
