@@ -27,8 +27,8 @@ public class ProductStockManagementController {
 
     @PutMapping("/update-warehouse-stock")
     //    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_PRODUCT_STOCK_MANAGEMENT_UPDATE_WAREHOUSE_STOCK')") // todo
-    public ProductStockUpdateResponseDTO updateProductStockOnWarehouse(@Valid @RequestBody ProductStockUpdateRequestDTO request) {
-        return productStockManagementService.updateProductPhysicalStockOnWarehouse(request);
+    public ResponseEntity<@NotNull ApiResponseDTO<ProductStockUpdateResponseDTO>> updateProductStockOnWarehouse(@Valid @RequestBody ProductStockUpdateRequestDTO request) {
+        return ResponseEntity.ok().body(ApiResponseDTO.success(productStockManagementService.updateProductPhysicalStockOnWarehouse(request)));
     }
 
     @GetMapping("/product-warehouse-stocks-list")
