@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,7 +25,7 @@ public class WarehouseController {
     private final WarehouseService warehouseService;
 
     @PostMapping
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_WAREHOUSE_CREATE')") // todo
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_WAREHOUSE_CREATE')")
     public ResponseEntity<@NotNull ApiResponseDTO<WarehouseCreateResponseDTO>> createWarehouse(@Valid @RequestBody WarehouseCreateRequestDTO requestDTO) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -32,7 +33,7 @@ public class WarehouseController {
     }
 
     @PutMapping
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_WAREHOUSE_UPDATE')") // todo
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_WAREHOUSE_UPDATE')")
     public ResponseEntity<@NotNull ApiResponseDTO<WarehouseUpdateResponseDTO>> updateWarehouse(@Valid @RequestBody WarehouseUpdateRequestDTO requestDTO) {
         return ResponseEntity
                 .ok()
@@ -40,7 +41,7 @@ public class WarehouseController {
     }
 
     @GetMapping
-    //    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_WAREHOUSE_READ_LIST')") // todo
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_WAREHOUSE_READ_LIST')")
     public ResponseEntity<@NotNull ApiResponseDTO<PageResponseDTO<WarehouseListResponseDTO>>> getWarehouseList(
             @RequestParam(name = "sortField", defaultValue = "id") String sortField,
             @RequestParam(name = "sortDirection", defaultValue = "DESC") Sort.Direction sortDirection,

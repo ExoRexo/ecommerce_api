@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
@@ -26,13 +27,13 @@ public class ProductStockManagementController {
     private final ProductStockManagementService productStockManagementService;
 
     @PutMapping("/update-warehouse-stock")
-    //    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_PRODUCT_STOCK_MANAGEMENT_UPDATE_WAREHOUSE_STOCK')") // todo
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_PRODUCT_STOCK_MANAGEMENT_UPDATE_WAREHOUSE_STOCK')")
     public ResponseEntity<@NotNull ApiResponseDTO<ProductStockUpdateResponseDTO>> updateProductStockOnWarehouse(@Valid @RequestBody ProductStockUpdateRequestDTO request) {
         return ResponseEntity.ok().body(ApiResponseDTO.success(productStockManagementService.updateProductPhysicalStockOnWarehouse(request)));
     }
 
     @GetMapping("/product-warehouse-stocks-list")
-    //    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_PRODUCT_STOCK_MANAGEMENT_READ_PRODUCT_WH_STOCKS_LIST')") // todo
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_PRODUCT_STOCK_MANAGEMENT_READ_PRODUCT_WH_STOCKS_LIST')")
     public ResponseEntity<@NotNull ApiResponseDTO<PageResponseDTO<StockListResponseDTO>>> getProductWarehouseStocksList(
             @RequestParam(name = "sortField", defaultValue = "id") String sortField,
             @RequestParam(name = "sortDirection", defaultValue = "DESC") Sort.Direction sortDirection,
@@ -70,7 +71,7 @@ public class ProductStockManagementController {
     }
 
     @GetMapping("/warehouse-transactions-list")
-    //    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_PRODUCT_STOCK_MANAGEMENT_READ_WH_TRANSACTIONS_LIST')") // todo
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_INVENTORY_PRODUCT_STOCK_MANAGEMENT_READ_WH_TRANSACTIONS_LIST')")
     public ResponseEntity<@NotNull ApiResponseDTO<PageResponseDTO<TransactionListResponseDTO>>> getWarehouseTransactionsList(
             @RequestParam(name = "sortField", defaultValue = "id") String sortField,
             @RequestParam(name = "sortDirection", defaultValue = "DESC") Sort.Direction sortDirection,

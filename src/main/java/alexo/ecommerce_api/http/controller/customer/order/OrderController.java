@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
@@ -100,7 +101,7 @@ public class OrderController {
     }
 
     @PostMapping("/cancel")
-    //    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_CUSTOMER_ORDER_CANCEL')") // todo
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_CUSTOMER_ORDER_CANCEL')")
     public ResponseEntity<@NotNull ApiResponseDTO<OrderCancellationResponseDTO>> cancelOrder(@Valid @RequestBody OrderCancellationRequestDTO requestDTO) {
         return ResponseEntity
                 .ok()
@@ -111,7 +112,7 @@ public class OrderController {
     }
 
     @PostMapping("/complete")
-    //    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_CUSTOMER_ORDER_COMPLETE')") // todo
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_CUSTOMER_ORDER_COMPLETE')")
     public ResponseEntity<@NotNull ApiResponseDTO<OrderCompletionResponseDTO>> completeOrder(@Valid @RequestBody OrderCompletionRequestDTO requestDTO) {
         // any checks of token from other API or microservice, for example...
         return ResponseEntity
