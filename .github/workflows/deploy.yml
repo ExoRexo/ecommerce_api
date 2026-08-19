@@ -43,7 +43,7 @@ jobs:
           source_jar="$(find target -maxdepth 1 -type f -name 'ecommerce_api-*.jar' ! -name '*.jar.original' -print -quit)"
           test -n "$source_jar"
 
-          release_name="ecommerce_api-${GITHUB_RUN_NUMBER}-${GITHUB_SHA:0:7}.jar"
+          release_name="ecommerce_api-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}-${GITHUB_SHA:0:7}.jar"
           cp "$source_jar" "target/$release_name"
           echo "name=$release_name" >> "$GITHUB_OUTPUT"
 
