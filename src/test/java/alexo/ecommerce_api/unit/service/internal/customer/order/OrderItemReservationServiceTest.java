@@ -1,7 +1,6 @@
 package alexo.ecommerce_api.unit.service.internal.customer.order;
 
 import alexo.ecommerce_api.cache.customer.order.OrderCacheService;
-import alexo.ecommerce_api.repository.customer.CustomerWalletTransactionRepository;
 import alexo.ecommerce_api.repository.customer.OrderItemWarehouseReservationRepository;
 import alexo.ecommerce_api.repository.customer.order_item.OrderItemRepository;
 import alexo.ecommerce_api.repository.inventory.ProductWarehouseStockRepository;

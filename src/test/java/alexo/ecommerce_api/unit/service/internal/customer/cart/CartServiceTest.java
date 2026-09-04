@@ -1,7 +1,6 @@
 package alexo.ecommerce_api.unit.service.internal.customer.cart;
 
 import alexo.ecommerce_api.dto.service.internal.customer.cart.update_product_qty.UpdateProductQuantityInCartRequestDTO;
-import alexo.ecommerce_api.entity.identity.User;
 import alexo.ecommerce_api.repository.catalog.ProductRepository;
 import alexo.ecommerce_api.repository.customer.CartItemRepository;
 import alexo.ecommerce_api.repository.customer.CustomerCartRepository;
