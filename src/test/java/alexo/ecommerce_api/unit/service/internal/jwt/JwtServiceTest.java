@@ -1,18 +1,28 @@
-package alexo.ecommerce_api.service.internal.jwt;
+package alexo.ecommerce_api.unit.service.internal.jwt;
 
 import alexo.ecommerce_api.dto.configuration.security.jwt.JwtPropertiesDTO;
 import alexo.ecommerce_api.dto.service.internal.identity.UserPrincipalDTO;
 import alexo.ecommerce_api.entity.identity.Permission;
 import alexo.ecommerce_api.entity.identity.Role;
+import alexo.ecommerce_api.service.internal.identity.authority.UserPrincipalService;
+import alexo.ecommerce_api.service.internal.jwt.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class JwtServiceTest {
+
+    @Mock
+    UserPrincipalService userPrincipalService;
 
     private JwtService jwtService;
 
@@ -21,7 +31,9 @@ class JwtServiceTest {
         jwtService = new JwtService(new JwtPropertiesDTO(
                 "test-secret-with-at-least-32-characters",
                 3_600_000L
-        ));
+        ),
+            userPrincipalService
+        );
         jwtService.initializeKey();
     }
 
@@ -36,6 +48,7 @@ class JwtServiceTest {
                 List.of(Permission.PermissionCode.CATALOG_PRODUCT_READ_LIST),
                 List.of()
         );
+        when(userPrincipalService.loadUserById(42L)).thenReturn(principal);
 
         String token = jwtService.generateToken(principal);
 
@@ -71,7 +84,7 @@ class JwtServiceTest {
 
     @Test
     void shouldRejectShortSecret() {
-        JwtService service = new JwtService(new JwtPropertiesDTO("short", 1_000L));
+        JwtService service = new JwtService(new JwtPropertiesDTO("short", 1_000L), userPrincipalService);
 
         assertThatThrownBy(service::initializeKey)
                 .isInstanceOf(IllegalStateException.class)

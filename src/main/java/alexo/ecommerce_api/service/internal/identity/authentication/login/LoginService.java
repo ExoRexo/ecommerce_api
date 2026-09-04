@@ -39,7 +39,7 @@ public class LoginService {
         return generateTokenForPrincipal(getFreshPrincipalForUserId(userId));
     }
 
-    private UserPrincipalDTO getFreshPrincipalForUserId(@NotNull Long userId) {
+    public UserPrincipalDTO getFreshPrincipalForUserId(@NotNull Long userId) {
         return (UserPrincipalDTO) userPrincipalService.loadUserById(userId);
     }
 
